@@ -1,0 +1,40 @@
+pluginManagement {
+
+    repositories {
+        
+        maven {
+        
+            name = 'Fabric'
+            url = 'https://maven.fabricmc.net/'
+        }
+        
+        maven {
+        
+            name = 'Sponge Snapshots'
+            url = 'https://repo.spongepowered.org/repository/maven-public/'
+        }
+        
+        maven {
+        
+            name = 'Quilt (Release)'
+            url = 'https://maven.quiltmc.org/repository/release'
+        }
+        
+        maven {
+        
+            name = 'Quilt (Snapshot)'
+            url = 'https://maven.quiltmc.org/repository/snapshot'
+        }
+
+        maven {
+            name = 'Cotton'
+            url = 'https://server.bbkr.space/artifactory/libs-release/'
+        }
+
+        mavenCentral()
+        gradlePluginPortal()
+    }
+}
+
+rootProject.name = 'Collective-1,18,2'
+include("Common", "Fabric", "Forge")
