@@ -1,0 +1,30 @@
+modLoader="javafml"
+loaderVersion="*"
+license="All rights reserved"
+issueTrackerURL="https://github.com/ricksouth/serilum-mc-mods/labels/Library%3A%20Collective"
+logoFile="icon.png"
+
+[[mods]]
+modId="collective"
+version="7.15"
+displayName="Collective"
+displayURL="https://curseforge.com/minecraft/mc-mods/collective"
+authors="Rick South"
+description='''Collective is a shared library with common code for all of Serilum's mods.
+'''
+credits='''Thank you very much to my Membership sponsors for supporting the development of this mod:  
+
+Adam E, Alister, aternosorg, Cherriesaurus, FireStriker, Greg Johnson, Kreezxil, Michael W. S., Mir3JonCZ, Rebecca Hb., Shana Gitnick, silver Bowsman, Tyler Behl   
+
+If you would like to contribute too, check out https://ricksouth.com/donate. Appreciate it! <3
+'''
+
+[[dependencies.collective]]
+    modId="minecraft"
+    mandatory=true
+    versionRange="[1.20.2]"
+    ordering="NONE"
+    side="BOTH"
+
+[[mixins]]
+    config = "collective_neoforge.mixins.json"
