@@ -117,9 +117,3 @@ publishing {
         }
     }
 }
-
-repositories {
-    maven {
-        url = "https://github.com/Serilum/.maven/raw/maven/"
-    }
-}
