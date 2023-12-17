@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "id": "collective",
-  "version": "7.16",
+  "version": "7.19",
 
   "name": "Collective",
   "description": "Collective is a shared library with common code for all of Serilum's mods.",
@@ -10,8 +10,8 @@
   ],
   "contact": {
     "homepage": "https://curseforge.com/minecraft/mc-mods/collective",
-    "sources": "https://github.com/ricksouth/serilum-mod-sources/tree/main/Minecraft/Collective",
-    "issues": "https://github.com/ricksouth/serilum-mc-mods/labels/Mod:%20Collective"
+    "sources": "https://github.com/Serilum/Collective",
+    "issues": "https://github.com/Serilum/.issue-tracker/labels/Library: Collective"
   },
 
   "license": "All Rights Reserved",
@@ -35,7 +35,6 @@
   "custom": {
     "modmenu": {
       "links": {
-        "modmenu.discord": "https://discord.gg/vFren9YzzN",
         "Donate <3" : "https://ricksouth.com/donate"
       },
       "badges": [ "library" ]
