@@ -1,12 +1,12 @@
 modLoader="javafml"
 loaderVersion="*"
 license="All rights reserved"
-issueTrackerURL="https://github.com/ricksouth/serilum-mc-mods/labels/Library%3A%20Collective"
+issueTrackerURL="https://github.com/Serilum/.issue-tracker/labels/Library: Collective"
 logoFile="icon.png"
 
 [[mods]]
 modId="collective"
-version="7.16"
+version="7.19"
 displayName="Collective"
 displayURL="https://curseforge.com/minecraft/mc-mods/collective"
 authors="Rick South"
