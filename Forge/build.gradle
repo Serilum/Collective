@@ -1,7 +1,7 @@
 plugins {
     id 'idea'
     id 'maven-publish'
-    id 'net.minecraftforge.gradle' version '[6.0,6.2)'
+    id 'net.minecraftforge.gradle' version '[6.0.16,6.2)'
     id 'org.spongepowered.mixin' version "0.7-SNAPSHOT" // mixin
 }
 
@@ -81,7 +81,8 @@ minecraft {
     }
 }
 
-sourceSets.main.resources.srcDir 'src/generated/resources'
+//sourceSets.main.resources.srcDir 'src/generated/resources'
+sourceSets.main.resources { srcDir 'src/generated/resources' }
 
 dependencies {
     compileOnly group:'org.spongepowered', name:'mixin', version:'0.8.5'
@@ -99,6 +100,12 @@ tasks.withType(Javadoc).configureEach {
 }
 tasks.named("sourcesJar", Jar) {
     from(project(":Common").sourceSets.main.allSource)
+}
+
+sourceSets.each {
+    def dir = layout.buildDirectory.dir("sourcesSets/$it.name")
+    it.output.resourcesDir = dir
+    it.java.destinationDirectory = dir
 }
 
 processResources {
