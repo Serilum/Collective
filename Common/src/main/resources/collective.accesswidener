@@ -30,3 +30,4 @@ accessible field net/minecraft/client/gui/screens/inventory/SignEditScreen sign 
 accessible field net/minecraft/client/gui/screens/inventory/SignEditScreen messages [Ljava/lang/String;
 accessible field net/minecraft/client/gui/screens/inventory/SignEditScreen line I
 accessible field net/minecraft/client/gui/screens/inventory/SignEditScreen signField Lnet/minecraft/client/gui/font/TextFieldHelper;
+accessible method net/minecraft/world/entity/animal/horse/AbstractHorse getFlag (I)Z
