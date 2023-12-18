@@ -8,21 +8,18 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModLoadingContext;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLLoadCompleteEvent;
-import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.neoforged.neoforge.common.NeoForge;
 
 @Mod(CollectiveReference.MOD_ID)
 public class CollectiveNeoForge {
 	public static CollectiveNeoForge instance;
 	
-    public CollectiveNeoForge() {
+    public CollectiveNeoForge(IEventBus modEventBus) {
         instance = this;
 
         setGlobalConstants();
         CollectiveCommon.init();
         CollectiveConfigScreen.registerScreen(ModLoadingContext.get());
-
-        IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
     	
         modEventBus.addListener(this::loadComplete);
         

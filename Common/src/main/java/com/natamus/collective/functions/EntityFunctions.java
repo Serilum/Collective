@@ -106,6 +106,10 @@ public class EntityFunctions {
 		entity.setSharedFlag(flag, set);
 	}
 
+	public static boolean getAbstractHorseEntityFlagResult(AbstractHorse abstractHorse, int flag) {
+		return abstractHorse.getFlag(flag);
+	}
+
 	public static void resetMerchantOffers(Villager villager) {
 		for (MerchantOffer offer : villager.getOffers()) {
 			resetMerchantOffer(offer);
