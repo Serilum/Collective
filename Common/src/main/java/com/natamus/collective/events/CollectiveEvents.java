@@ -35,21 +35,21 @@ public class CollectiveEvents {
 	public static WeakHashMap<ServerLevel, WeakHashMap<Entity, Entity>> entitiesToRide = new WeakHashMap<ServerLevel, WeakHashMap<Entity, Entity>>();
 	public static CopyOnWriteArrayList<Pair<Integer, Runnable>> scheduledRunnables = new CopyOnWriteArrayList<Pair<Integer, Runnable>>();
 
-	public static void onWorldTick(ServerLevel serverlevel) {
-		if (entitiesToSpawn.computeIfAbsent(serverlevel, k -> new ArrayList<Entity>()).size() > 0) {
-			Entity tospawn = entitiesToSpawn.get(serverlevel).get(0);
+	public static void onWorldTick(ServerLevel serverLevel) {
+		if (entitiesToSpawn.computeIfAbsent(serverLevel, k -> new ArrayList<Entity>()).size() > 0) {
+			Entity tospawn = entitiesToSpawn.get(serverLevel).get(0);
 
-			serverlevel.addFreshEntityWithPassengers(tospawn);
+			serverLevel.addFreshEntityWithPassengers(tospawn);
 
-			if (entitiesToRide.computeIfAbsent(serverlevel, k -> new WeakHashMap<Entity, Entity>()).containsKey(tospawn)) {
-				Entity rider = entitiesToRide.get(serverlevel).get(tospawn);
+			if (entitiesToRide.computeIfAbsent(serverLevel, k -> new WeakHashMap<Entity, Entity>()).containsKey(tospawn)) {
+				Entity rider = entitiesToRide.get(serverLevel).get(tospawn);
 
 				rider.startRiding(tospawn);
 
-				entitiesToRide.get(serverlevel).remove(tospawn);
+				entitiesToRide.get(serverLevel).remove(tospawn);
 			}
 
-			entitiesToSpawn.get(serverlevel).remove(0);
+			entitiesToSpawn.get(serverLevel).remove(0);
 		}
 	}
 
@@ -62,56 +62,56 @@ public class CollectiveEvents {
 			}
 		}
 	}
-	
-	public static boolean onEntityJoinLevel(Level world, Entity entity) {
+
+	public static boolean onEntityJoinLevel(Level level, Entity entity) {
 		if (!(entity instanceof LivingEntity)) {
 			return true;
 		}
-		
+
 		if (RegisterMod.shouldDoCheck) {
 			if (entity instanceof Player) {
-				RegisterMod.joinWorldProcess(world, (Player)entity);
+				RegisterMod.joinWorldProcess(level, (Player)entity);
 			}
 		}
-		
+
 		if (entity.isRemoved()) {
 			return true;
 		}
-		
-		if (GlobalVariables.samobjects.isEmpty()) {
+
+		if (GlobalVariables.globalSAMs.isEmpty()) {
 			return true;
 		}
-		
+
 		Set<String> tags = entity.getTags();
 		if (tags.contains(CollectiveReference.MOD_ID + ".checked")) {
 			return true;
 		}
 		entity.addTag(CollectiveReference.MOD_ID + ".checked");
-		
-		EntityType<?> entitytype = entity.getType();
-		if (entitytype == null || !GlobalVariables.activesams.contains(entitytype)) {
+
+		EntityType<?> entityType = entity.getType();
+		if (!GlobalVariables.activeSAMEntityTypes.contains(entityType)) {
 			return true;
 		}
-		
-		boolean isspawner = tags.contains(CollectiveReference.MOD_ID + ".fromspawner");
-		
+
+		boolean isFromSpawner = tags.contains(CollectiveReference.MOD_ID + ".fromspawner");
+
 		List<SAMObject> possibles = new ArrayList<SAMObject>();
-		for (SAMObject samobject : GlobalVariables.samobjects) {
-			if (samobject == null) {
+		for (SAMObject sam : GlobalVariables.globalSAMs) {
+			if (sam == null) {
 				continue;
 			}
 
-			if (samobject.fromtype == null) {
+			if (sam.fromEntityType == null) {
 				continue;
 			}
-			if (samobject.fromtype.equals(entitytype)) {
-				if ((samobject.spawner && !isspawner) || (!samobject.spawner && isspawner)) {
+			if (sam.fromEntityType.equals(entityType)) {
+				if ((sam.onlyFromSpawner && !isFromSpawner) || (!sam.onlyFromSpawner && isFromSpawner)) {
 					continue;
 				}
-				possibles.add(samobject);
+				possibles.add(sam);
 			}
 		}
-		
+
 		int size = possibles.size();
 		if (size == 0) {
 			return true;
@@ -121,24 +121,30 @@ public class CollectiveEvents {
 
 		for (SAMObject sam : possibles) {
 			double num = GlobalVariables.random.nextDouble();
-			if (num > sam.chance) {
+			if (num > sam.changeChance) {
 				continue;
 			}
-			
-			Vec3 evec = entity.position();
-			if (sam.surface) {
-				if (!BlockPosFunctions.isOnSurface(world, evec)) {
+
+			Vec3 eVec = entity.position();
+			boolean isOnSurface = BlockPosFunctions.isOnSurface(level, eVec);
+
+			if (sam.onlyOnSurface) {
+				if (!isOnSurface) {
 					continue;
 				}
 			}
-			
-			Entity to = sam.totype.create(world);
+			else if (sam.onlyBelowSurface) {
+				if (isOnSurface) {
+					continue;
+				}
+			}
+
+			Entity to = sam.toEntityType.create(level);
 			if (to == null) {
 				return true;
 			}
 
-			//to.setWorld(Level);
-			to.setPos(evec.x, evec.y, evec.z);
+			to.setPos(eVec.x, eVec.y, eVec.z);
 
 			if (ageable && to instanceof AgeableMob) {
 				AgeableMob am = (AgeableMob)to;
@@ -146,19 +152,19 @@ public class CollectiveEvents {
 				to = am;
 			}
 
-			boolean ignoremainhand = false;
-			if (sam.helditem != null) {
+			boolean ignoreMainhand = false;
+			if (sam.itemToHold != null) {
 				if (to instanceof LivingEntity) {
 					LivingEntity le = (LivingEntity)to;
-					if (!le.getMainHandItem().getItem().equals(sam.helditem)) {
-						le.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(sam.helditem, 1));
-						ignoremainhand = true;
+					if (!le.getMainHandItem().getItem().equals(sam.itemToHold)) {
+						le.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(sam.itemToHold, 1));
+						ignoreMainhand = true;
 					}
 				}
 			}
-			
+
 			boolean ride = false;
-			if (EntityFunctions.isHorse(to) && sam.rideable) {
+			if (EntityFunctions.isHorse(to) && sam.rideNotReplace) {
 				AbstractHorse ah = (AbstractHorse)to;
 				ah.setTamed(true);
 
@@ -166,25 +172,25 @@ public class CollectiveEvents {
 			}
 			else {
 				if (CollectiveConfigHandler.transferItemsBetweenReplacedEntities) {
-					EntityFunctions.transferItemsBetweenEntities(entity, to, ignoremainhand);
+					EntityFunctions.transferItemsBetweenEntities(entity, to, ignoreMainhand);
 				}
 			}
 
-			if (!(world instanceof ServerLevel)) {
+			if (!(level instanceof ServerLevel)) {
 				return true;
 			}
-			
-			ServerLevel serverworld = (ServerLevel)world;
+
+			ServerLevel serverLevel = (ServerLevel)level;
 
 			if (ride) {
-				SpawnEntityFunctions.startRidingEntityOnNextTick(serverworld, to, entity);
+				SpawnEntityFunctions.startRidingEntityOnNextTick(serverLevel, to, entity);
 			}
 			else {
 				entity.remove(RemovalReason.DISCARDED);
 			}
 
 			to.addTag(CollectiveReference.MOD_ID + ".checked");
-			SpawnEntityFunctions.spawnEntityOnNextTick(serverworld, to);
+			SpawnEntityFunctions.spawnEntityOnNextTick(serverLevel, to);
 
 			return ride;
 		}

@@ -6,7 +6,7 @@ logoFile="icon.png"
 
 [[mods]]
 modId="collective"
-version="7.22"
+version="7.23"
 displayName="Collective"
 displayURL="https://serilum.com/mod/collective"
 authors="Rick South"
