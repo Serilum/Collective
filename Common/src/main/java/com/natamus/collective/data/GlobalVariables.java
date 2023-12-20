@@ -18,8 +18,8 @@ public class GlobalVariables {
 	public static RandomSource randomSource = RandomSource.create();
 
 	// Spawn A Mob variables
-	public static CopyOnWriteArrayList<EntityType<?>> activesams = new CopyOnWriteArrayList<EntityType<?>>();
-	public static CopyOnWriteArrayList<SAMObject> samobjects = new CopyOnWriteArrayList<SAMObject>();
+	public static CopyOnWriteArrayList<EntityType<?>> activeSAMEntityTypes = new CopyOnWriteArrayList<EntityType<?>>();
+	public static CopyOnWriteArrayList<SAMObject> globalSAMs = new CopyOnWriteArrayList<SAMObject>();
 
 	// Villager names; 1: guard-villagers, 2-4: farlanders
 	public static List<String> moddedvillagers = new ArrayList<String>(Arrays.asList("Villager", "WanderingTrader", "Guard", "Farlander", "ElderFarlander", "Wanderer", "ThiefWanderingTrader", "PlagueDoctor", "GoblinTrader", "VeinGoblinTrader", "RedMerchant", "WanderingWizard", "WanderingWinemaker", "WanderingBaker", "Bowman", "Crossbowman", "Horseman", "Nomad", "Recruit", "RecruitShieldman", "Gatekeeper", "VillagerEntityMCA"));
