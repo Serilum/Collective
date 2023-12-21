@@ -20,9 +20,9 @@ public class FabricMixinConfigPlugin implements IMixinConfigPlugin {
 
     @Override
     public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
-        return !(mixinClassName.contains(".neoforge.") && !isNeoForge()||
-                mixinClassName.contains(".forge.") && !isForge() ||
-                mixinClassName.contains(".fabric.") && !isFabric());
+        return !(mixinClassName.contains("neoforge.") && !isNeoForge()||
+                mixinClassName.contains("forge.") && !isForge() ||
+                mixinClassName.contains("fabric.") && !isFabric());
     }
 
     @Override
