@@ -117,16 +117,15 @@ public class CollectiveEvents {
 			return true;
 		}
 
+		Vec3 eVec = entity.position();
 		boolean ageable = entity instanceof AgeableMob;
+		boolean isOnSurface = BlockPosFunctions.isOnSurface(level, eVec);
 
 		for (SAMObject sam : possibles) {
 			double num = GlobalVariables.random.nextDouble();
 			if (num > sam.changeChance) {
 				continue;
 			}
-
-			Vec3 eVec = entity.position();
-			boolean isOnSurface = BlockPosFunctions.isOnSurface(level, eVec);
 
 			if (sam.onlyOnSurface) {
 				if (!isOnSurface) {
@@ -135,6 +134,12 @@ public class CollectiveEvents {
 			}
 			else if (sam.onlyBelowSurface) {
 				if (isOnSurface) {
+					continue;
+				}
+			}
+
+			if (sam.onlyBelowSpecificY) {
+				if (eVec.y >= sam.specificY) {
 					continue;
 				}
 			}
