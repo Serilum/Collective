@@ -62,39 +62,39 @@ public class CollectiveEvents {
 			}
 		}
 	}
-	
+
 	public static boolean onEntityJoinLevel(Level level, Entity entity) {
 		if (!(entity instanceof LivingEntity)) {
 			return true;
 		}
-		
+
 		if (RegisterMod.shouldDoCheck) {
 			if (entity instanceof Player) {
 				RegisterMod.joinWorldProcess(level, (Player)entity);
 			}
 		}
-		
+
 		if (entity.isRemoved()) {
 			return true;
 		}
-		
+
 		if (GlobalVariables.globalSAMs.isEmpty()) {
 			return true;
 		}
-		
+
 		Set<String> tags = entity.getTags();
 		if (tags.contains(CollectiveReference.MOD_ID + ".checked")) {
 			return true;
 		}
 		entity.addTag(CollectiveReference.MOD_ID + ".checked");
-		
+
 		EntityType<?> entityType = entity.getType();
 		if (!GlobalVariables.activeSAMEntityTypes.contains(entityType)) {
 			return true;
 		}
-		
+
 		boolean isFromSpawner = tags.contains(CollectiveReference.MOD_ID + ".fromspawner");
-		
+
 		List<SAMObject> possibles = new ArrayList<SAMObject>();
 		for (SAMObject sam : GlobalVariables.globalSAMs) {
 			if (sam == null) {
@@ -111,22 +111,21 @@ public class CollectiveEvents {
 				possibles.add(sam);
 			}
 		}
-		
+
 		int size = possibles.size();
 		if (size == 0) {
 			return true;
 		}
 
+		Vec3 eVec = entity.position();
 		boolean ageable = entity instanceof AgeableMob;
+		boolean isOnSurface = BlockPosFunctions.isOnSurface(level, eVec);
 
 		for (SAMObject sam : possibles) {
 			double num = GlobalVariables.random.nextDouble();
 			if (num > sam.changeChance) {
 				continue;
 			}
-			
-			Vec3 eVec = entity.position();
-			boolean isOnSurface = BlockPosFunctions.isOnSurface(level, eVec);
 
 			if (sam.onlyOnSurface) {
 				if (!isOnSurface) {
@@ -138,7 +137,13 @@ public class CollectiveEvents {
 					continue;
 				}
 			}
-			
+
+			if (sam.onlyBelowSpecificY) {
+				if (eVec.y >= sam.specificY) {
+					continue;
+				}
+			}
+
 			Entity to = sam.toEntityType.create(level);
 			if (to == null) {
 				return true;
@@ -162,7 +167,7 @@ public class CollectiveEvents {
 					}
 				}
 			}
-			
+
 			boolean ride = false;
 			if (EntityFunctions.isHorse(to) && sam.rideNotReplace) {
 				AbstractHorse ah = (AbstractHorse)to;
@@ -179,7 +184,7 @@ public class CollectiveEvents {
 			if (!(level instanceof ServerLevel)) {
 				return true;
 			}
-			
+
 			ServerLevel serverLevel = (ServerLevel)level;
 
 			if (ride) {
