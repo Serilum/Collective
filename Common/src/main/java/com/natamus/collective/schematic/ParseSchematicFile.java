@@ -19,7 +19,7 @@ public class ParseSchematicFile {
         return getParsedSchematicObject(schematicInputStream, level, centerPos, extraYOffset, skipAir, true);
     }
     public static ParsedSchematicObject getParsedSchematicObject(InputStream schematicInputStream, Level level, BlockPos centerPos, int extraYOffset, boolean skipAir, boolean automaticCenter) {
-        Schematic schematic = new Schematic(schematicInputStream);
+        Schematic schematic = new Schematic(schematicInputStream, level);
 
         int maxBuildHeight = level.getMaxBuildHeight();
         int length = schematic.getLength();
