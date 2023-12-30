@@ -66,10 +66,14 @@ public class PlayerFunctions {
 	}
 
 	public static boolean isJoiningWorldForTheFirstTime(Player player, String modid) {
-		return isJoiningWorldForTheFirstTime(player, modid, true);
+		return isJoiningWorldForTheFirstTime(player, modid, false);
 	}
 	public static boolean isJoiningWorldForTheFirstTime(Player player, String modid, boolean mustHaveEmptyInventory) {
+		return isJoiningWorldForTheFirstTime(player, modid, false, true);
+	}
+	public static boolean isJoiningWorldForTheFirstTime(Player player, String modid, boolean mustHaveEmptyInventory, boolean mustBeCloseToSpawn) {
 		String firstjointag = CollectiveReference.MOD_ID + ".firstJoin." + modid;
+		String playerName = player.getName().getString();
 
 		Set<String> tags = player.getTags();
 		if (tags.contains(firstjointag)) {
@@ -89,19 +93,32 @@ public class PlayerFunctions {
 			}
 
 			if (!isempty) {
+				Constants.LOG.debug("[" + modid + "] Inventory of " + playerName + " is not empty, first join is false.");
 				return false;
 			}
 		}
 
-		Level level = player.getCommandSenderWorld();
-		ServerLevel serverLevel = (ServerLevel)level;
-		BlockPos wspos = serverLevel.getSharedSpawnPos();
-		BlockPos ppos = player.blockPosition();
-		BlockPos cpos = new BlockPos(ppos.getX(), wspos.getY(), ppos.getZ());
+		if (mustBeCloseToSpawn) {
+			Level level = player.getCommandSenderWorld();
+			ServerLevel serverLevel = (ServerLevel) level;
+			ServerPlayer serverPlayer = (ServerPlayer) player;
 
-		int spawnRadius = serverLevel.getGameRules().getRule(GameRules.RULE_SPAWN_RADIUS).get();
+			BlockPos spawnPos = serverPlayer.getRespawnPosition();
+			if (spawnPos == null) {
+				spawnPos = serverLevel.getSharedSpawnPos();
+			}
+			Constants.LOG.debug("[" + modid + "] Checking for first join of " + playerName + " with spawn position: " + spawnPos.toShortString());
 
-		return cpos.closerThan(wspos, spawnRadius*2);
+			BlockPos playerPos = player.blockPosition();
+			BlockPos checkPos = new BlockPos(playerPos.getX(), spawnPos.getY(), playerPos.getZ());
+
+			int spawnRadius = serverLevel.getGameRules().getRule(GameRules.RULE_SPAWN_RADIUS).get();
+			Constants.LOG.debug("[" + modid + "] Checking for first join of " + playerName + " with spawn radius: " + spawnRadius);
+
+			return checkPos.closerThan(spawnPos, spawnRadius * 2);
+		}
+
+		return true;
 	}
 
 	public static BlockPos getSpawnPoint(Level world, Player player) {
