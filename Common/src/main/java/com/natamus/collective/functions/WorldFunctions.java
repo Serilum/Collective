@@ -1,59 +1,73 @@
 package com.natamus.collective.functions;
 
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.storage.LevelResource;
 
+import java.io.File;
+
 public class WorldFunctions {
-	public static void setWorldTime(ServerLevel ServerLevel, Integer time) {
+	public static void setWorldTime(ServerLevel serverLevel, Integer time) {
 		if (time < 0 || time > 24000) {
 			return;
 		}
 
-		int days = getTotalDaysPassed(ServerLevel);
-		ServerLevel.setDayTime(time + (days * 24000L)); // setDayTime
+		int days = getTotalDaysPassed(serverLevel);
+		serverLevel.setDayTime(time + (days * 24000L));
 	}
 	
-	public static int getTotalTimePassed(ServerLevel ServerLevel) {
-		return (int)ServerLevel.getDayTime();
+	public static int getTotalTimePassed(ServerLevel serverLevel) {
+		return (int)serverLevel.getDayTime();
 	}
-	public static int getTotalDaysPassed(ServerLevel ServerLevel) {
-		int currenttime = getTotalTimePassed(ServerLevel);
+	public static int getTotalDaysPassed(ServerLevel serverLevel) {
+		int currenttime = getTotalTimePassed(serverLevel);
 		return (int)Math.floor((double)currenttime/24000);
 	}
-	public static int getWorldTime(ServerLevel ServerLevel) {
-		return getTotalTimePassed(ServerLevel) - (getTotalDaysPassed(ServerLevel)*24000);
+	public static int getWorldTime(ServerLevel serverLevel) {
+		return getTotalTimePassed(serverLevel) - (getTotalDaysPassed(serverLevel)*24000);
 	}
 	
 	// Dimension functions
-	public static String getWorldDimensionName(Level world) {
-		return world.dimension().location().toString();
+	public static String getWorldDimensionName(Level level) {
+		return level.dimension().location().toString();
 	}
-	public static boolean isOverworld(Level world) {
-		return getWorldDimensionName(world).toLowerCase().endsWith("overworld");
+	public static boolean isOverworld(Level level) {
+		return getWorldDimensionName(level).toLowerCase().endsWith("overworld");
 	}
-	public static boolean isNether(Level world) {
-		return getWorldDimensionName(world).toLowerCase().endsWith("nether");
+	public static boolean isNether(Level level) {
+		return getWorldDimensionName(level).toLowerCase().endsWith("nether");
 	}
-	public static boolean isEnd(Level world) {
-		return getWorldDimensionName(world).toLowerCase().endsWith("end");
+	public static boolean isEnd(Level level) {
+		return getWorldDimensionName(level).toLowerCase().endsWith("end");
 	}
 	
-	// IWorld functions
-	public static Level getWorldIfInstanceOfAndNotRemote(LevelAccessor iworld) {
-		if (iworld.isClientSide()) {
+	// LevelAccessor/IWorld functions
+	public static Level getWorldIfInstanceOfAndNotRemote(LevelAccessor levelAccessor) {
+		if (levelAccessor.isClientSide()) {
 			return null;
 		}
-		if (iworld instanceof Level) {
-			return ((Level)iworld);
+		if (levelAccessor instanceof Level) {
+			return ((Level)levelAccessor);
 		}
 		return null;
 	}
 	
 	// Path
-	public static String getWorldPath(ServerLevel ServerLevel) {
-		String worldpath = ServerLevel.getServer().getWorldPath(LevelResource.ROOT).toString();
-		return worldpath.substring(0, worldpath.length() - 2);
+	public static String getWorldPath(ServerLevel serverLevel) {
+		return getWorldPath(serverLevel.getServer());
+	}
+    public static String getWorldPath(MinecraftServer minecraftServer) {
+        String worldpath = minecraftServer.getWorldPath(LevelResource.ROOT).toString();
+        return worldpath.substring(0, worldpath.length() - 2);
+    }
+
+	public static String getWorldFolderName(ServerLevel serverLevel) {
+		return getWorldFolderName(serverLevel.getServer());
+	}
+	public static String getWorldFolderName(MinecraftServer minecraftServer) {
+		String worldPath = getWorldPath(minecraftServer);
+		return worldPath.substring(worldPath.lastIndexOf(File.separator) + 1);
 	}
 }

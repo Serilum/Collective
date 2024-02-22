@@ -63,7 +63,7 @@ public abstract class DuskConfig {
 
 	private static final HashMap<String, List<EntryInfo>> entryHashMap = new HashMap<String, List<EntryInfo>>();
 
-	protected static class EntryInfo {
+	public static class EntryInfo {
 		Field field;
 		Object widget;
 		int width;
@@ -552,8 +552,8 @@ public abstract class DuskConfig {
 	public static class DuskConfigListWidget extends ContainerObjectSelectionList<ButtonEntry> {
 		Font font;
 
-		public DuskConfigListWidget(Minecraft client, int i, int j, int k, int l, int m) {
-			super(client, i, j, k, m);
+		public DuskConfigListWidget(Minecraft client, int width, int height, int y, int itemHeight, int m) {
+			super(client, width, height-68, y, m);
 			this.centerListVertically = false;
 			font = client.font;
 		}
@@ -647,7 +647,7 @@ public abstract class DuskConfig {
 			rewriteConfig = true;
 		}
 
-		String content = new String(Files.readAllBytes(path), StandardCharsets.UTF_8);
+		String content = Files.readString(path);
 		content = Stream.of(content.split("\n")).filter(s -> !s.startsWith("\t//")).collect(Collectors.joining("\n"));
 
 		gson.fromJson(new StringReader(content), configClass.get(modid));

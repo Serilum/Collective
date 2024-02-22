@@ -17,12 +17,16 @@ pluginManagement {
             name = 'Sponge Snapshots'
             url = 'https://repo.spongepowered.org/repository/maven-public/'
         }
+        maven {
+            name = 'Parchment'
+            url = 'https://maven.parchmentmc.org'
+        }
     }
 }
 
-/*plugins {
-    id 'org.gradle.toolchains.foojay-resolver-convention' version '0.5.0'
-}*/
+plugins {
+    id 'org.gradle.toolchains.foojay-resolver-convention' version '0.8.0'
+}
 
 // This should match the folder name of the project, or else IDEA may complain (see https://youtrack.jetbrains.com/issue/IDEA-317606)
 rootProject.name = 'Collective-1,20,4'

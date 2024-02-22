@@ -19,7 +19,7 @@ public class CollectiveChatEvents {
         		return newMessage;
         	}
         }
-        
+
         return message;
     });
     
