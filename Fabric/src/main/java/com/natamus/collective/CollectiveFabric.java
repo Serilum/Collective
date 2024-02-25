@@ -3,6 +3,9 @@ package com.natamus.collective;
 import com.natamus.collective.check.RegisterMod;
 import com.natamus.collective.config.GenerateJSONFiles;
 import com.natamus.collective.events.CollectiveEvents;
+import com.natamus.collective.fabric.networking.FabricNetworkHandler;
+import com.natamus.collective.implementations.networking.NetworkSetup;
+import com.natamus.collective.implementations.networking.data.Side;
 import com.natamus.collective.util.CollectiveReference;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents;
@@ -15,6 +18,8 @@ import net.minecraft.world.entity.Entity;
 public class CollectiveFabric implements ModInitializer { 
 	@Override
 	public void onInitialize() {
+		new NetworkSetup(new FabricNetworkHandler(Side.SERVER));
+
 		setGlobalConstants();
 		CollectiveCommon.init();
 
