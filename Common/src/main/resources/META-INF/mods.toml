@@ -6,7 +6,7 @@ logoFile="icon.png"
 
 [[mods]]
 modId="collective"
-version="7.36"
+version="7.37"
 displayName="Collective"
 displayURL="https://serilum.com/mod/collective"
 authors="Rick South"
@@ -14,9 +14,9 @@ description='''Collective is a shared library with common code for all of Serilu
 '''
 credits='''Thank you very much to my Membership sponsors for supporting the development of this mod:  
 
-Alister, Andrean Olgo, aternosorg, Cherriesaurus, Kreezxil, Michael W. S., Mir3JonCZ, Rebecca Hb., Shana Gitnick, Tyler Behl   
+Alister, Andrean Olgo, aternosorg, Cherriesaurus, Jack, Kreezxil, Michael W. S., Mir3JonCZ, Shana Gitnick, Tyler Behl   
 
-If you would like to contribute too, check out https://ricksouth.com/donate. Appreciate it! <3
+If you would like to contribute too, check out https://serilum.com/donate. Appreciate it! <3
 '''
 
 [[dependencies.collective]]

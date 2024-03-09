@@ -1,9 +1,6 @@
 package com.natamus.collective.functions;
 
-import java.util.List;
-
 import com.natamus.collective.data.GlobalVariables;
-
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -13,6 +10,9 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.EndPortalFrameBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.Material;
+
+import java.util.List;
 
 public class BlockFunctions {
 	// START: Checks whether specificblock equals tocheckblock
@@ -96,6 +96,10 @@ public class BlockFunctions {
 		}
 		
 		return blockstate.getValue(EndPortalFrameBlock.HAS_EYE);
+	}
+
+	public static boolean canOpenByHand(BlockState blockState) {
+		return !blockState.getMaterial().equals(Material.METAL);
 	}
 	
 	public static String blockToReadableString(Block block, int amount) {
