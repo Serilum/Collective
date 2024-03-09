@@ -1,18 +1,15 @@
 package com.natamus.collective.functions;
 
-import java.util.List;
-
 import com.natamus.collective.data.GlobalVariables;
-
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.EndPortalFrameBlock;
+import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+
+import java.util.List;
 
 public class BlockFunctions {
 	// START: Checks whether specificblock equals tocheckblock
@@ -96,6 +93,23 @@ public class BlockFunctions {
 		}
 		
 		return blockstate.getValue(EndPortalFrameBlock.HAS_EYE);
+	}
+
+	public static boolean canOpenByHand(BlockState blockState) {
+		return canOpenByHand(blockState, true);
+	}
+	public static boolean canOpenByHand(BlockState blockState, boolean defaultReturn) {
+		Block block = blockState.getBlock();
+		if (block instanceof DoorBlock) {
+			DoorBlock doorBlock = (DoorBlock)block;
+			return doorBlock.type().canOpenByHand();
+		}
+		else if (block instanceof TrapDoorBlock){
+			TrapDoorBlock trapDoorBlock = (TrapDoorBlock)block;
+			return trapDoorBlock.getType().canOpenByHand();
+		}
+
+		return defaultReturn;
 	}
 	
 	public static String blockToReadableString(Block block, int amount) {
