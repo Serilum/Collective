@@ -1,5 +1,5 @@
 This is the latest source code of Collective.
-Minecraft version: 1.20.1, mod version: 7.36.
+Minecraft version: 1.20.1, mod version: 7.37.
 
 Please don't distribute without permission.
 For all Minecraft modding projects, feel free to visit my profile page on CurseForge or Modrinth.
@@ -8,6 +8,6 @@ For all Minecraft modding projects, feel free to visit my profile page on CurseF
  Overview: https://serilum.com/
 
 If you are feeling generous and would like to support the development of the mods, you can!
- https://ricksouth.com/donate contains all the information. <3
+ https://serilum.com/donate contains all the information. <3
 
 Thanks for looking at the source code! Hope it's of some use to your project. Happy modding!
