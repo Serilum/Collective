@@ -4,6 +4,7 @@ import com.mojang.datafixers.util.Pair;
 import com.natamus.collective.check.RegisterMod;
 import com.natamus.collective.config.CollectiveConfigHandler;
 import com.natamus.collective.data.GlobalVariables;
+import com.natamus.collective.features.PlayerHeadCacheFeature;
 import com.natamus.collective.functions.BlockPosFunctions;
 import com.natamus.collective.functions.EntityFunctions;
 import com.natamus.collective.functions.SpawnEntityFunctions;
@@ -68,9 +69,15 @@ public class CollectiveEvents {
 			return true;
 		}
 
-		if (RegisterMod.shouldDoCheck) {
-			if (entity instanceof Player) {
-				RegisterMod.joinWorldProcess(level, (Player)entity);
+		if (entity instanceof Player) {
+			Player player = (Player)entity;
+
+			if (RegisterMod.shouldDoCheck) {
+				RegisterMod.joinWorldProcess(level, player);
+			}
+
+			if (PlayerHeadCacheFeature.isHeadCachingEnabled()) {
+				PlayerHeadCacheFeature.cachePlayer(player);
 			}
 		}
 
