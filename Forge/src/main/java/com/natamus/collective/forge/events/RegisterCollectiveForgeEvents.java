@@ -1,11 +1,13 @@
 package com.natamus.collective.forge.events;
 
+import com.natamus.collective.cmds.CommandCollective;
 import com.natamus.collective.config.GenerateJSONFiles;
 import com.natamus.collective.events.CollectiveEvents;
 import com.natamus.collective.functions.WorldFunctions;
 import com.natamus.collective.util.CollectiveReference;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
+import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.TickEvent.Phase;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
@@ -60,5 +62,10 @@ public class RegisterCollectiveForgeEvents {
         if (!CollectiveEvents.onEntityJoinLevel(e.getLevel(), e.getEntity())) {
             e.setCanceled(true);
         }
+    }
+
+    @SubscribeEvent
+    public void registerCommands(RegisterCommandsEvent e) {
+    	CommandCollective.register(e.getDispatcher());
     }
 }

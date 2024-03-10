@@ -1,5 +1,6 @@
 package com.natamus.collective.neoforge.events;
 
+import com.natamus.collective.cmds.CommandCollective;
 import com.natamus.collective.config.GenerateJSONFiles;
 import com.natamus.collective.events.CollectiveEvents;
 import com.natamus.collective.functions.WorldFunctions;
@@ -9,6 +10,7 @@ import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod.EventBusSubscriber;
+import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.TickEvent;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.event.entity.living.MobSpawnEvent;
@@ -60,4 +62,9 @@ public class RegisterCollectiveNeoForgeEvents {
             e.setCanceled(true);
         }
     }
+
+	@SubscribeEvent
+	public static void registerCommands(RegisterCommandsEvent e) {
+		CommandCollective.register(e.getDispatcher());
+	}
 }
