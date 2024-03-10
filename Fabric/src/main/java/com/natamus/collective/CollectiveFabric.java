@@ -1,6 +1,7 @@
 package com.natamus.collective;
 
 import com.natamus.collective.check.RegisterMod;
+import com.natamus.collective.cmds.CommandCollective;
 import com.natamus.collective.config.GenerateJSONFiles;
 import com.natamus.collective.data.GlobalConstants;
 import com.natamus.collective.events.CollectiveEvents;
@@ -11,6 +12,7 @@ import com.natamus.collective.implementations.networking.data.Side;
 import com.natamus.collective.util.CollectiveReference;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
@@ -40,6 +42,10 @@ public class CollectiveFabric implements ModInitializer {
 		
 		ServerEntityEvents.ENTITY_LOAD.register((Entity entity, ServerLevel world) -> {
 			CollectiveEvents.onEntityJoinLevel(world, entity);
+		});
+
+		CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
+			CommandCollective.register(dispatcher);
 		});
 
 		RegisterMod.register(CollectiveReference.NAME, CollectiveReference.MOD_ID, CollectiveReference.VERSION, CollectiveReference.ACCEPTED_VERSIONS);
