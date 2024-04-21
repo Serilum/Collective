@@ -6,12 +6,17 @@ import com.natamus.collective.events.CollectiveEvents;
 import com.natamus.collective.functions.WorldFunctions;
 import com.natamus.collective.util.CollectiveReference;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.TickEvent.Phase;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.entity.living.LivingSpawnEvent;
+import net.minecraftforge.event.level.BlockEvent;
 import net.minecraftforge.event.server.ServerAboutToStartEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -73,6 +78,41 @@ public class RegisterCollectiveForgeEvents {
             e.setCanceled(true);
         }
     }
+
+	@SubscribeEvent
+	public void onBlockBreak(BlockEvent.BreakEvent e) {
+		Level level = WorldFunctions.getWorldIfInstanceOfAndNotRemote(e.getLevel());
+		if (level == null) {
+			return;
+		}
+
+		if (!CollectiveEvents.onBlockBreak(level, e.getPlayer(), e.getPos(), e.getState(), null)) {
+			e.setCanceled(true);
+		}
+	}
+
+	@SubscribeEvent
+	public void onEntityBlockPlace(BlockEvent.EntityPlaceEvent e) {
+		Level level = WorldFunctions.getWorldIfInstanceOfAndNotRemote(e.getLevel());
+		if (level == null) {
+			return;
+		}
+
+		Entity entity = e.getEntity();
+		if (!(entity instanceof Player)) {
+			return;
+		}
+
+		Player player = (Player)entity;
+		ItemStack itemStack = player.getMainHandItem();
+		if (itemStack.isEmpty()) {
+			itemStack = player.getOffhandItem();
+		}
+
+		if (!CollectiveEvents.onEntityBlockPlace(level, e.getPos(), e.getPlacedBlock(), (LivingEntity)entity, itemStack)) {
+			e.setCanceled(true);
+		}
+	}
 
     @SubscribeEvent
     public void registerCommands(RegisterCommandsEvent e) {
