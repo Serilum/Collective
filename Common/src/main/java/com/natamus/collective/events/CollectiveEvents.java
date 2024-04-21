@@ -1,5 +1,8 @@
 package com.natamus.collective.events;
 
+import com.mojang.authlib.GameProfile;
+import com.mojang.authlib.minecraft.MinecraftSessionService;
+import com.mojang.authlib.yggdrasil.ProfileResult;
 import com.mojang.datafixers.util.Pair;
 import com.natamus.collective.check.RegisterMod;
 import com.natamus.collective.config.CollectiveConfigHandler;
@@ -7,9 +10,12 @@ import com.natamus.collective.data.GlobalVariables;
 import com.natamus.collective.features.PlayerHeadCacheFeature;
 import com.natamus.collective.functions.BlockPosFunctions;
 import com.natamus.collective.functions.EntityFunctions;
+import com.natamus.collective.functions.HeadFunctions;
 import com.natamus.collective.functions.SpawnEntityFunctions;
 import com.natamus.collective.objects.SAMObject;
 import com.natamus.collective.util.CollectiveReference;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.TickTask;
 import net.minecraft.server.level.ServerLevel;
@@ -20,15 +26,21 @@ import net.minecraft.world.entity.Entity.RemovalReason;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.animal.horse.AbstractHorse;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.PlayerHeadItem;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.SkullBlock;
+import net.minecraft.world.level.block.WallSkullBlock;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.SkullBlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.util.WeakHashMap;
+import javax.annotation.Nullable;
+import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class CollectiveEvents {
@@ -208,5 +220,112 @@ public class CollectiveEvents {
 		}
 
 		return true;
+	}
+
+	public static boolean onBlockBreak(Level level, Player player, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity) {
+		if (level.isClientSide) {
+			return true;
+		}
+
+		Block block = state.getBlock();
+		if (block instanceof SkullBlock || block instanceof WallSkullBlock) {
+			if (player.isCreative()) {
+				return true;
+			}
+
+			BlockEntity targetBlockEntity = level.getBlockEntity(pos);
+			if (!(targetBlockEntity instanceof SkullBlockEntity)) {
+				return true;
+			}
+
+			SkullBlockEntity skullBlockEntity = (SkullBlockEntity)targetBlockEntity;
+			if (skullBlockEntity == null) {
+				return true;
+			}
+
+			GameProfile gameProfile = skullBlockEntity.getOwnerProfile();
+			if (gameProfile == null) {
+				return true;
+			}
+
+			UUID uuid = gameProfile.getId();
+			if (uuid.toString().startsWith("ffffffff")) { // Old player head format
+				return true;
+			}
+
+			ItemStack namedHeadStack = null;
+			if (!gameProfile.getName().equals("")) {
+				namedHeadStack = HeadFunctions.getNewPlayerHead(gameProfile, 1);
+			}
+
+			if (namedHeadStack == null) {
+				GameProfile uuidGameProfile;
+				if (PlayerHeadCacheFeature.cachedGameProfileMap.containsKey(uuid)) {
+					uuidGameProfile = PlayerHeadCacheFeature.cachedGameProfileMap.get(uuid);
+				} else {
+					MinecraftSessionService minecraftSessionService = ((ServerLevel)level).getServer().getSessionService();
+
+					ProfileResult uuidProfileResult = minecraftSessionService.fetchProfile(uuid, false);
+					if (uuidProfileResult == null) {
+						return true;
+					}
+
+					uuidGameProfile = uuidProfileResult.profile();
+
+					if (uuidGameProfile.getName().equals("")) {
+						return true;
+					}
+
+					PlayerHeadCacheFeature.cachedGameProfileMap.put(uuid, uuidGameProfile);
+				}
+
+				namedHeadStack = HeadFunctions.getNewPlayerHead(uuidGameProfile, 1);
+			}
+
+			if (namedHeadStack != null) {
+				level.destroyBlock(pos, false);
+
+				level.addFreshEntity(new ItemEntity(level, pos.getX(), pos.getY()+0.5, pos.getZ(), namedHeadStack));
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	public static boolean onEntityBlockPlace(Level level, BlockPos pos, BlockState state, LivingEntity entity, ItemStack itemStack) {
+		if (level.isClientSide) {
+			return true;
+		}
+
+		if (!(entity instanceof Player)) {
+			return true;
+		}
+
+		if (!(itemStack.getItem() instanceof PlayerHeadItem)) {
+			return true;
+		}
+		String itemName = itemStack.getHoverName().getString();
+		if (!itemName.contains("'s Head")) {
+			return true;
+		}
+
+		CompoundTag skullOwner = itemStack.getTagElement("SkullOwner");
+		if (skullOwner == null) {
+			return true;
+		}
+
+		int[] idIntArray = skullOwner.getIntArray("Id");
+		if (idIntArray[0] != -1) {
+			return true;
+		}
+
+		String headName = itemName.replace("'s Head", "");
+
+		ItemStack newHeadStack = HeadFunctions.getNewPlayerHead((ServerLevel)level, headName, itemStack.getCount());
+
+		CompoundTag skullOwnerCompoundTag = HeadFunctions.getSkullOwnerCompoundTag((ServerLevel)level, headName);
+		itemStack.addTagElement("SkullOwner", skullOwnerCompoundTag);
+		return false;
 	}
 }

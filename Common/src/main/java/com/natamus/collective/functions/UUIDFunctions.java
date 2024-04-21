@@ -1,9 +1,16 @@
 package com.natamus.collective.functions;
 
+import com.mojang.util.UndashedUuid;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class UUIDFunctions {
+	public static UUID getUUIDFromStringLenient(String uuidString) {
+		return UndashedUuid.fromStringLenient(uuidString);
+	}
+
 	public static List<Integer> oldIdToIntArray(String oldid) {
 		String oldidfull = oldid.replace("-", "");
 
