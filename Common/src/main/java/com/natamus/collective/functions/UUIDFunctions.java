@@ -2,8 +2,13 @@ package com.natamus.collective.functions;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class UUIDFunctions {
+	public static UUID getUUIDFromStringLenient(String uuidString) {
+		return UUID.fromString(uuidString.replaceFirst("(\\w{8})(\\w{4})(\\w{4})(\\w{4})(\\w{12})", "$1-$2-$3-$4-$5"));
+	}
+
 	public static List<Integer> oldIdToIntArray(String oldid) {
 		String oldidfull = oldid.replace("-", "");
 
