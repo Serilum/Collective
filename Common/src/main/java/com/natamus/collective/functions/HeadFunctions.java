@@ -22,10 +22,17 @@ import java.util.*;
 public class HeadFunctions {
 	public static ItemStack getNewPlayerHead(ServerLevel serverLevel, String playerName, Integer amount) {
 		GameProfile gameProfile = getGameProfileFromPlayerName(serverLevel, playerName);
+		if (gameProfile == null) {
+			return null;
+		}
 
 		return getNewPlayerHead(gameProfile, amount);
 	}
 	public static ItemStack getNewPlayerHead(GameProfile gameProfile, Integer amount) {
+		if (gameProfile == null) {
+			return null;
+		}
+
 		PropertyMap propertyMap = gameProfile.getProperties();
 
 		String encodedTextures = "";
