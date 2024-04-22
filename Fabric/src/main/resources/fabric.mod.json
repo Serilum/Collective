@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "id": "collective",
-  "version": "7.41",
+  "version": "7.42",
 
   "name": "Collective",
   "description": "Collective is a shared library with common code for all of Serilum's mods.",
@@ -50,12 +50,11 @@
 	  "Membership sponsors:",
 	  " Alister",
 	  " Andrean Olgo",
-	  " aternosorg",
+	  " BirdieMiner",
 	  " Cherriesaurus",
 	  " Jack",
-	  " Kreezxil",
+	  " Jeremy Langford",
 	  " Michael W. S.",
-	  " Mir3JonCZ",
 	  " Shana Gitnick",
 	  " Tyler Behl"
   ]
