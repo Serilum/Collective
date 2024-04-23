@@ -10,26 +10,12 @@ import org.apache.commons.lang3.ArrayUtils;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Scanner;
 
 public class DataFunctions {
-	public static String readStringFromURL(String requestURL) {
-		String data = "";
-	    try (Scanner scanner = new Scanner(new URL(requestURL).openStream(), StandardCharsets.UTF_8)) {
-	        scanner.useDelimiter("\\A");
-	        data = scanner.hasNext() ? scanner.next() : "";
-	    }
-	    catch(Exception ignored) {}
-	    
-	    return data;
-	}
-
 	@SuppressWarnings("deprecation")
 	public static String getCurrentMinecraftVersion() {
 		return SharedConstants.VERSION_STRING;
