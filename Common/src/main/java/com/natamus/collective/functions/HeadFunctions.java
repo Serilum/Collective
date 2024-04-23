@@ -1,24 +1,23 @@
 package com.natamus.collective.functions;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.mojang.authlib.GameProfile;
-import com.mojang.authlib.GameProfileRepository;
-import com.mojang.authlib.ProfileLookupCallback;
 import com.mojang.authlib.minecraft.MinecraftSessionService;
 import com.mojang.authlib.properties.Property;
 import com.mojang.authlib.properties.PropertyMap;
 import com.mojang.authlib.yggdrasil.ProfileResult;
+import com.natamus.collective.data.GlobalVariables;
 import com.natamus.collective.features.PlayerHeadCacheFeature;
 import net.minecraft.core.UUIDUtil;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 
-import java.util.Base64;
-import java.util.UUID;
+import java.util.*;
 
 public class HeadFunctions {
 	public static ItemStack getNewPlayerHead(ServerLevel serverLevel, String playerName, Integer amount) {
@@ -90,27 +89,26 @@ public class HeadFunctions {
 	public static GameProfile getGameProfileFromPlayerName(ServerLevel serverLevel, String playerName) {
 		MinecraftSessionService minecraftSessionService = serverLevel.getServer().getSessionService();
 
-		MinecraftServer minecraftServer = serverLevel.getServer();
-		GameProfileRepository gameProfileRepository = minecraftServer.getProfileRepository();
-
 		UUID headUUID;
 		if (PlayerHeadCacheFeature.cachedPlayerNamesMap.containsKey(playerName.toLowerCase())) {
 			headUUID = PlayerHeadCacheFeature.cachedPlayerNamesMap.get(playerName.toLowerCase());
 			playerName = PlayerHeadCacheFeature.cachedPlayerUUIDsMap.get(headUUID);
 		}
 		else {
-			gameProfileRepository.findProfilesByNames(new String[]{playerName}, new ProfileLookupCallback() {
-				@Override
-				public void onProfileLookupSucceeded(GameProfile gameProfile) {
-					PlayerHeadCacheFeature.cachedPlayerNamesMap.put(gameProfile.getName().toLowerCase(), gameProfile.getId());
-					PlayerHeadCacheFeature.cachedPlayerUUIDsMap.put(gameProfile.getId(), gameProfile.getName());
-				}
+			String nameIdJsonString = DataFunctions.readStringFromURL(GlobalVariables.playerDataURL + playerName.toLowerCase());
+			if (nameIdJsonString.equals("")) {
+				return null;
+			}
 
-				@Override
-				public void onProfileLookupFailed(String profileName, Exception exception) { }
-			});
+			Map<String, String> nameIdJson = new Gson().fromJson(nameIdJsonString, new TypeToken<HashMap<String, String>>() {}.getType());
 
-			return null;
+			String headName = nameIdJson.get("name");
+			String headUUIDRaw = nameIdJson.get("id");
+
+			headUUID = UUIDFunctions.getUUIDFromStringLenient(headUUIDRaw);
+
+			PlayerHeadCacheFeature.cachedPlayerNamesMap.put(headName.toLowerCase(), headUUID);
+			PlayerHeadCacheFeature.cachedPlayerUUIDsMap.put(headUUID, headName);
 		}
 
 		GameProfile gameProfile;
@@ -173,4 +171,60 @@ public class HeadFunctions {
 	public static boolean hasStandardHead(String mobname) {
         return mobname.equals("creeper") || mobname.equals("zombie") || mobname.equals("skeleton");
     }
+
+
+	// Legacy Code for backwards compatibility
+	public static ItemStack getPlayerHead(String playername, Integer amount) {
+		String nameIdJsonString = DataFunctions.readStringFromURL(GlobalVariables.playerDataURL + playername.toLowerCase());
+		if (nameIdJsonString.equals("")) {
+			return null;
+		}
+
+		try {
+			Map<String, String> nameIdJson = new Gson().fromJson(nameIdJsonString, new TypeToken<HashMap<String, String>>() {}.getType());
+
+			String headName = nameIdJson.get("name");
+			String headUUID = nameIdJson.get("id");
+
+			String profileJsonString = DataFunctions.readStringFromURL(GlobalVariables.skinDataURL + headUUID);
+			if (profileJsonString.equals("")) {
+				return null;
+			}
+
+			String[] rawValue = profileJsonString.replaceAll(" ", "").split("value\":\"");
+
+			String texturevalue = rawValue[1].split("\"")[0];
+			String d = new String(Base64.getDecoder().decode((texturevalue.getBytes())));
+
+			String texture = Base64.getEncoder().encodeToString((("{\"textures\"" + d.split("\"textures\"")[1]).getBytes()));
+			String oldid = new UUID(texture.hashCode(), texture.hashCode()).toString();
+
+			return HeadFunctions.getTexturedHead(headName + "'s Head", texture, oldid, 1);
+		}
+		catch (ArrayIndexOutOfBoundsException ignored) { }
+
+		return null;
+	}
+	public static ItemStack getTexturedHead(String headname, String texture, String oldid, Integer amount) {
+		ItemStack texturedhead = new ItemStack(Items.PLAYER_HEAD, amount);
+
+		List<Integer> intarray = UUIDFunctions.oldIdToIntArray(oldid);
+
+		CompoundTag skullOwner = new CompoundTag();
+		skullOwner.putIntArray("Id", intarray);
+
+		CompoundTag properties = new CompoundTag();
+		ListTag textures = new ListTag();
+		CompoundTag tex = new CompoundTag();
+		tex.putString("Value", texture);
+		textures.add(tex);
+
+		properties.put("textures", textures);
+		skullOwner.put("Properties", properties);
+		texturedhead.addTagElement("SkullOwner", skullOwner);
+
+		Component tcname = Component.literal(headname);
+		texturedhead.setHoverName(tcname);
+		return texturedhead;
+	}
 }
