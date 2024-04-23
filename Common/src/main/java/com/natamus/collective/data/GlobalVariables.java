@@ -34,11 +34,7 @@ public class GlobalVariables {
 
 	// Mob drops
 	public static HashMap<EntityType<?>, List<Item>> entitydrops = null;
-	
-	// URLS
-	public static String playerDataURL = "https://api.mojang.com/users/profiles/minecraft/";
-	public static String skinDataURL = "https://sessionserver.mojang.com/session/minecraft/profile/";
-	
+
 	// HashMaps to generate
 	public static Map<Block, BlockEntityType<?>> blocksWithTileEntity = new HashMap<Block, BlockEntityType<?>>();
 	
