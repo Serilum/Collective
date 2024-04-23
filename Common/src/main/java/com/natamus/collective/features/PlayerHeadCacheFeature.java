@@ -71,4 +71,22 @@ public class PlayerHeadCacheFeature {
 		cachedPlayerHeadsMap = new HashMap<String, ItemStack>();
 		return true;
 	}
+
+
+	// Backwards compatibility. Will be removed in a later version.
+	@Deprecated
+	public static ItemStack getPlayerHeadStackFromCache(String playerName) {
+		if (cachedPlayerHeadsMap.containsKey(playerName)) {
+			return cachedPlayerHeadsMap.get(playerName).copy();
+		}
+
+		ItemStack headStack = HeadFunctions.getPlayerHead(playerName, 1);
+		if (headStack == null) {
+			return null;
+		}
+
+		cachedPlayerHeadsMap.put(playerName, headStack);
+
+		return headStack.copy();
+	}
 }
