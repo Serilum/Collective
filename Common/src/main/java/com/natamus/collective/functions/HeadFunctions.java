@@ -16,7 +16,6 @@ import net.minecraft.server.players.GameProfileCache;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 
-import java.util.Base64;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -36,34 +35,20 @@ public class HeadFunctions {
 
 		PropertyMap propertyMap = gameProfile.getProperties();
 
-		String encodedTextures = "";
+		String texturePropertyValue = "";
 		for (Property textureProperty : propertyMap.get("textures")) {
 			if (textureProperty.name().equals("textures")) {
-				encodedTextures = textureProperty.value();
+				texturePropertyValue = textureProperty.value();
 				break;
 			}
 		}
 
-		String decodedTextures = new String(Base64.getDecoder().decode(encodedTextures));
-
-		StringBuilder decodedNoTimestampTextures = new StringBuilder();
-		for (String line : decodedTextures.split("\n")) {
-			if (!decodedNoTimestampTextures.toString().equals("")) {
-				decodedNoTimestampTextures.append("\n");
-			}
-
-			if (line.contains("\"timestamp\" : ")) {
-				decodedNoTimestampTextures.append("  \"timestamp\" : 0,"); // Allows stacking of heads
-				continue;
-			}
-
-			decodedNoTimestampTextures.append(line);
-		}
-
-		String textures = Base64.getEncoder().encodeToString(decodedNoTimestampTextures.toString().getBytes());
-		if (textures.isEmpty()) {
+		if (!texturePropertyValue.contains("cHJvZmlsZUlk")) {
 			return null;
 		}
+
+		// Set timestamp to 0 to make heads stackable
+		String textures = "ewogICJ0aW1lc3RhbXAiIDogMCwKICAicHJvZmlsZUlk" + texturePropertyValue.split("cHJvZmlsZUlk")[1];
 
 		int[] headIntArray = UUIDUtil.uuidToIntArray(gameProfile.getId());
 
