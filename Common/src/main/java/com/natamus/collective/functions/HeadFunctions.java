@@ -33,6 +33,7 @@ public class HeadFunctions {
 			return null;
 		}
 
+		String playerName = gameProfile.getName();
 		PropertyMap propertyMap = gameProfile.getProperties();
 
 		String texturePropertyValue = "";
@@ -52,23 +53,24 @@ public class HeadFunctions {
 
 		int[] headIntArray = UUIDUtil.uuidToIntArray(gameProfile.getId());
 
-		return getNewTexturedHead(gameProfile.getName(), textures, headIntArray, amount);
+		ItemStack playerHeadStack = getNewTexturedHead(playerName, textures, headIntArray, amount);
+		playerHeadStack.setHoverName(Component.literal(playerName + "'s Head"));
+
+		return playerHeadStack;
 	}
 
-	public static ItemStack getNewTexturedHead(String playerName, String texture, String uuidString, Integer amount) {
+	public static ItemStack getNewTexturedHead(String entityName, String texture, String uuidString, Integer amount) {
 		UUID uuid = UUIDFunctions.getUUIDFromStringLenient(uuidString);
 		int[] intArray = UUIDUtil.uuidToIntArray(uuid);
 
-		return getNewTexturedHead(playerName, texture, intArray, amount);
+		return getNewTexturedHead(entityName, texture, intArray, amount);
 	}
-	public static ItemStack getNewTexturedHead(String playerName, String texture, int[] idIntArray, Integer amount) {
+	public static ItemStack getNewTexturedHead(String entityName, String texture, int[] idIntArray, Integer amount) {
 		ItemStack texturedHeadStack = new ItemStack(Items.PLAYER_HEAD, amount);
 
-		CompoundTag skullOwnerCompoundTag = getSkullOwnerCompoundTag(playerName, texture, idIntArray);
+		CompoundTag skullOwnerCompoundTag = getSkullOwnerCompoundTag(entityName, texture, idIntArray);
 		texturedHeadStack.addTagElement("SkullOwner", skullOwnerCompoundTag);
 
-		Component tcname = Component.literal(playerName + "'s Head");
-		texturedHeadStack.setHoverName(tcname);
 		return texturedHeadStack;
 	}
 
@@ -139,9 +141,9 @@ public class HeadFunctions {
 
 		return getSkullOwnerCompoundTag(playerName, textures, headIntArray);
 	}
-	public static CompoundTag getSkullOwnerCompoundTag(String playerName, String textures, int[] idIntArray) {
+	public static CompoundTag getSkullOwnerCompoundTag(String entityName, String textures, int[] idIntArray) {
 		CompoundTag skullOwnerCompoundTag = new CompoundTag();
-		skullOwnerCompoundTag.putString("Name", playerName);
+		skullOwnerCompoundTag.putString("Name", entityName);
 		skullOwnerCompoundTag.putIntArray("Id", idIntArray);
 
 		CompoundTag propertiesCompoundTag = new CompoundTag();
