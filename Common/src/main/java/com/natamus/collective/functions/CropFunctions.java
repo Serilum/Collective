@@ -38,37 +38,41 @@ public class CropFunctions {
 		
 		return false;
 	}
-	
-	public static boolean growCrop(Level world, Player player, BlockState state, BlockPos pos) {
-		if (!(world instanceof ServerLevel)) {
+
+	public static boolean growCrop(Level level, Player player, BlockState blockState, BlockPos blockPos) {
+		return growCrop(level, player, blockState, blockPos, player.getItemInHand(InteractionHand.MAIN_HAND));
+	}
+	public static boolean growCrop(Level level, Player player, BlockState blockState, BlockPos blockPos, InteractionHand interactionHand) {
+		return growCrop(level, player, blockState, blockPos, player.getItemInHand(interactionHand));
+	}
+	public static boolean growCrop(Level level, Player player, BlockState blockState, BlockPos blockPos, ItemStack itemStack) {
+		if (level.isClientSide) {
 			return false;
 		}
-		
-		ItemStack hand = player.getItemInHand(InteractionHand.MAIN_HAND);
-		Block block = state.getBlock();
+
+		Block block = blockState.getBlock();
 
 		if (block instanceof BonemealableBlock) {
 			BonemealableBlock igrowable = (BonemealableBlock)block;
-			while (igrowable.isValidBonemealTarget(world, pos, state)) {
-				if (!igrowable.isBonemealSuccess(world, world.random, pos, state)) {
+			while (igrowable.isValidBonemealTarget(level, blockPos, blockState)) {
+				if (!igrowable.isBonemealSuccess(level, level.random, blockPos, blockState)) {
 					break;
 				}
-				igrowable.performBonemeal((ServerLevel)world, world.random, pos, state);
-				state = world.getBlockState(pos);
-				hand.shrink(1);
-				if (hand.getCount() == 0) {
+				igrowable.performBonemeal((ServerLevel)level, level.random, blockPos, blockState);
+				blockState = level.getBlockState(blockPos);
+				itemStack.shrink(1);
+				if (itemStack.getCount() == 0) {
 					break;
 				}
 			}
 		}
 		else {
-
-			for (Property<?> property : Collections.unmodifiableCollection(state.getValues().keySet())) {
+			for (Property<?> property : Collections.unmodifiableCollection(blockState.getValues().keySet())) {
 				if (property instanceof IntegerProperty) {
 					IntegerProperty prop = (IntegerProperty) property;
 					String name = prop.getName();
 					if (name.equals("age")) {
-						Comparable<?> cv = state.getValues().get(property);
+						Comparable<?> cv = blockState.getValues().get(property);
 						int value = Integer.parseUnsignedInt(cv.toString());
 						int max = Collections.max(prop.getPossibleValues());
 						if (value == max) {
@@ -76,16 +80,16 @@ public class CropFunctions {
 						}
 
 						while (value < max) {
-							world.setBlockAndUpdate(pos, world.getBlockState(pos).cycle(property));
+							level.setBlockAndUpdate(blockPos, level.getBlockState(blockPos).cycle(property));
 							if (!player.isCreative()) {
-								hand.shrink(1);
-								if (hand.getCount() == 0) {
+								itemStack.shrink(1);
+								if (itemStack.getCount() == 0) {
 									break;
 								}
 							}
 							value += 1;
 
-							if (!player.isShiftKeyDown()) {
+							if (!player.isCrouching()) {
 								break;
 							}
 						}
@@ -94,7 +98,7 @@ public class CropFunctions {
 			}
 		}
 		
-		world.levelEvent(2005, pos, 0);
+		level.levelEvent(2005, blockPos, 0);
 		return true;
 	}
 	
