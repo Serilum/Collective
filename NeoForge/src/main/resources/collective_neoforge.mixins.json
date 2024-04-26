@@ -5,14 +5,17 @@
   "plugin": "com.natamus.collective.neoforge.mixin.plugin.NeoForgeMixinConfigPlugin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
-    "BoneMealItemMixin"
+	"BoneMealItemMixin",
+	"ClientHooksMixin",
+	"PrimaryLevelDataMixin"
   ],
   "client": [
-    "TitleScreenMixin"
+	"TitleScreenMixin",
+	"WorldOpenFlowsMixin"
   ],
   "server": [
   ],
   "injectors": {
-    "defaultRequire": 1
+	"defaultRequire": 1
   }
 }
