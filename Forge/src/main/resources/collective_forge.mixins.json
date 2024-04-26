@@ -5,14 +5,16 @@
   "compatibilityLevel": "JAVA_17",
   "refmap": "collective_forge.refmap.json",
   "mixins": [
-    "BoneMealItemMixin"
+	"BoneMealItemMixin",
+	"PrimaryLevelDataMixin"
   ],
   "client": [
-    "TitleScreenMixin"
+	"TitleScreenMixin",
+	"WorldOpenFlowsMixin"
   ],
   "server": [
   ],
   "injectors": {
-    "defaultRequire": 1
+	"defaultRequire": 1
   }
 }
