@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "id": "collective",
+  "version": "7.52",
+
+  "name": "Collective",
+  "description": "Collective is a shared library with common code for all of Serilum's mods.",
+  "authors": [
+    "Rick South"
+  ],
+  "contact": {
+    "homepage": "https://curseforge.com/minecraft/mc-mods/collective",
+    "sources": "https://github.com/Serilum/Collective",
+    "issues": "https://github.com/Serilum/.issue-tracker/labels/Library: Collective"
+  },
+
+  "license": "All Rights Reserved",
+  "icon": "icon.png",
+
+  "environment": "*",
+  "entrypoints": { "main": [ "com.natamus.collective.CollectiveFabric" ], "client": [ "com.natamus.collective.CollectiveFabricClient" ], "modmenu": [ "com.natamus.collective.fabric.config.CollectiveModMenu" ] },
+  "mixins": [
+    "collective_fabric.mixins.json",
+    "collective_fabric.crop.mixins.json"
+  ],
+  "accessWidener" : "collective.accesswidener",
+
+  "depends": {
+    "fabricloader": ">=0.12.6",
+    "fabric": "*",
+    "minecraft": ">=1.20",
+    "java": ">=17"
+  },
+
+  "custom": {
+    "modmenu": {
+      "links": {
+        "Donate <3" : "https://ricksouth.com/donate"
+      },
+      "badges": [ "library" ]
+    }
+  },
+
+  "contributors": [
+	  " ",
+	  "Thank you very much to my Membership sponsors for supporting the development of this mod!",
+	  " ",
+	  "If you would like to contribute too, check out https://serilum.com/donate.",
+	  " ",
+	  "Membership sponsors:",
+	  " Alister",
+	  " Andrean Olgo",
+	  " aternosorg",
+	  " BirdieMiner",
+	  " Cherriesaurus",
+	  " Jack",
+	  " Jeremy Langford",
+	  " Michael W. S.",
+	  " pepe1191",
+	  " Shana Gitnick",
+	  " Tyler Behl"
+  ]
+}

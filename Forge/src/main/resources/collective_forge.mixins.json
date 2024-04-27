@@ -1,0 +1,21 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "com.natamus.collective.forge.mixin",
+  "plugin": "com.natamus.collective.forge.mixin.plugin.ForgeMixinConfigPlugin",
+  "compatibilityLevel": "JAVA_21",
+  "refmap": "collective_forge.refmap.json",
+  "mixins": [
+	"BoneMealItemMixin",
+	"PrimaryLevelDataMixin"
+  ],
+  "client": [
+	"TitleScreenMixin",
+	"WorldOpenFlowsMixin"
+  ],
+  "server": [
+  ],
+  "injectors": {
+	"defaultRequire": 1
+  }
+}
