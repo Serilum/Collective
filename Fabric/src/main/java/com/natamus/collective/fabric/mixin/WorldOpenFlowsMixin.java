@@ -15,7 +15,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class WorldOpenFlowsMixin {
 	@ModifyVariable(method = "loadLevel", at = @At(value= "STORE"), ordinal = 3)
 	public boolean loadLevel_bl2(boolean isLifeCycleStable) {
-		return !Services.MODLOADER.isDevelopmentEnvironment() && !Services.MODLOADER.isModLoaded("hideexperimentalwarning");
+		if (Services.MODLOADER.isDevelopmentEnvironment() || Services.MODLOADER.isModLoaded("hideexperimentalwarning")) {
+			return true;
+		}
+
+		return isLifeCycleStable;
 	}
 
 	@Inject(method = "confirmWorldCreation", at = @At(value = "INVOKE_ASSIGN", target = "Lcom/mojang/serialization/Lifecycle;experimental()Lcom/mojang/serialization/Lifecycle;", remap = false), cancellable = true)
