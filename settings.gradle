@@ -37,4 +37,6 @@ pluginManagement {
 }
 
 rootProject.name = 'Collective-1,19,2'
-include("Common", "Fabric", "Forge")
+include("Common")
+include("Fabric")
+include("Forge")
