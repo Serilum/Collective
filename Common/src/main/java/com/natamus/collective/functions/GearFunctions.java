@@ -5,6 +5,7 @@ import com.natamus.collective.data.Constants;
 import net.minecraft.core.Holder;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.TagParser;
@@ -413,7 +414,7 @@ public class GearFunctions {
 				continue;
 			}
 
-			MobEffectInstance mobEffectInstance = new MobEffectInstance(Holder.direct(mobEffect), duration, lvl-1);
+			MobEffectInstance mobEffectInstance = new MobEffectInstance(BuiltInRegistries.MOB_EFFECT.wrapAsHolder(mobEffect), duration, lvl-1);
 
 			mobEffectInstanceList.add(mobEffectInstance);
 		}

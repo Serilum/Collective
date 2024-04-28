@@ -3,6 +3,7 @@ package com.natamus.collective.functions;
 import com.natamus.collective.data.GlobalVariables;
 import com.natamus.collective.util.CollectiveReference;
 import net.minecraft.core.Holder;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.effect.MobEffect;
@@ -84,7 +85,7 @@ public class EntityFunctions {
 	}
 
 	public static void addPotionEffect(Entity entity, MobEffect effect, Integer ms) {
-		addPotionEffect(entity, Holder.direct(effect), ms);
+		addPotionEffect(entity, BuiltInRegistries.MOB_EFFECT.wrapAsHolder(effect), ms);
 	}
 	public static void addPotionEffect(Entity entity, Holder<MobEffect> mobEffectHolder, Integer ms) {
 		MobEffectInstance freeze = new MobEffectInstance(mobEffectHolder, ms/50);
@@ -92,7 +93,7 @@ public class EntityFunctions {
 		le.addEffect(freeze);
 	}
 	public static void removePotionEffect(Entity entity, MobEffect effect) {
-		removePotionEffect(entity, Holder.direct(effect));
+		removePotionEffect(entity, BuiltInRegistries.MOB_EFFECT.wrapAsHolder(effect));
 	}
 	public static void removePotionEffect(Entity entity, Holder<MobEffect> mobEffectHolder) {
 		LivingEntity le = (LivingEntity)entity;

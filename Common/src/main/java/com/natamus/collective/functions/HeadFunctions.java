@@ -66,7 +66,7 @@ public class HeadFunctions {
 	public static ItemStack getNewTexturedHead(String entityName, String texture, UUID uuid, Integer amount) {
 		ItemStack texturedHeadStack = new ItemStack(Items.PLAYER_HEAD, amount);
 
-		GameProfile gameProfile = new GameProfile(uuid, entityName);
+		GameProfile gameProfile = new GameProfile(uuid, entityName.replace(" ", "_"));
 		gameProfile.getProperties().put("textures", new Property("textures", texture));
 
 		texturedHeadStack.set(DataComponents.PROFILE, new ResolvableProfile(gameProfile));

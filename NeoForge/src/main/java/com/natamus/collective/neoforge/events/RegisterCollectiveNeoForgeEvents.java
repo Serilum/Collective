@@ -11,11 +11,12 @@ import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
-import net.neoforged.neoforge.event.TickEvent;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.event.entity.living.MobSpawnEvent;
 import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.neoforge.event.server.ServerAboutToStartEvent;
+import net.neoforged.neoforge.event.tick.LevelTickEvent;
+import net.neoforged.neoforge.event.tick.ServerTickEvent;
 
 @EventBusSubscriber
 public class RegisterCollectiveNeoForgeEvents {
@@ -25,9 +26,9 @@ public class RegisterCollectiveNeoForgeEvents {
     }
 
     @SubscribeEvent
-    public static void onWorldTick(TickEvent.LevelTickEvent e) {
-        Level level = e.level;
-        if (level.isClientSide || !e.phase.equals(TickEvent.Phase.END)) {
+    public static void onWorldTick(LevelTickEvent.Post e) {
+        Level level = e.getLevel();
+        if (level.isClientSide) {
             return;
         }
 
@@ -35,11 +36,7 @@ public class RegisterCollectiveNeoForgeEvents {
     }
 
     @SubscribeEvent
-    public static void onServerTick(TickEvent.ServerTickEvent e) {
-        if (!e.phase.equals(TickEvent.Phase.END)) {
-            return;
-        }
-
+    public static void onServerTick(ServerTickEvent.Post e) {
         CollectiveEvents.onServerTick(e.getServer());
     }
 
