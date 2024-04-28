@@ -12,11 +12,11 @@ import java.util.List;
 
 public class SignFunctions {
     public static List<String> getSignText(BlockEntity blockEntity) {
-        if (blockEntity instanceof SignBlockEntity) {
-            return getSignText((SignBlockEntity)blockEntity);
-        }
-        else if (blockEntity instanceof HangingSignBlockEntity) {
+        if (blockEntity instanceof HangingSignBlockEntity) {
             return getSignText((HangingSignBlockEntity)blockEntity);
+        }
+        else if (blockEntity instanceof SignBlockEntity) {
+            return getSignText((SignBlockEntity)blockEntity);
         }
         return new ArrayList<String>();
     }
