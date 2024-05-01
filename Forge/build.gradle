@@ -111,7 +111,7 @@ processResources {
 jar {
     manifest {
         attributes([
-            "MixinConfigs" : "collective_forge.mixins.json" // mixin
+            "MixinConfigs" : "collective.mixins.json" // mixin
         ])
     }
 }
