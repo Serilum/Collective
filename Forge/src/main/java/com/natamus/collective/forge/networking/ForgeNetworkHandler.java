@@ -32,13 +32,13 @@ public class ForgeNetworkHandler extends PacketRegistrationHandler {
     }
 
     protected <T> void registerPacket(PacketContainer<T> container) {
-        if (CHANNELS.get(container.getClass()) == null) {
+        if (CHANNELS.get(container.classType()) == null) {
             var channel = ChannelBuilder.named(container.type().id()).optional().eventNetworkChannel()
                     .addListener(event -> {
                         T message = container.decoder().apply(event.getPayload());
                         buildHandler(container.handler()).accept(message, event.getSource());
                     });
-            CHANNELS.put(container.getClass(), new Message<>(channel, container.encoder()));
+            CHANNELS.put(container.classType(), new Message<>(channel, container.encoder()));
         }
     }
 
