@@ -22,7 +22,7 @@ public class GlobalVariables {
 	public static CopyOnWriteArrayList<SAMObject> globalSAMs = new CopyOnWriteArrayList<SAMObject>();
 
 	// Villager names; 1: guard-villagers, 2-4: farlanders
-	public static List<String> moddedvillagers = new ArrayList<String>(Arrays.asList("Villager", "WanderingTrader", "Guard", "Farlander", "ElderFarlander", "Wanderer", "ThiefWanderingTrader", "PlagueDoctor", "GoblinTrader", "VeinGoblinTrader", "RedMerchant", "WanderingWizard", "WanderingWinemaker", "WanderingBaker", "Bowman", "Crossbowman", "Horseman", "Nomad", "Recruit", "RecruitShieldman", "Gatekeeper", "VillagerEntityMCA"));
+	public static List<String> moddedvillagers = new ArrayList<String>(Arrays.asList("Villager", "WanderingTrader", "Guard", "Farlander", "ElderFarlander", "Wanderer", "ThiefWanderingTrader", "PlagueDoctor", "GoblinTrader", "VeinGoblinTrader", "RedMerchant", "WanderingWizard", "WanderingWinemaker", "WanderingBaker", "Bowman", "Crossbowman", "Horseman", "Nomad", "Recruit", "RecruitShieldman", "Gatekeeper", "VillagerEntityMCA", "Priest"));
 
 	// Names
 	public static List<String> areaNames = new ArrayList<String>();
