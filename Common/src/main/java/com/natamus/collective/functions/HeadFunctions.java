@@ -64,6 +64,10 @@ public class HeadFunctions {
 		return getNewTexturedHead(entityName, texture, uuid, amount);
 	}
 	public static ItemStack getNewTexturedHead(String entityName, String texture, UUID uuid, Integer amount) {
+		if (entityName.length() > 16) {
+			entityName = entityName.substring(0, 16);
+		}
+
 		ItemStack texturedHeadStack = new ItemStack(Items.PLAYER_HEAD, amount);
 
 		GameProfile gameProfile = new GameProfile(uuid, entityName.replace(" ", "_"));
