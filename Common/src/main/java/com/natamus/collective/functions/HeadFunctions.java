@@ -66,6 +66,10 @@ public class HeadFunctions {
 		return getNewTexturedHead(entityName, texture, intArray, amount);
 	}
 	public static ItemStack getNewTexturedHead(String entityName, String texture, int[] idIntArray, Integer amount) {
+		if (entityName.length() > 16) {
+			entityName = entityName.substring(0, 16);
+		}
+
 		ItemStack texturedHeadStack = new ItemStack(Items.PLAYER_HEAD, amount);
 
 		CompoundTag skullOwnerCompoundTag = getSkullOwnerCompoundTag(entityName.replace(" ", "_"), texture, idIntArray);
