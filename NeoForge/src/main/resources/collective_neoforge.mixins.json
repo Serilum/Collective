@@ -5,6 +5,7 @@
   "plugin": "com.natamus.collective.neoforge.mixin.plugin.NeoForgeMixinConfigPlugin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
+	"BaseSpawnerMixin",
 	"BoneMealItemMixin",
 	"PrimaryLevelDataMixin"
   ],
@@ -16,6 +17,6 @@
   "server": [
   ],
   "injectors": {
-	"defaultRequire": 1
+	"defaultRequire": 0
   }
 }
