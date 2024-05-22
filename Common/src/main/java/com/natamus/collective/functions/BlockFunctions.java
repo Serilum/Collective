@@ -1,17 +1,37 @@
 package com.natamus.collective.functions;
 
+import com.natamus.collective.data.Constants;
 import com.natamus.collective.data.GlobalVariables;
 import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.loot.LootParams;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
+import net.minecraft.world.phys.Vec3;
 
+import javax.annotation.Nullable;
 import java.util.List;
 
 public class BlockFunctions {
+	public static List<ItemStack> getBlockDrops(Level level, BlockState blockState, boolean silkTouched) {
+		return getBlockDrops(level, blockState, silkTouched ? Constants.silkPickaxeStack : Constants.normalPickaxeStack, null, new Vec3(0, 0, 0));
+	}
+	public static List<ItemStack> getBlockDrops(Level level, BlockState blockState, ItemStack itemStack, Player player) {
+		return getBlockDrops(level, blockState, itemStack, player, player.position());
+	}
+	public static List<ItemStack> getBlockDrops(Level level, BlockState blockState, ItemStack itemStack, Player player, Vec3 vec) {
+		LootParams.Builder lootParamsBuilder = (new LootParams.Builder((ServerLevel)level)).withParameter(LootContextParams.BLOCK_STATE, blockState).withParameter(LootContextParams.TOOL, itemStack).withParameter(LootContextParams.ORIGIN, vec).withOptionalParameter(LootContextParams.THIS_ENTITY, player);
+
+		return blockState.getDrops(lootParamsBuilder);
+	}
+
 	// START: Checks whether specificblock equals tocheckblock
 	public static Boolean isSpecificBlock(Block specificblock, Block tocheckblock) {
 		if (specificblock == null || tocheckblock == null) {
@@ -42,6 +62,13 @@ public class BlockFunctions {
 		BlockEntity tileentity = world.getBlockEntity(pos);
 		
 		Block.dropResources(blockstate, world, pos, tileentity);
+		world.setBlock(pos, Blocks.AIR.defaultBlockState(), 3);
+	}
+	public static void dropBlock(Level world, BlockPos pos, @Nullable Entity entity, ItemStack itemStack) {
+		BlockState blockstate = world.getBlockState(pos);
+		BlockEntity tileentity = world.getBlockEntity(pos);
+
+		Block.dropResources(blockstate, world, pos, tileentity, entity, itemStack);
 		world.setBlock(pos, Blocks.AIR.defaultBlockState(), 3);
 	}
 	
