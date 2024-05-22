@@ -10,6 +10,7 @@ public class CollectiveCommon {
     public static void init() {
         Constants.LOG.info("Loading Collective version " + CollectiveReference.VERSION + ".");
 
+		Constants.initConstantData();
         CollectiveConfigHandler.initConfig();
         GlobalVariables.generateHashMaps();
 		LoadJSONFiles.startListening();
