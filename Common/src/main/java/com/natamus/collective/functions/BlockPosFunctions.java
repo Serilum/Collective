@@ -6,6 +6,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
@@ -41,81 +42,135 @@ public class BlockPosFunctions {
 	// START: RECURSIVE GET BLOCKS
 	private static final HashMap<BlockPos, Integer> rgnbcount = new HashMap<BlockPos, Integer>();
 
-	public static List<BlockPos> getBlocksNextToEachOther(Level world, BlockPos startpos, List<Block> possibleblocks) {
-		return getBlocksNextToEachOther(world, startpos, possibleblocks, 50);
+	public static List<BlockPos> getBlocksNextToEachOther(Level level, BlockPos startPos, List<Block> possibleBlocks) {
+		return getBlocksNextToEachOther(level, startPos, possibleBlocks, 50);
 	}
-	public static List<BlockPos> getBlocksNextToEachOther(Level world, BlockPos startpos, List<Block> possibleblocks, int maxDistance) {
-		List<BlockPos> checkedblocks = new ArrayList<BlockPos>();
-		List<BlockPos> theblocksaround = new ArrayList<BlockPos>();
-		if (possibleblocks.contains(world.getBlockState(startpos).getBlock())) {
-			theblocksaround.add(startpos);
-			checkedblocks.add(startpos);
+	public static List<BlockPos> getBlocksNextToEachOther(Level level, BlockPos startPos, List<Block> possibleBlocks, int maxDistance) {
+		List<BlockPos> checkedBlocks = new ArrayList<BlockPos>();
+		List<BlockPos> blocksAround = new ArrayList<BlockPos>();
+		if (possibleBlocks.contains(level.getBlockState(startPos).getBlock())) {
+			blocksAround.add(startPos);
+			checkedBlocks.add(startPos);
 		}
 
-		rgnbcount.put(startpos.immutable(), 0);
-		recursiveGetNextBlocks(world, startpos, startpos, possibleblocks, theblocksaround, checkedblocks, maxDistance);
-		return theblocksaround;
+		rgnbcount.put(startPos.immutable(), 0);
+		recursiveGetNextBlocks(level, startPos, startPos, possibleBlocks, blocksAround, checkedBlocks, maxDistance);
+		return blocksAround;
 	}
-	private static void recursiveGetNextBlocks(Level world, BlockPos startpos, BlockPos pos, List<Block> possibleblocks, List<BlockPos> theblocksaround, List<BlockPos> checkedblocks, int maxDistance) {
-		int rgnbc = rgnbcount.get(startpos);
+	private static void recursiveGetNextBlocks(Level level, BlockPos startPos, BlockPos pos, List<Block> possibleBlocks, List<BlockPos> blocksAround, List<BlockPos> checkedBlocks, int maxDistance) {
+		int rgnbc = rgnbcount.get(startPos);
 		if (rgnbc > 100) {
 			return;
 		}
-		rgnbcount.put(startpos, rgnbc + 1);
+		rgnbcount.put(startPos, rgnbc + 1);
 
-		List<BlockPos> possibleblocksaround = getBlocksAround(pos, true);
-		for (BlockPos pba : possibleblocksaround) {
-			if (checkedblocks.contains(pba)) {
+		List<BlockPos> possibleBlocksaround = getBlocksAround(pos, true);
+		for (BlockPos pba : possibleBlocksaround) {
+			if (checkedBlocks.contains(pba)) {
 				continue;
 			}
-			checkedblocks.add(pba);
+			checkedBlocks.add(pba);
 
-			if (possibleblocks.contains(world.getBlockState(pba).getBlock())) {
-				if (!theblocksaround.contains(pba)) {
-					theblocksaround.add(pba);
-					if (BlockPosFunctions.withinDistance(startpos, pba, maxDistance)) {
-						recursiveGetNextBlocks(world, startpos, pba, possibleblocks, theblocksaround, checkedblocks, maxDistance);
+			if (possibleBlocks.contains(level.getBlockState(pba).getBlock())) {
+				if (!blocksAround.contains(pba)) {
+					blocksAround.add(pba);
+					if (BlockPosFunctions.withinDistance(startPos, pba, maxDistance)) {
+						recursiveGetNextBlocks(level, startPos, pba, possibleBlocks, blocksAround, checkedBlocks, maxDistance);
 					}
 				}
 			}
 		}
 	}
-	private static final HashMap<BlockPos, Integer> rgnbmcount = new HashMap<BlockPos, Integer>();
 
-	public static List<BlockPos> getBlocksNextToEachOtherMaterial(Level world, BlockPos startpos, List<Material> possiblematerials) {
-		return getBlocksNextToEachOtherMaterial(world, startpos, possiblematerials, 50);
+
+	private static final HashMap<BlockPos, Integer> rgnbtcount = new HashMap<BlockPos, Integer>();
+
+	public static List<BlockPos> getBlocksNextToEachOtherTag(Level level, BlockPos startPos, List<TagKey<Block>> possibleBlockTags) {
+		return getBlocksNextToEachOtherTag(level, startPos, possibleBlockTags, 50);
 	}
-	public static List<BlockPos> getBlocksNextToEachOtherMaterial(Level world, BlockPos startpos, List<Material> possiblematerials, int maxDistance) {
-		List<BlockPos> checkedblocks = new ArrayList<BlockPos>();
-		List<BlockPos> theblocksaround = new ArrayList<BlockPos>();
-		if (possiblematerials.contains(world.getBlockState(startpos).getMaterial())) {
-			theblocksaround.add(startpos);
-			checkedblocks.add(startpos);
+	public static List<BlockPos> getBlocksNextToEachOtherTag(Level level, BlockPos startPos, List<TagKey<Block>> possibleBlockTags, int maxDistance) {
+		List<BlockPos> checkedBlocks = new ArrayList<BlockPos>();
+		List<BlockPos> blocksAround = new ArrayList<BlockPos>();
+
+		BlockState startBlockState = level.getBlockState(startPos);
+		for (TagKey<Block> blockTagKey : possibleBlockTags) {
+			if (startBlockState.is(blockTagKey)) {
+				blocksAround.add(startPos);
+				checkedBlocks.add(startPos);
+				break;
+			}
 		}
 
-		rgnbmcount.put(startpos.immutable(), 0);
-		recursiveGetNextBlocksMaterial(world, startpos, startpos, possiblematerials, theblocksaround, checkedblocks, maxDistance);
-		return theblocksaround;
+		rgnbtcount.put(startPos.immutable(), 0);
+		recursiveGetNextBlocksTag(level, startPos, startPos, possibleBlockTags, blocksAround, checkedBlocks, maxDistance);
+		return blocksAround;
 	}
-	private static void recursiveGetNextBlocksMaterial(Level world, BlockPos startpos, BlockPos pos, List<Material> possiblematerials, List<BlockPos> theblocksaround, List<BlockPos> checkedblocks, int maxDistance) {
-		int rgnbmc = rgnbmcount.get(startpos);
+	private static void recursiveGetNextBlocksTag(Level level, BlockPos startPos, BlockPos pos, List<TagKey<Block>> possibleBlockTags, List<BlockPos> blocksAround, List<BlockPos> checkedBlocks, int maxDistance) {
+		int rgnbc = rgnbtcount.get(startPos);
+		if (rgnbc > 100) {
+			return;
+		}
+		rgnbtcount.put(startPos, rgnbc + 1);
+
+		List<BlockPos> possibleBlocksaround = getBlocksAround(pos, true);
+		for (BlockPos pba : possibleBlocksaround) {
+			if (checkedBlocks.contains(pba)) {
+				continue;
+			}
+			checkedBlocks.add(pba);
+
+			BlockState pbaState = level.getBlockState(pba);
+			for (TagKey<Block> blockTagKey : possibleBlockTags) {
+				if (pbaState.is(blockTagKey)) {
+					if (!blocksAround.contains(pba)) {
+						blocksAround.add(pba);
+						if (BlockPosFunctions.withinDistance(startPos, pba, maxDistance)) {
+							recursiveGetNextBlocksTag(level, startPos, pba, possibleBlockTags, blocksAround, checkedBlocks, maxDistance);
+						}
+					}
+					break;
+				}
+			}
+		}
+	}
+
+
+	private static final HashMap<BlockPos, Integer> rgnbmcount = new HashMap<BlockPos, Integer>();
+
+	public static List<BlockPos> getBlocksNextToEachOtherMaterial(Level level, BlockPos startPos, List<Material> possibleMaterials) {
+		return getBlocksNextToEachOtherMaterial(level, startPos, possibleMaterials, 50);
+	}
+	public static List<BlockPos> getBlocksNextToEachOtherMaterial(Level level, BlockPos startPos, List<Material> possibleMaterials, int maxDistance) {
+		List<BlockPos> checkedBlocks = new ArrayList<BlockPos>();
+		List<BlockPos> blocksAround = new ArrayList<BlockPos>();
+		if (possibleMaterials.contains(level.getBlockState(startPos).getMaterial())) {
+			blocksAround.add(startPos);
+			checkedBlocks.add(startPos);
+		}
+
+		rgnbmcount.put(startPos.immutable(), 0);
+		recursiveGetNextBlocksMaterial(level, startPos, startPos, possibleMaterials, blocksAround, checkedBlocks, maxDistance);
+		return blocksAround;
+	}
+	private static void recursiveGetNextBlocksMaterial(Level level, BlockPos startPos, BlockPos pos, List<Material> possibleMaterials, List<BlockPos> blocksAround, List<BlockPos> checkedBlocks, int maxDistance) {
+		int rgnbmc = rgnbmcount.get(startPos);
 		if (rgnbmc > 100) {
 			return;
 		}
-		rgnbmcount.put(startpos, rgnbmc + 1);
+		rgnbmcount.put(startPos, rgnbmc + 1);
 
-		List<BlockPos> possibleblocksaround = getBlocksAround(pos, true);
-		for (BlockPos pba : possibleblocksaround) {
-			if (checkedblocks.contains(pba)) {
+		List<BlockPos> possibleBlocksaround = getBlocksAround(pos, true);
+		for (BlockPos pba : possibleBlocksaround) {
+			if (checkedBlocks.contains(pba)) {
 				continue;
 			}
-			checkedblocks.add(pba);
+			checkedBlocks.add(pba);
 
-			if (possiblematerials.contains(world.getBlockState(pba).getMaterial())) {
-				if (!theblocksaround.contains(pba)) {
-					theblocksaround.add(pba);
-					if (BlockPosFunctions.withinDistance(startpos, pba, maxDistance)) {
-						recursiveGetNextBlocksMaterial(world, startpos, pba, possiblematerials, theblocksaround, checkedblocks, maxDistance);
+			if (possibleMaterials.contains(level.getBlockState(pba).getMaterial())) {
+				if (!blocksAround.contains(pba)) {
+					blocksAround.add(pba);
+					if (BlockPosFunctions.withinDistance(startPos, pba, maxDistance)) {
+						recursiveGetNextBlocksMaterial(level, startPos, pba, possibleMaterials, blocksAround, checkedBlocks, maxDistance);
 					}
 				}
 			}
@@ -130,7 +185,7 @@ public class BlockPosFunctions {
 		int height = serverLevel.getHeight();
 		int lowestY = serverLevel.getMinBuildHeight();
 
-		BlockPos returnpos = new BlockPos(x, height-1, z);
+		BlockPos returnPos = new BlockPos(x, height-1, z);
 		if (!WorldFunctions.isNether(serverLevel)) {
 			BlockPos pos = new BlockPos(x, height, z);
 			for (int y = height; y > lowestY; y--) {
@@ -147,7 +202,7 @@ public class BlockPosFunctions {
 				if (!continueCycle) {
 					Material material = blockState.getMaterial();
 					if (blockState.getLightBlock(serverLevel, pos) >= 15 || GlobalVariables.surfacematerials.contains(material)) {
-						returnpos = pos.above().immutable();
+						returnPos = pos.above().immutable();
 						break;
 					}
 				}
@@ -156,14 +211,14 @@ public class BlockPosFunctions {
 			}
 		}
 		else {
-			int maxheight = 128;
+			int maxHeight = 128;
 			BlockPos pos = new BlockPos(x, lowestY, z);
-			for (int y = lowestY; y < maxheight; y++) {
-				BlockState blockstate = serverLevel.getBlockState(pos);
-				if (blockstate.getBlock().equals(Blocks.AIR)) {
+			for (int y = lowestY; y < maxHeight; y++) {
+				BlockState blockState = serverLevel.getBlockState(pos);
+				if (blockState.getBlock().equals(Blocks.AIR)) {
 					BlockState upstate = serverLevel.getBlockState(pos.above());
 					if (upstate.getBlock().equals(Blocks.AIR)) {
-						returnpos = pos.immutable();
+						returnPos = pos.immutable();
 						break;
 					}
 				}
@@ -172,7 +227,7 @@ public class BlockPosFunctions {
 			}
 		}
 
-		return returnpos;
+		return returnPos;
 	}
 
 	public static BlockPos getCenterNearbyVillage(ServerLevel serverLevel) {
@@ -218,20 +273,9 @@ public class BlockPosFunctions {
 	public static BlockPos getNearbyBiome(ServerLevel serverLevel, BlockPos nearPos, String biome) {
 		String rawOutput = CommandFunctions.getRawCommandOutput(serverLevel, Vec3.atBottomCenterOf(nearPos), "/locate biome " + biome);
 
-		if (rawOutput.contains("[") && rawOutput.contains("]") && rawOutput.contains(", ")) {
-			String[] coords;
-			try {
-				if (rawOutput.contains(":")) {
-					rawOutput = rawOutput.split(":", 2)[1];
-				}
-
-				String rawcoords = rawOutput.split("\\[")[1].split("]")[0];
-				coords = rawcoords.split(", ");
-			}
-			catch (IndexOutOfBoundsException ex) {
-				return null;
-			}
-
+		if (rawOutput.contains("nearest") && rawOutput.contains("[")) {
+			String rawcoords = rawOutput.split("nearest")[1].split("\\[")[1].split("]")[0];
+			String[] coords = rawcoords.split(", ");
 			if (coords.length == 3) {
 				String sx = coords[0];
 				String sz = coords[2];
@@ -244,27 +288,27 @@ public class BlockPosFunctions {
 		return null;
 	}
 
-	public static BlockPos getCenterNearbyStructure(ServerLevel serverworld, HolderSet<Structure> structure) {
-		return getNearbyStructure(serverworld, structure, new BlockPos(0, 0, 0));
+	public static BlockPos getCenterNearbyStructure(ServerLevel serverLevel, HolderSet<Structure> structure) {
+		return getNearbyStructure(serverLevel, structure, new BlockPos(0, 0, 0));
 	}
-	public static BlockPos getNearbyStructure(ServerLevel serverworld, HolderSet<Structure> structure, BlockPos nearpos) {
-		return getNearbyStructure(serverworld, structure, nearpos, 9999);
+	public static BlockPos getNearbyStructure(ServerLevel serverLevel, HolderSet<Structure> structure, BlockPos nearPos) {
+		return getNearbyStructure(serverLevel, structure, nearPos, 9999);
 	}
-	public static BlockPos getNearbyStructure(ServerLevel serverworld, HolderSet<Structure> structure, BlockPos nearpos, int radius) {
-		Pair<BlockPos, Holder<Structure>> pair = serverworld.getChunkSource().getGenerator().findNearestMapStructure(serverworld, structure, nearpos, radius, false);
+	public static BlockPos getNearbyStructure(ServerLevel serverLevel, HolderSet<Structure> structure, BlockPos nearPos, int radius) {
+		Pair<BlockPos, Holder<Structure>> pair = serverLevel.getChunkSource().getGenerator().findNearestMapStructure(serverLevel, structure, nearPos, radius, false);
 		if (pair == null) {
 			return null;
 		}
 
-		BlockPos villagepos = pair.getFirst();
-		if (villagepos == null) {
+		BlockPos villagePos = pair.getFirst();
+		if (villagePos == null) {
 			return null;
 		}
 
 		BlockPos spawnpos = null;
-		for (int y = serverworld.getHeight()-1; y > 0; y--) {
-			BlockPos checkpos = new BlockPos(villagepos.getX(), y, villagepos.getZ());
-			if (serverworld.getBlockState(checkpos).getBlock().equals(Blocks.AIR)) {
+		for (int y = serverLevel.getHeight()-1; y > 0; y--) {
+			BlockPos checkpos = new BlockPos(villagePos.getX(), y, villagePos.getZ());
+			if (serverLevel.getBlockState(checkpos).getBlock().equals(Blocks.AIR)) {
 				continue;
 			}
 			spawnpos = checkpos.above().immutable();
@@ -274,8 +318,8 @@ public class BlockPosFunctions {
 		return spawnpos;
 	}
 
-	public static BlockPos getBlockPlayerIsLookingAt(Level world, Player player, boolean stopOnLiquid) {
-		HitResult raytraceresult = RayTraceFunctions.rayTrace(world, player, stopOnLiquid);
+	public static BlockPos getBlockPlayerIsLookingAt(Level level, Player player, boolean stopOnLiquid) {
+		HitResult raytraceresult = RayTraceFunctions.rayTrace(level, player, stopOnLiquid);
         double posX = raytraceresult.getLocation().x;
         double posY = Math.floor(raytraceresult.getLocation().y);
         double posZ = raytraceresult.getLocation().z;
@@ -359,11 +403,11 @@ public class BlockPosFunctions {
 
 
 	// START: CHECK functions
-	public static Boolean isOnSurface(Level world, BlockPos pos) {
-		return world.canSeeSky(pos);
+	public static Boolean isOnSurface(Level level, BlockPos pos) {
+		return level.canSeeSky(pos);
 	}
-	public static Boolean isOnSurface(Level world, Vec3 vecpos) {
-		return isOnSurface(world, new BlockPos(vecpos.x, vecpos.y, vecpos.z));
+	public static Boolean isOnSurface(Level level, Vec3 vecPos) {
+		return isOnSurface(level, new BlockPos(vecPos.x, vecPos.y, vecPos.z));
 	}
 
 
@@ -375,8 +419,8 @@ public class BlockPosFunctions {
 	}
 	// END: CHECK functions
 
-	public static BlockPos getBlockPosFromHitResult(HitResult hitresult) {
-		Vec3 vec = hitresult.getLocation();
+	public static BlockPos getBlockPosFromHitResult(HitResult hitResult) {
+		Vec3 vec = hitResult.getLocation();
 		return new BlockPos(vec.x, vec.y, vec.z);
 	}
 }
