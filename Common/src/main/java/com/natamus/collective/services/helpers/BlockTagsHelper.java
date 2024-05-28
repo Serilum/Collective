@@ -4,4 +4,5 @@ import net.minecraft.world.level.block.state.BlockState;
 
 public interface BlockTagsHelper {
     boolean isOre(BlockState blockState);
+    boolean isOre(BlockState blockState, boolean fuzzyCheck);
 }
