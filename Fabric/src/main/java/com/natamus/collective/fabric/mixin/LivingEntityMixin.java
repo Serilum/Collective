@@ -1,11 +1,9 @@
 package com.natamus.collective.fabric.mixin;
 
 import com.natamus.collective.fabric.callbacks.CollectiveEntityEvents;
-import net.minecraft.util.Mth;
+import net.minecraft.tags.EntityTypeTags;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
@@ -41,18 +39,15 @@ public abstract class LivingEntityMixin {
 	}
 	
 	@Inject(method = "calculateFallDamage(FF)I", at = @At(value = "RETURN"), cancellable = true)
-	protected void LivingEntity_calculateFallDamage(float f, float g, CallbackInfoReturnable<Integer> ci) {
+	protected void LivingEntity_calculateFallDamage(float fallDistance, float damageMultiplier, CallbackInfoReturnable<Integer> ci) {
 		LivingEntity livingEntity = (LivingEntity)(Object)this;
-		Level world = livingEntity.level();
-		
-		if (CollectiveEntityEvents.ON_FALL_DAMAGE_CALC.invoker().onFallDamageCalc(world, livingEntity, f, g) == 0) {
-			ci.setReturnValue(0);
+		if (livingEntity.getType().is(EntityTypeTags.FALL_DAMAGE_IMMUNE)) {
 			return;
 		}
-		
-		MobEffectInstance mobEffectInstance = livingEntity.getEffect(MobEffects.JUMP);
-		float h = mobEffectInstance == null ? 0.0F : (float)(mobEffectInstance.getAmplifier() + 1);
-		ci.setReturnValue(Mth.ceil((f - 3.0F - h) * g));
+
+		if (CollectiveEntityEvents.ON_FALL_DAMAGE_CALC.invoker().onFallDamageCalc(livingEntity.level(), livingEntity, fallDistance, damageMultiplier) == 0) {
+			ci.setReturnValue(0);
+		}
 	}
 	
 	@ModifyVariable(method = "actuallyHurt(Lnet/minecraft/world/damagesource/DamageSource;F)V", at = @At(value= "INVOKE_ASSIGN", target = "Ljava/lang/Math;max(FF)F", ordinal = 0), ordinal = 0, argsOnly = true)
