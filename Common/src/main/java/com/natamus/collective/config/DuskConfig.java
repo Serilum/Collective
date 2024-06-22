@@ -219,7 +219,12 @@ public abstract class DuskConfig {
 			entryHashMap.put(modid, new ArrayList<EntryInfo>());
 		}
 
-		entryHashMap.get(modid).add(info);
+		try {
+			entryHashMap.get(modid).add(info);
+		}
+		catch (NullPointerException ex) {
+			entryHashMap.put(modid, Arrays.asList(info));
+		}
 	}
 
 	private static void textField(String modid, EntryInfo info, Function<String,Number> f, Pattern pattern, double min, double max, boolean cast) {
