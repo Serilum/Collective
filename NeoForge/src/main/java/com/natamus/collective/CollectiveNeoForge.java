@@ -7,6 +7,7 @@ import com.natamus.collective.implementations.networking.data.Side;
 import com.natamus.collective.neoforge.config.CollectiveConfigScreen;
 import com.natamus.collective.neoforge.events.RegisterCollectiveNeoForgeEvents;
 import com.natamus.collective.neoforge.networking.NeoForgeNetworkHandler;
+import com.natamus.collective.neoforge.services.NeoForgeRegisterItemHelper;
 import com.natamus.collective.util.CollectiveReference;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModLoadingContext;
@@ -31,6 +32,7 @@ public class CollectiveNeoForge {
 
 		modEventBus.addListener(this::commonSetupEvent);
 		modEventBus.addListener(this::loadComplete);
+		modEventBus.addListener(NeoForgeRegisterItemHelper::addItemsToCreativeInventory);
 
 		handler = new NeoForgeNetworkHandler(FMLLoader.getDist().isClient() ? Side.CLIENT : Side.SERVER);
         modEventBus.register(handler);
