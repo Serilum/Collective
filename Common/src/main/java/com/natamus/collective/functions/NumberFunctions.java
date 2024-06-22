@@ -34,12 +34,6 @@ public class NumberFunctions {
 			return false;
 		}
 
-		try {
-			Double.parseDouble(string);
-		}
-		catch (NumberFormatException ex) {
-			return false;
-		}
-		return true;
+		return string.matches("-?\\d+(\\.\\d+)?");
 	}
 }
