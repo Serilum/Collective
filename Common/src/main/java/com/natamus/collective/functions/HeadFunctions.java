@@ -9,6 +9,7 @@ import com.natamus.collective.features.PlayerHeadCacheFeature;
 import net.minecraft.core.UUIDUtil;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.players.GameProfileCache;
@@ -58,12 +59,18 @@ public class HeadFunctions {
 	}
 
 	public static ItemStack getNewTexturedHead(String entityName, String texture, String uuidString, Integer amount) {
+		return getNewTexturedHead(entityName, texture, uuidString, "", amount);
+	}
+	public static ItemStack getNewTexturedHead(String entityName, String texture, String uuidString, String noteBlockSound, Integer amount) {
 		UUID uuid = UUIDFunctions.getUUIDFromStringLenient(uuidString);
 		int[] intArray = UUIDUtil.uuidToIntArray(uuid);
 
-		return getNewTexturedHead(entityName, texture, uuid, amount);
+		return getNewTexturedHead(entityName, texture, uuid, noteBlockSound, amount);
 	}
 	public static ItemStack getNewTexturedHead(String entityName, String texture, UUID uuid, Integer amount) {
+		return getNewTexturedHead(entityName, texture, uuid, "", amount);
+	}
+	public static ItemStack getNewTexturedHead(String entityName, String texture, UUID uuid, String noteBlockSound, Integer amount) {
 		if (entityName.length() > 16) {
 			entityName = entityName.substring(0, 16);
 		}
@@ -74,6 +81,10 @@ public class HeadFunctions {
 		gameProfile.getProperties().put("textures", new Property("textures", texture));
 
 		texturedHeadStack.set(DataComponents.PROFILE, new ResolvableProfile(gameProfile));
+
+		if (!noteBlockSound.equals("")) {
+			texturedHeadStack.set(DataComponents.NOTE_BLOCK_SOUND, new ResourceLocation(noteBlockSound));
+		}
 
 		return texturedHeadStack;
 	}
