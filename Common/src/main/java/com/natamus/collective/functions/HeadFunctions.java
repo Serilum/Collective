@@ -8,6 +8,7 @@ import com.natamus.collective.features.PlayerHeadCacheFeature;
 import net.minecraft.core.UUIDUtil;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.StringTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
@@ -20,14 +21,20 @@ import java.util.UUID;
 
 public class HeadFunctions {
 	public static ItemStack getNewPlayerHead(ServerLevel serverLevel, String playerName, Integer amount) {
+		return getNewPlayerHead(serverLevel, playerName, "", amount);
+	}
+	public static ItemStack getNewPlayerHead(ServerLevel serverLevel, String playerName, String noteBlockSound, Integer amount) {
 		GameProfile gameProfile = getGameProfileFromPlayerName(serverLevel, playerName);
 		if (gameProfile == null) {
 			return null;
 		}
 
-		return getNewPlayerHead(gameProfile, amount);
+		return getNewPlayerHead(gameProfile, noteBlockSound, amount);
 	}
 	public static ItemStack getNewPlayerHead(GameProfile gameProfile, Integer amount) {
+		return getNewPlayerHead(gameProfile, "", amount);
+	}
+	public static ItemStack getNewPlayerHead(GameProfile gameProfile, String noteBlockSound, Integer amount) {
 		if (gameProfile == null) {
 			return null;
 		}
@@ -52,7 +59,7 @@ public class HeadFunctions {
 
 		int[] headIntArray = UUIDUtil.uuidToIntArray(gameProfile.getId());
 
-		ItemStack playerHeadStack = getNewTexturedHead(playerName, textures, headIntArray, amount);
+		ItemStack playerHeadStack = getNewTexturedHead(playerName, textures, headIntArray, noteBlockSound, amount);
 		playerHeadStack.setHoverName(Component.literal(playerName + "'s Head"));
 
 		return playerHeadStack;
@@ -77,8 +84,15 @@ public class HeadFunctions {
 
 		ItemStack texturedHeadStack = new ItemStack(Items.PLAYER_HEAD, amount);
 
+		CompoundTag texturedHeadCompoundTag = new CompoundTag();
 		CompoundTag skullOwnerCompoundTag = getSkullOwnerCompoundTag(entityName.replace(" ", "_"), texture, idIntArray);
-		texturedHeadStack.addTagElement("SkullOwner", skullOwnerCompoundTag);
+		texturedHeadCompoundTag.put("SkullOwner", skullOwnerCompoundTag);
+
+		if (!noteBlockSound.equals("")) {
+			texturedHeadCompoundTag.put("note_block_sound", StringTag.valueOf(noteBlockSound));
+		}
+
+		texturedHeadStack.setTag(texturedHeadCompoundTag);
 
 		return texturedHeadStack;
 	}
@@ -128,9 +142,6 @@ public class HeadFunctions {
 	}
 
 	public static CompoundTag getSkullOwnerCompoundTag(ServerLevel serverLevel, String playerName) {
-		return getSkullOwnerCompoundTag(serverLevel, playerName, "");
-	}
-	public static CompoundTag getSkullOwnerCompoundTag(ServerLevel serverLevel, String playerName, String noteBlockSound) {
 		GameProfile gameProfile = getGameProfileFromPlayerName(serverLevel, playerName);
 		PropertyMap propertyMap = gameProfile.getProperties();
 
@@ -147,12 +158,9 @@ public class HeadFunctions {
 
 		int[] headIntArray = UUIDUtil.uuidToIntArray(gameProfile.getId());
 
-		return getSkullOwnerCompoundTag(playerName, textures, headIntArray, noteBlockSound);
+		return getSkullOwnerCompoundTag(playerName, textures, headIntArray);
 	}
 	public static CompoundTag getSkullOwnerCompoundTag(String entityName, String textures, int[] idIntArray) {
-		return getSkullOwnerCompoundTag(entityName, textures, idIntArray, "");
-	}
-	public static CompoundTag getSkullOwnerCompoundTag(String entityName, String textures, int[] idIntArray, String noteBlockSound) {
 		CompoundTag skullOwnerCompoundTag = new CompoundTag();
 		skullOwnerCompoundTag.putString("Name", entityName);
 		skullOwnerCompoundTag.putIntArray("Id", idIntArray);
@@ -164,11 +172,6 @@ public class HeadFunctions {
 		texturesListTag.add(texturesCompoundTag);
 
 		propertiesCompoundTag.put("textures", texturesListTag);
-
-		if (!noteBlockSound.equals("")) {
-			propertiesCompoundTag.putString("note_block_sound", noteBlockSound);
-		}
-
 		skullOwnerCompoundTag.put("Properties", propertiesCompoundTag);
 
 		return skullOwnerCompoundTag;
