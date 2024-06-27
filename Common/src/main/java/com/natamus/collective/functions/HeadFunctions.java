@@ -59,12 +59,18 @@ public class HeadFunctions {
 	}
 
 	public static ItemStack getNewTexturedHead(String entityName, String texture, String uuidString, Integer amount) {
+		return getNewTexturedHead(entityName, texture, uuidString, "", amount);
+	}
+	public static ItemStack getNewTexturedHead(String entityName, String texture, String uuidString, String noteBlockSound, Integer amount) {
 		UUID uuid = UUIDFunctions.getUUIDFromStringLenient(uuidString);
 		int[] intArray = UUIDUtil.uuidToIntArray(uuid);
 
-		return getNewTexturedHead(entityName, texture, intArray, amount);
+		return getNewTexturedHead(entityName, texture, intArray, noteBlockSound, amount);
 	}
 	public static ItemStack getNewTexturedHead(String entityName, String texture, int[] idIntArray, Integer amount) {
+		return getNewTexturedHead(entityName, texture, idIntArray, "", amount);
+	}
+	public static ItemStack getNewTexturedHead(String entityName, String texture, int[] idIntArray, String noteBlockSound, Integer amount) {
 		if (entityName.length() > 16) {
 			entityName = entityName.substring(0, 16);
 		}
@@ -122,6 +128,9 @@ public class HeadFunctions {
 	}
 
 	public static CompoundTag getSkullOwnerCompoundTag(ServerLevel serverLevel, String playerName) {
+		return getSkullOwnerCompoundTag(serverLevel, playerName, "");
+	}
+	public static CompoundTag getSkullOwnerCompoundTag(ServerLevel serverLevel, String playerName, String noteBlockSound) {
 		GameProfile gameProfile = getGameProfileFromPlayerName(serverLevel, playerName);
 		PropertyMap propertyMap = gameProfile.getProperties();
 
@@ -138,9 +147,12 @@ public class HeadFunctions {
 
 		int[] headIntArray = UUIDUtil.uuidToIntArray(gameProfile.getId());
 
-		return getSkullOwnerCompoundTag(playerName, textures, headIntArray);
+		return getSkullOwnerCompoundTag(playerName, textures, headIntArray, noteBlockSound);
 	}
 	public static CompoundTag getSkullOwnerCompoundTag(String entityName, String textures, int[] idIntArray) {
+		return getSkullOwnerCompoundTag(entityName, textures, idIntArray, "");
+	}
+	public static CompoundTag getSkullOwnerCompoundTag(String entityName, String textures, int[] idIntArray, String noteBlockSound) {
 		CompoundTag skullOwnerCompoundTag = new CompoundTag();
 		skullOwnerCompoundTag.putString("Name", entityName);
 		skullOwnerCompoundTag.putIntArray("Id", idIntArray);
@@ -152,6 +164,11 @@ public class HeadFunctions {
 		texturesListTag.add(texturesCompoundTag);
 
 		propertiesCompoundTag.put("textures", texturesListTag);
+
+		if (!noteBlockSound.equals("")) {
+			propertiesCompoundTag.putString("note_block_sound", noteBlockSound);
+		}
+
 		skullOwnerCompoundTag.put("Properties", propertiesCompoundTag);
 
 		return skullOwnerCompoundTag;
