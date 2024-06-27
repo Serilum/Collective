@@ -6,7 +6,7 @@ logoFile="icon.png"
 
 [[mods]]
 modId="collective"
-version="7.65"
+version="7.66"
 displayName="Collective"
 displayURL="https://serilum.com/mod/collective"
 authors="Rick South"
@@ -29,7 +29,7 @@ If you would like to contribute too, check out https://serilum.com/donate. Appre
 [[dependencies.collective]]
     modId="neoforge"
     type="required"
-    versionRange="[21.0.40,)"
+    versionRange="[21.0.40-beta,)"
     ordering="NONE"
     side="BOTH"
 
