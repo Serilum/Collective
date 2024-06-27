@@ -22,14 +22,20 @@ import java.util.UUID;
 
 public class HeadFunctions {
 	public static ItemStack getNewPlayerHead(ServerLevel serverLevel, String playerName, Integer amount) {
+		return getNewPlayerHead(serverLevel, playerName, "", amount);
+	}
+	public static ItemStack getNewPlayerHead(ServerLevel serverLevel, String playerName, String noteBlockSound, Integer amount) {
 		GameProfile gameProfile = getGameProfileFromPlayerName(serverLevel, playerName);
 		if (gameProfile == null) {
 			return null;
 		}
 
-		return getNewPlayerHead(gameProfile, amount);
+		return getNewPlayerHead(gameProfile, noteBlockSound, amount);
 	}
 	public static ItemStack getNewPlayerHead(GameProfile gameProfile, Integer amount) {
+		return getNewPlayerHead(gameProfile, "", amount);
+	}
+	public static ItemStack getNewPlayerHead(GameProfile gameProfile, String noteBlockSound, Integer amount) {
 		if (gameProfile == null) {
 			return null;
 		}
@@ -52,7 +58,7 @@ public class HeadFunctions {
 		// Set timestamp to 0 to make heads stackable
 		String textures = "ewogICJ0aW1lc3RhbXAiIDogMCwKICAicHJvZmlsZUlk" + texturePropertyValue.split("cHJvZmlsZUlk")[1];
 
-		ItemStack playerHeadStack = getNewTexturedHead(playerName, textures, gameProfile.getId(), amount);
+		ItemStack playerHeadStack = getNewTexturedHead(playerName, textures, gameProfile.getId(), noteBlockSound, amount);
 		playerHeadStack.set(DataComponents.CUSTOM_NAME, Component.literal(playerName + "'s Head"));
 
 		return playerHeadStack;
