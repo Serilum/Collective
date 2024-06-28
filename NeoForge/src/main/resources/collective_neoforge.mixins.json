@@ -6,6 +6,7 @@
   "compatibilityLevel": "JAVA_21",
   "mixins": [
 	"BaseSpawnerMixin",
+	"BlockEntityMixin",
 	"BoneMealItemMixin",
 	"PrimaryLevelDataMixin"
   ],
