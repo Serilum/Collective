@@ -9,6 +9,7 @@
 	"AnimalMixin",
 	"AnvilMenuMixin",
 	"BaseSpawnerMixin",
+	"BlockEntityMixin",
 	"BlockMixin",
 	"BoneMealItemMixin",
 	"BowItemMixin",
