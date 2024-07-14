@@ -17,7 +17,7 @@ public class FabricTeleportHelper implements TeleportHelper {
 
     @Override
     public boolean teleportEntity(Entity entity, ServerLevel serverLevel, BlockPos blockPos) {
-        return entity.teleportTo(serverLevel, blockPos.getX()+0.5, blockPos.getY(), blockPos.getZ()+0.5, null, entity.getYRot(), entity.getXRot());
+        return entity.teleportTo(serverLevel, blockPos.getX()+0.5, blockPos.getY(), blockPos.getZ()+0.5, RelativeMovement.ALL, entity.getYRot(), entity.getXRot());
     }
 
     @Override
