@@ -209,14 +209,7 @@ public abstract class DuskConfig {
 		}
 
 		if (!entryHashMap.containsKey(modid)) {
-			entryHashMap.put(modid, new ArrayList<EntryInfo>());
-		}
-
-		try {
-			entryHashMap.get(modid).add(info);
-		}
-		catch (NullPointerException ex) {
-			entryHashMap.put(modid, Arrays.asList(info));
+			entryHashMap.put(modid, new ArrayList<EntryInfo>(Arrays.asList(info)));
 		}
 	}
 
