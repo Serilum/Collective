@@ -1,6 +1,5 @@
 package com.natamus.collective.check;
 
-import com.natamus.collective.config.CollectiveConfigHandler;
 import com.natamus.collective.functions.DataFunctions;
 import com.natamus.collective.functions.StringFunctions;
 import com.natamus.collective.functions.WorldFunctions;
@@ -38,12 +37,7 @@ public class RegisterMod {
 	}
 	
 	public static void initialProcess() {
-		if (!CollectiveConfigHandler.enableAntiRepostingCheck) {
-			shouldDoCheck = false;
-		}
-		else if (!checkAlternative()) {
-			shouldDoCheck = false;
-		}
+		shouldDoCheck = false;
 	}
 	
 	public static void joinWorldProcess(Level world, Player player) {

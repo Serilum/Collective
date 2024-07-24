@@ -12,7 +12,6 @@ public class CollectiveConfigHandler extends DuskConfig {
     @Entry public static boolean transferItemsBetweenReplacedEntities = true;
     @Entry(min = 1, max = 500) public static int loopsAmountUsedToGetAllEntityDrops = 100;
     @Entry(min = 0, max = 3600000) public static int findABlockCheckAroundEntitiesDelayMs = 30000;
-    @Entry public static boolean enableAntiRepostingCheck = true;
     @Entry public static boolean enablePatronPets = true;
 
     public static void initConfig() {
@@ -24,9 +23,6 @@ public class CollectiveConfigHandler extends DuskConfig {
         ));
         configMetaData.put("findABlockCheckAroundEntitiesDelayMs", Arrays.asList(
                 "The delay of the is-there-a-block-around-check around entities in ms. Used in mods which depends on a specific blockstate in the world. Increasing this number can increase TPS if needed."
-        ));
-        configMetaData.put("enableAntiRepostingCheck", Arrays.asList(
-                "Please check out https://stopmodreposts.org/ for more information on why this feature exists."
         ));
         configMetaData.put("enablePatronPets", Arrays.asList(
                 "Enables pets for Patrons. Will be added in a future release."
