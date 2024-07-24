@@ -1,6 +1,5 @@
 package com.natamus.collective.check;
 
-import com.natamus.collective.config.CollectiveConfigHandler;
 import com.natamus.collective.functions.DataFunctions;
 import com.natamus.collective.functions.StringFunctions;
 import com.natamus.collective.functions.WorldFunctions;
@@ -38,12 +37,7 @@ public class RegisterMod {
 	}
 	
 	public static void initialProcess() {
-		if (!CollectiveConfigHandler.enableAntiRepostingCheck) {
-			shouldDoCheck = false;
-		}
-		else if (!checkAlternative()) {
-			shouldDoCheck = false;
-		}
+		shouldDoCheck = false;
 	}
 	
 	public static void joinWorldProcess(Level world, Player player) {
@@ -131,18 +125,23 @@ public class RegisterMod {
 	}
 	
 	private static List<String> checkIfAllJarsExist() {
-		List<String> installedmods = DataFunctions.getInstalledModJars();
-		
 		List<String> wrongmodnames = new ArrayList<String>();
-		for (String jarname : jarlist) {
-			if (!installedmods.contains(jarname) && jartoname.containsKey(jarname)) {
-				wrongmodnames.add(jartoname.get(jarname));
+
+		boolean enabled = false;
+		if (enabled) {
+			List<String> installedmods = DataFunctions.getInstalledModJars();
+
+			for (String jarname : jarlist) {
+				if (!installedmods.contains(jarname) && jartoname.containsKey(jarname)) {
+					wrongmodnames.add(jartoname.get(jarname));
+				}
+			}
+
+			if (wrongmodnames.size() > 0) {
+				Collections.sort(wrongmodnames);
 			}
 		}
-		
-		if (wrongmodnames.size() > 0) {
-			Collections.sort(wrongmodnames);
-		}
+
 		return wrongmodnames;
 	}
 	
