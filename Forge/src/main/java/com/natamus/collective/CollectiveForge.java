@@ -1,7 +1,7 @@
 package com.natamus.collective;
 
 import com.natamus.collective.check.RegisterMod;
-import com.natamus.collective.forge.config.CollectiveConfigScreen;
+import com.natamus.collective.forge.config.ForgeCollectiveConfigScreen;
 import com.natamus.collective.forge.events.RegisterCollectiveForgeEvents;
 import com.natamus.collective.forge.networking.ForgeNetworkHandler;
 import com.natamus.collective.forge.services.ForgeRegisterItemHelper;
@@ -26,7 +26,7 @@ public class CollectiveForge {
 
         setGlobalConstants();
         CollectiveCommon.init();
-        CollectiveConfigScreen.registerScreen(ModLoadingContext.get());
+        ForgeCollectiveConfigScreen.registerScreen(ModLoadingContext.get());
 
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
 

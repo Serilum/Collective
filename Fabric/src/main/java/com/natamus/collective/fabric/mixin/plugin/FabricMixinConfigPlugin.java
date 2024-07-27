@@ -20,10 +20,10 @@ public class FabricMixinConfigPlugin implements IMixinConfigPlugin {
 
     @Override
     public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
-        return !((mixinClassName.contains(".neoforge.") || mixinClassName.contains("_neoforge.")) && !isNeoForge() ||
-                (mixinClassName.contains(".forge.") || mixinClassName.contains("_forge.")) && !isForge() ||
-                (mixinClassName.contains(".fabric.") || mixinClassName.contains("_fabric.")) && !isFabric());
-    }
+		return ((!mixinClassName.contains(".neoforge.") && !mixinClassName.contains("_neoforge.")) || isNeoForge()) &&
+				((!mixinClassName.contains(".forge.") && !mixinClassName.contains("_forge.")) || isForge()) &&
+				((!mixinClassName.contains(".fabric.") && !mixinClassName.contains("_fabric.")) || isFabric());
+	}
 
     @Override
     public void acceptTargets(Set<String> myTargets, Set<String> otherTargets) {
