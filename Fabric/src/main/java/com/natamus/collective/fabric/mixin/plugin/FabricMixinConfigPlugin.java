@@ -1,5 +1,7 @@
 package com.natamus.collective.fabric.mixin.plugin;
 
+import com.natamus.collective.bundle.BundleConfigCheck;
+import com.natamus.collective.fabric.bundle.BundleJarJarCheck;
 import org.objectweb.asm.tree.ClassNode;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
@@ -20,10 +22,25 @@ public class FabricMixinConfigPlugin implements IMixinConfigPlugin {
 
     @Override
     public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
-		return ((!mixinClassName.contains(".neoforge.") && !mixinClassName.contains("_neoforge.")) || isNeoForge()) &&
-				((!mixinClassName.contains(".forge.") && !mixinClassName.contains("_forge.")) || isForge()) &&
-				((!mixinClassName.contains(".fabric.") && !mixinClassName.contains("_fabric.")) || isFabric());
-	}
+        if (((mixinClassName.contains(".neoforge.") || mixinClassName.contains("_neoforge.")) && !isNeoForge() ||
+                (mixinClassName.contains(".forge.") || mixinClassName.contains("_forge.")) && !isForge() ||
+                (mixinClassName.contains(".fabric.") || mixinClassName.contains("_fabric.")) && !isFabric())) {
+            return false;
+        }
+
+		String[] pSpl = mixinClassName.split("\\.");
+		if (pSpl.length < 3) {
+			return true;
+		}
+
+		String modId = pSpl[2].split("_")[0];
+
+		if (BundleJarJarCheck.isModJarJard(modId)) {
+			return BundleConfigCheck.isBundleModEnabled(modId);
+		}
+
+        return true;
+    }
 
     @Override
     public void acceptTargets(Set<String> myTargets, Set<String> otherTargets) {
