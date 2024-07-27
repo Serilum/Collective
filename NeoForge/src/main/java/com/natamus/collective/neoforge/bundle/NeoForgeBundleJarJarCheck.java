@@ -8,7 +8,7 @@ import net.neoforged.neoforgespi.locating.ModFileDiscoveryAttributes;
 
 import java.io.File;
 
-public class BundleJarJarCheck {
+public class NeoForgeBundleJarJarCheck {
 	@SuppressWarnings("UnstableApiUsage")
 	public static boolean isModJarJard(String modId) {
 		boolean isJarJar = false;

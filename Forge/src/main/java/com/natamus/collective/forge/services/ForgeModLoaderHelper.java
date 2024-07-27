@@ -1,5 +1,6 @@
 package com.natamus.collective.forge.services;
 
+import com.natamus.collective.forge.bundle.ForgeBundleJarJarCheck;
 import com.natamus.collective.services.helpers.ModLoaderHelper;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.ModList;
@@ -31,5 +32,10 @@ public class ForgeModLoaderHelper implements ModLoaderHelper {
     @Override
     public boolean isClientSide() {
         return FMLEnvironment.dist.equals(Dist.CLIENT);
+    }
+
+    @Override
+    public boolean isJarJard(String modId) {
+        return ForgeBundleJarJarCheck.isModJarJard(modId);
     }
 }

@@ -1,6 +1,7 @@
 package com.natamus.collective.neoforge.services;
 
 
+import com.natamus.collective.neoforge.bundle.NeoForgeBundleJarJarCheck;
 import com.natamus.collective.services.helpers.ModLoaderHelper;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.fml.ModList;
@@ -32,5 +33,10 @@ public class NeoForgeModLoaderHelper implements ModLoaderHelper {
     @Override
     public boolean isClientSide() {
         return FMLEnvironment.dist.equals(Dist.CLIENT);
+    }
+
+    @Override
+    public boolean isJarJard(String modId) {
+        return NeoForgeBundleJarJarCheck.isModJarJard(modId);
     }
 }
