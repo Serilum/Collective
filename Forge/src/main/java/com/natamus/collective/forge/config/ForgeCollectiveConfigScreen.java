@@ -5,7 +5,7 @@ import com.natamus.collective.util.CollectiveReference;
 import net.minecraftforge.client.ConfigScreenHandler;
 import net.minecraftforge.fml.ModLoadingContext;
 
-public class CollectiveConfigScreen {
+public class ForgeCollectiveConfigScreen {
     public static void registerScreen(ModLoadingContext modLoadingContext) {
         modLoadingContext.registerExtensionPoint(ConfigScreenHandler.ConfigScreenFactory.class, () -> {
             return new ConfigScreenHandler.ConfigScreenFactory((mc, screen) -> {

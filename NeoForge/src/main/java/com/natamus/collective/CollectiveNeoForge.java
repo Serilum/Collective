@@ -4,7 +4,7 @@ import com.natamus.collective.check.RegisterMod;
 import com.natamus.collective.implementations.networking.NetworkSetup;
 import com.natamus.collective.implementations.networking.PacketRegistrationHandler;
 import com.natamus.collective.implementations.networking.data.Side;
-import com.natamus.collective.neoforge.config.CollectiveConfigScreen;
+import com.natamus.collective.neoforge.config.NeoForgeCollectiveConfigScreen;
 import com.natamus.collective.neoforge.events.RegisterCollectiveNeoForgeEvents;
 import com.natamus.collective.neoforge.networking.NeoForgeNetworkHandler;
 import com.natamus.collective.neoforge.services.NeoForgeRegisterItemHelper;
@@ -28,7 +28,7 @@ public class CollectiveNeoForge {
 
         setGlobalConstants();
         CollectiveCommon.init();
-        CollectiveConfigScreen.registerScreen(ModLoadingContext.get());
+        NeoForgeCollectiveConfigScreen.registerScreen(ModLoadingContext.get());
 
 		modEventBus.addListener(this::commonSetupEvent);
 		modEventBus.addListener(this::loadComplete);
