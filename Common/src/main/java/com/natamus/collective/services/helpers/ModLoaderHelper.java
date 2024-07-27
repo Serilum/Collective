@@ -6,4 +6,5 @@ public interface ModLoaderHelper {
     boolean isModLoaded(String modId);
     boolean isDevelopmentEnvironment();
     boolean isClientSide();
+    boolean isJarJard(String modId);
 }
