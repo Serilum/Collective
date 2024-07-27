@@ -5,7 +5,7 @@ import net.fabricmc.loader.api.ModContainer;
 
 import java.util.Optional;
 
-public class BundleJarJarCheck {
+public class FabricBundleJarJarCheck {
 	public static boolean isModJarJard(String modId) {
 		boolean isJarJar = false;
 

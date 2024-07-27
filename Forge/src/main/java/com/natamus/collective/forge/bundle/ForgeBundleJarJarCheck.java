@@ -6,7 +6,7 @@ import net.minecraftforge.fml.loading.moddiscovery.ModFileInfo;
 
 import java.io.File;
 
-public class BundleJarJarCheck {
+public class ForgeBundleJarJarCheck {
 	public static boolean isModJarJard(String modId) {
 		boolean isJarJar = false;
 

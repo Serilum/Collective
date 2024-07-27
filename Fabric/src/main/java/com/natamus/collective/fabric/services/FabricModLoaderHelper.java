@@ -1,5 +1,6 @@
 package com.natamus.collective.fabric.services;
 
+import com.natamus.collective.fabric.bundle.FabricBundleJarJarCheck;
 import com.natamus.collective.fabric.data.GlobalFabricObjects;
 import com.natamus.collective.services.helpers.ModLoaderHelper;
 import net.fabricmc.api.EnvType;
@@ -28,5 +29,10 @@ public class FabricModLoaderHelper implements ModLoaderHelper {
     @Override
     public boolean isClientSide() {
         return GlobalFabricObjects.fabricLoader.getEnvironmentType() == EnvType.CLIENT;
+    }
+
+    @Override
+    public boolean isJarJard(String modId) {
+        return FabricBundleJarJarCheck.isModJarJard(modId);
     }
 }

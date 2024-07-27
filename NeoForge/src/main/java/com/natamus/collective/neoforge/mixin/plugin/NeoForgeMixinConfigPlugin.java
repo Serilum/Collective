@@ -1,7 +1,7 @@
 package com.natamus.collective.neoforge.mixin.plugin;
 
 import com.natamus.collective.bundle.BundleConfigCheck;
-import com.natamus.collective.neoforge.bundle.BundleJarJarCheck;
+import com.natamus.collective.neoforge.bundle.NeoForgeBundleJarJarCheck;
 import org.objectweb.asm.tree.ClassNode;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
@@ -35,7 +35,7 @@ public class NeoForgeMixinConfigPlugin implements IMixinConfigPlugin {
 
 		String modId = pSpl[2].split("_")[0];
 
-		if (BundleJarJarCheck.isModJarJard(modId)) {
+		if (NeoForgeBundleJarJarCheck.isModJarJard(modId)) {
 			return BundleConfigCheck.isBundleModEnabled(modId);
 		}
 
