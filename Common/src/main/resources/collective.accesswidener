@@ -1,0 +1,31 @@
+accessWidener v1 named
+accessible field net/minecraft/client/Options gamma Lnet/minecraft/client/OptionInstance;
+mutable field net/minecraft/client/Options gamma Lnet/minecraft/client/OptionInstance;
+accessible class net/minecraft/server/commands/TeleportCommand$LookAt
+accessible field net/minecraft/client/OptionInstance value Ljava/lang/Object;
+mutable field net/minecraft/client/OptionInstance value Ljava/lang/Object;
+accessible field net/minecraft/world/entity/monster/Creeper DATA_IS_POWERED Lnet/minecraft/network/syncher/EntityDataAccessor;
+accessible method net/minecraft/world/entity/Entity setSharedFlag (IZ)V
+accessible field net/minecraft/world/item/trading/MerchantOffer maxUses I
+mutable field net/minecraft/world/item/trading/MerchantOffer maxUses I
+accessible field net/minecraft/world/item/trading/MerchantOffer uses I
+accessible field net/minecraft/world/item/trading/MerchantOffer demand I
+accessible field net/minecraft/world/level/BaseSpawner spawnDelay I
+accessible field net/minecraft/world/entity/LivingEntity DATA_HEALTH_ID Lnet/minecraft/network/syncher/EntityDataAccessor;
+accessible field net/minecraft/world/entity/projectile/FishingHook biting Z
+accessible field net/minecraft/world/entity/Entity dimensions Lnet/minecraft/world/entity/EntityDimensions;
+accessible field net/minecraft/world/entity/Entity eyeHeight F
+accessible field net/minecraft/world/entity/Mob goalSelector Lnet/minecraft/world/entity/ai/goal/GoalSelector;
+accessible field net/minecraft/world/entity/Mob targetSelector Lnet/minecraft/world/entity/ai/goal/GoalSelector;
+accessible field net/minecraft/client/KeyMapping key Lcom/mojang/blaze3d/platform/InputConstants$Key;
+accessible field net/minecraft/world/inventory/MerchantMenu trader Lnet/minecraft/world/item/trading/Merchant;
+accessible field net/minecraft/client/gui/screens/Screen title Lnet/minecraft/network/chat/Component;
+mutable field net/minecraft/client/gui/screens/Screen title Lnet/minecraft/network/chat/Component;
+accessible field net/minecraft/client/gui/screens/inventory/AbstractSignEditScreen sign Lnet/minecraft/world/level/block/entity/SignBlockEntity;
+accessible field net/minecraft/client/gui/screens/inventory/AbstractSignEditScreen text Lnet/minecraft/world/level/block/entity/SignText;
+accessible field net/minecraft/client/gui/screens/inventory/AbstractSignEditScreen messages [Ljava/lang/String;
+accessible field net/minecraft/client/gui/screens/inventory/AbstractSignEditScreen line I
+accessible field net/minecraft/client/gui/screens/inventory/AbstractSignEditScreen signField Lnet/minecraft/client/gui/font/TextFieldHelper;
+accessible field net/minecraft/client/gui/screens/inventory/AbstractSignEditScreen isFrontText Z
+accessible method net/minecraft/world/entity/animal/horse/AbstractHorse getFlag (I)Z
+accessible method net/minecraft/world/level/block/TrapDoorBlock getType ()Lnet/minecraft/world/level/block/state/properties/BlockSetType;
