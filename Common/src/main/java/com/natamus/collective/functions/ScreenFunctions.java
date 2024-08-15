@@ -1,6 +1,9 @@
 package com.natamus.collective.functions;
 
+import net.minecraft.client.gui.components.Renderable;
+import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.font.TextFieldHelper;
+import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractSignEditScreen;
 import net.minecraft.client.gui.screens.inventory.MerchantScreen;
@@ -72,5 +75,9 @@ public class ScreenFunctions {
 
 	public static boolean signTextOnScreenisFront(AbstractSignEditScreen abstractSignEditScreen) {
 		return abstractSignEditScreen.isFrontText;
+	}
+
+	public static <T extends GuiEventListener & Renderable & NarratableEntry> T addRenderableWidget(Screen screen, T renderableWidget) {
+		return screen.addRenderableWidget(renderableWidget);
 	}
 }
