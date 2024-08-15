@@ -55,39 +55,42 @@ public class ItemFunctions {
 		
 		Collection<Entry<ResourceKey<EntityType<?>>, EntityType<?>>> entitytypes = level.registryAccess().registryOrThrow(Registries.ENTITY_TYPE).entrySet();
 		for (Entry<ResourceKey<EntityType<?>>, EntityType<?>> entry : entitytypes) {
-			EntityType<?> type = entry.getValue();
-			if (type == null) {
-				continue;
-			}
-			Entity entity = type.create(level);
-			if (!(entity instanceof LivingEntity)) {
-				continue;
-			}
-			
-			LivingEntity le = (LivingEntity)entity;
-			ResourceLocation lootlocation = le.getType().getDefaultLootTable();
-			
-			LootTable loottable = server.getLootData().getLootTable(lootlocation);
-			LootParams lootParams = new LootParams.Builder((ServerLevel)level)
-	                .withLuck(1000000F)
-	                .withParameter(LootContextParams.THIS_ENTITY, entity)
-	                .withParameter(LootContextParams.ORIGIN, vec)
-	                .withParameter(LootContextParams.KILLER_ENTITY, fakeplayer)
-	                .withParameter(LootContextParams.DAMAGE_SOURCE, level.damageSources().playerAttack(fakeplayer))
-	                .create(LootContextParamSets.ENTITY);
-			
-			List<Item> alldrops = new ArrayList<Item>();
-			for (int n = 0; n < CollectiveConfigHandler.loopsAmountUsedToGetAllEntityDrops; n++) {
-				List<ItemStack> newdrops = loottable.getRandomItems(lootParams);
-				for (ItemStack newdrop : newdrops) {
-					Item newitem = newdrop.getItem();
-					if (!alldrops.contains(newitem) && !newitem.equals(Items.AIR)) {
-						alldrops.add(newitem);
+			try {
+				EntityType<?> type = entry.getValue();
+				if (type == null) {
+					continue;
+				}
+				Entity entity = type.create(level);
+				if (!(entity instanceof LivingEntity)) {
+					continue;
+				}
+
+				LivingEntity le = (LivingEntity) entity;
+				ResourceLocation lootlocation = le.getType().getDefaultLootTable();
+
+				LootTable loottable = server.getLootData().getLootTable(lootlocation);
+				LootParams lootParams = new LootParams.Builder((ServerLevel) level)
+						.withLuck(1000000F)
+						.withParameter(LootContextParams.THIS_ENTITY, entity)
+						.withParameter(LootContextParams.ORIGIN, vec)
+						.withParameter(LootContextParams.KILLER_ENTITY, fakeplayer)
+						.withParameter(LootContextParams.DAMAGE_SOURCE, level.damageSources().playerAttack(fakeplayer))
+						.create(LootContextParamSets.ENTITY);
+
+				List<Item> alldrops = new ArrayList<Item>();
+				for (int n = 0; n < CollectiveConfigHandler.loopsAmountUsedToGetAllEntityDrops; n++) {
+					List<ItemStack> newdrops = loottable.getRandomItems(lootParams);
+					for (ItemStack newdrop : newdrops) {
+						Item newitem = newdrop.getItem();
+						if (!alldrops.contains(newitem) && !newitem.equals(Items.AIR)) {
+							alldrops.add(newitem);
+						}
 					}
 				}
+
+				GlobalVariables.entitydrops.put(type, alldrops);
 			}
-			
-			GlobalVariables.entitydrops.put(type, alldrops);
+			catch (Exception ignored) { }
 		}
 	}
 	
