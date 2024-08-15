@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "id": "collective",
-  "version": "7.81",
+  "version": "7.83",
 
   "name": "Collective",
   "description": "Collective is a shared library with common code for all of Serilum's mods.",
