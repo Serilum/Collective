@@ -1,0 +1,55 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "com.natamus.collective.fabric.mixin",
+  "plugin": "com.natamus.collective.fabric.mixin.plugin.FabricMixinConfigPlugin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+	"AbstractFurnaceBlockEntityMixin",
+	"AbstractHorseMixin",
+	"AnimalMixin",
+	"AnvilMenuMixin",
+	"BaseSpawnerMixin",
+	"BlockEntityMixin",
+	"BlockMixin",
+	"BoneMealItemMixin",
+	"BowItemMixin",
+	"CommandsMixin",
+	"EntityTypeMixin",
+	"FishingRodHookedTriggerMixin",
+	"ItemEntityMixin",
+	"ItemStackMixin",
+	"LanguageMixin",
+	"LightningBoltMixin",
+	"LivingEntityMixin",
+	"MagmaCubeMixin",
+	"MinecraftServerMixin",
+	"NaturalSpawnerMixin",
+	"PistonBaseBlockMixin",
+	"PlayerListMixin",
+	"PlayerMixin",
+	"PortalShapeMixin",
+	"ServerExplosionMixin",
+	"ServerGamePacketListenerImplMixin",
+	"ServerLevelMixin",
+	"ServerPlayerGameModeMixin",
+	"ServerPlayerMixin",
+	"TeleportCommandMixin"
+  ],
+  "client": [
+	"ChatListenerMixin",
+	"ClientLevelMixin",
+	"CreateWorldScreenMixin",
+	"ItemInHandRendererMixin",
+	"MinecraftMixin",
+	"MultiPlayerGameModeMixin",
+	"SoundEngineMixin",
+	"TitleScreenMixin",
+	"WorldOpenFlowsMixin"
+  ],
+  "server": [
+  ],
+  "injectors": {
+	"defaultRequire": 1
+  }
+}

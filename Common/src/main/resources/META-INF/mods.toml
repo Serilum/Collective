@@ -1,0 +1,27 @@
+modLoader="javafml"
+loaderVersion="*"
+license="All rights reserved"
+issueTrackerURL="https://github.com/Serilum/.issue-tracker/labels/Library:%20Collective"
+logoFile="icon.png"
+
+[[mods]]
+modId="collective"
+version="7.85"
+displayName="Collective"
+displayURL="https://serilum.com/mod/collective"
+authors="Rick South"
+description='''Collective is a shared library with common code for all of Serilum's mods.
+'''
+credits='''Thank you very much to my Membership sponsors for supporting the development of this mod:  
+
+Alister, Andrean Olgo, aternosorg, Cherriesaurus, kate1073, Michael W. S., Tyler Behl, XAgent   
+
+If you would like to contribute too, check out https://serilum.com/donate. Appreciate it! <3
+'''
+
+[[dependencies.collective]]
+    modId="minecraft"
+    mandatory=true
+    versionRange="[1.21.2,1.21.3]"
+    ordering="NONE"
+    side="BOTH"

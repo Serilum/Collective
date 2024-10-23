@@ -1,0 +1,23 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "com.natamus.collective.neoforge.mixin",
+  "plugin": "com.natamus.collective.neoforge.mixin.plugin.NeoForgeMixinConfigPlugin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+	"BaseSpawnerMixin",
+	"BlockEntityMixin",
+	"BoneMealItemMixin",
+	"PrimaryLevelDataMixin"
+  ],
+  "client": [
+	"GuiMixin",
+	"TitleScreenMixin",
+	"WorldOpenFlowsMixin"
+  ],
+  "server": [
+  ],
+  "injectors": {
+	"defaultRequire": 1
+  }
+}
