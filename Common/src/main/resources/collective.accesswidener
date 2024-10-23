@@ -31,3 +31,5 @@ accessible field net/minecraft/client/gui/screens/inventory/AbstractSignEditScre
 accessible method net/minecraft/world/entity/animal/horse/AbstractHorse getFlag (I)Z
 accessible method net/minecraft/world/level/block/TrapDoorBlock getType ()Lnet/minecraft/world/level/block/state/properties/BlockSetType;
 accessible method net/minecraft/world/level/ServerExplosion calculateExplodedPositions ()Ljava/util/List;
+accessible field net/minecraft/world/level/ServerExplosion radius F
+mutable field net/minecraft/world/level/ServerExplosion radius F

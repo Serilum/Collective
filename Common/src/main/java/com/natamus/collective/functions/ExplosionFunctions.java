@@ -14,8 +14,16 @@ public class ExplosionFunctions {
 		}
 		return getAffectedBlockPositions((ServerExplosion)explosion);
 	}
-
 	public static List<BlockPos> getAffectedBlockPositions(ServerExplosion serverExplosion) {
 		return serverExplosion.calculateExplodedPositions();
+	}
+
+	public static void clearExplosion(Explosion explosion) {
+		if (!explosion.level().isClientSide) {
+			clearExplosion((ServerExplosion)explosion);
+		}
+	}
+	public static void clearExplosion(ServerExplosion serverExplosion) {
+		serverExplosion.radius = 0;
 	}
 }

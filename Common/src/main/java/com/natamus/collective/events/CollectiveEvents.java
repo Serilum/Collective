@@ -9,10 +9,7 @@ import com.natamus.collective.config.CollectiveConfigHandler;
 import com.natamus.collective.data.Constants;
 import com.natamus.collective.data.GlobalVariables;
 import com.natamus.collective.features.PlayerHeadCacheFeature;
-import com.natamus.collective.functions.BlockPosFunctions;
-import com.natamus.collective.functions.EntityFunctions;
-import com.natamus.collective.functions.HeadFunctions;
-import com.natamus.collective.functions.SpawnEntityFunctions;
+import com.natamus.collective.functions.*;
 import com.natamus.collective.objects.SAMObject;
 import com.natamus.collective.util.CollectiveReference;
 import net.minecraft.core.BlockPos;
@@ -70,7 +67,7 @@ public class CollectiveEvents {
 		int serverTickCount = minecraftServer.getTickCount();
 		for (Pair<Integer, Runnable> pair : scheduledRunnables) {
 			if (pair.getFirst() <= serverTickCount) {
-				minecraftServer.addTickable(new TickTask(minecraftServer.getTickCount(), pair.getSecond()));
+				minecraftServer.execute(new TickTask(minecraftServer.getTickCount(), pair.getSecond()));
 				scheduledRunnables.remove(pair);
 			}
 		}
