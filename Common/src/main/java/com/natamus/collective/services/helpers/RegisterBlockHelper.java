@@ -6,20 +6,21 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockBehaviour;
 
-import java.util.function.Supplier;
+import java.util.function.Function;
 
 public interface RegisterBlockHelper {
-    default <T extends Block> void registerBlockWithoutItem(Object modEventBusObject, ResourceLocation resourceLocation, Supplier<T> blockSupplier) {
-        registerBlockWithoutItem(modEventBusObject, resourceLocation, blockSupplier, false);
+    default <T extends Block> void registerBlockWithoutItem(Object modEventBusObject, ResourceLocation resourceLocation, Function<BlockBehaviour.Properties, Block> blockFunction, BlockBehaviour.Properties properties) {
+        registerBlockWithoutItem(modEventBusObject, resourceLocation, blockFunction, properties, false);
     }
-	<T extends Block> void registerBlockWithoutItem(Object modEventBusObject, ResourceLocation resourceLocation, Supplier<T> blockSupplier, boolean lastBlock);
+	<T extends Block> void registerBlockWithoutItem(Object modEventBusObject, ResourceLocation resourceLocation, Function<BlockBehaviour.Properties, Block> blockFunction, BlockBehaviour.Properties properties, boolean lastBlock);
 	Block getRegisteredBlockWithoutItem(ResourceLocation resourceLocation);
 
-	default <T extends Block> void registerBlockWithItem(Object modEventBusObject, ResourceLocation resourceLocation, Supplier<T> blockSupplier, ResourceKey<CreativeModeTab> creativeModeTabResourceKey) {
-        registerBlockWithItem(modEventBusObject, resourceLocation, blockSupplier, creativeModeTabResourceKey, false);
+	default <T extends Block> void registerBlockWithItem(Object modEventBusObject, ResourceLocation resourceLocation, Function<BlockBehaviour.Properties, Block> blockFunction, BlockBehaviour.Properties properties, ResourceKey<CreativeModeTab> creativeModeTabResourceKey) {
+        registerBlockWithItem(modEventBusObject, resourceLocation, blockFunction, properties, creativeModeTabResourceKey, false);
     }
-	<T extends Block> void registerBlockWithItem(Object modEventBusObject, ResourceLocation resourceLocation, Supplier<T> blockSupplier, ResourceKey<CreativeModeTab> creativeModeTabResourceKey, boolean lastBlock);
+	<T extends Block> void registerBlockWithItem(Object modEventBusObject, ResourceLocation resourceLocation, Function<BlockBehaviour.Properties, Block> blockFunction, BlockBehaviour.Properties properties, ResourceKey<CreativeModeTab> creativeModeTabResourceKey, boolean lastBlock);
 	Block getRegisteredBlockWithItem(ResourceLocation resourceLocation);
 
 	Pair<Block, BlockItem> getRegisteredBlockWithItemPair(ResourceLocation resourceLocation);

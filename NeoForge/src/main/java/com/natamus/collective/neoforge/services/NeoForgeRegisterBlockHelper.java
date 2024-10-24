@@ -8,6 +8,7 @@ import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredItem;
@@ -15,7 +16,7 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
-import java.util.function.Supplier;
+import java.util.function.Function;
 
 public class NeoForgeRegisterBlockHelper implements RegisterBlockHelper {
 	private static final HashMap<String, DeferredRegister.Blocks> deferredBlockRegisterMap = new HashMap<>();
@@ -24,8 +25,8 @@ public class NeoForgeRegisterBlockHelper implements RegisterBlockHelper {
 	private static final HashMap<ResourceLocation, Pair<DeferredBlock<Block>, DeferredItem<Item>>> registeredBlockWithItemPairs = new HashMap<>();
 
     @Override
-	public <T extends Block> void registerBlockWithoutItem(Object modEventBusObject, ResourceLocation resourceLocation, Supplier<T> blockSupplier, boolean lastBlock) {
-		staticRegisterBlock(modEventBusObject, resourceLocation, blockSupplier, null, lastBlock, false);
+	public <T extends Block> void registerBlockWithoutItem(Object modEventBusObject, ResourceLocation resourceLocation, Function<BlockBehaviour.Properties, Block> blockFunction, BlockBehaviour.Properties properties, boolean lastBlock) {
+		staticRegisterBlock(modEventBusObject, resourceLocation, blockFunction, properties, null, lastBlock, false);
 	}
 
 	@Override
@@ -34,8 +35,8 @@ public class NeoForgeRegisterBlockHelper implements RegisterBlockHelper {
 	}
 
     @Override
-	public <T extends Block> void registerBlockWithItem(Object modEventBusObject, ResourceLocation resourceLocation, Supplier<T> blockSupplier, ResourceKey<CreativeModeTab> creativeModeTabResourceKey, boolean lastBlock) {
-		staticRegisterBlock(modEventBusObject, resourceLocation, blockSupplier, creativeModeTabResourceKey, lastBlock, true);
+	public <T extends Block> void registerBlockWithItem(Object modEventBusObject, ResourceLocation resourceLocation, Function<BlockBehaviour.Properties, Block> blockFunction, BlockBehaviour.Properties properties, ResourceKey<CreativeModeTab> creativeModeTabResourceKey, boolean lastBlock) {
+		staticRegisterBlock(modEventBusObject, resourceLocation, blockFunction, properties, creativeModeTabResourceKey, lastBlock, true);
 	}
 
 	@Override
@@ -66,17 +67,17 @@ public class NeoForgeRegisterBlockHelper implements RegisterBlockHelper {
         }
 	}
 
-	public static <T extends Block> void staticRegisterBlock(Object modEventBusObject, ResourceLocation resourceLocation, Supplier<T> blockSupplier, ResourceKey<CreativeModeTab> creativeModeTabResourceKey, boolean lastBlock, boolean registerAsItem) {
+	public static <T extends Block> void staticRegisterBlock(Object modEventBusObject, ResourceLocation resourceLocation, Function<BlockBehaviour.Properties, Block> blockFunction, BlockBehaviour.Properties properties, ResourceKey<CreativeModeTab> creativeModeTabResourceKey, boolean lastBlock, boolean registerAsItem) {
 		String namespace = resourceLocation.getNamespace();
 		if (!deferredBlockRegisterMap.containsKey(namespace)) {
 			DeferredRegister.Blocks deferredBlockRegister = DeferredRegister.createBlocks(namespace);
 			deferredBlockRegisterMap.put(namespace, deferredBlockRegister);
 		}
 
-		DeferredBlock<Block> deferredBlockObject = deferredBlockRegisterMap.get(namespace).register(resourceLocation.getPath(), blockSupplier);
+		DeferredBlock<Block> deferredBlockObject = deferredBlockRegisterMap.get(namespace).registerBlock(resourceLocation.getPath(), blockFunction, properties);
 
 		if (registerAsItem) {
-			DeferredItem<Item> deferredItemObject = NeoForgeRegisterItemHelper.staticRegisterItem(modEventBusObject, resourceLocation, () -> new BlockItem(deferredBlockObject.get(), new Item.Properties()), creativeModeTabResourceKey, lastBlock);
+			DeferredItem<Item> deferredItemObject = NeoForgeRegisterItemHelper.staticRegisterItem(modEventBusObject, resourceLocation, (itemProperties) -> new BlockItem(deferredBlockObject.get(), itemProperties), new Item.Properties().useBlockDescriptionPrefix(), creativeModeTabResourceKey, lastBlock);
 
 			registeredBlockWithItemPairs.put(resourceLocation, Pair.of(deferredBlockObject, deferredItemObject));
 		}

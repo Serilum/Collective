@@ -14,7 +14,7 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.function.Supplier;
+import java.util.function.Function;
 
 public class NeoForgeRegisterItemHelper implements RegisterItemHelper {
 	private static final HashMap<String, DeferredRegister.Items> deferredItemRegisterMap = new HashMap<>();
@@ -24,8 +24,8 @@ public class NeoForgeRegisterItemHelper implements RegisterItemHelper {
 	private static final List<Pair<ResourceKey<CreativeModeTab>, DeferredItem<Item>>> creativeInventoryItemPairs = new ArrayList<>();
 
     @Override
-	public <T extends Item> void registerItem(Object modEventBusObject, ResourceLocation resourceLocation, Supplier<T> itemSupplier, ResourceKey<CreativeModeTab> creativeModeTabResourceKey, boolean lastItem) {
-		staticRegisterItem(modEventBusObject, resourceLocation, itemSupplier, creativeModeTabResourceKey, lastItem);
+	public <T extends Item> void registerItem(Object modEventBusObject, ResourceLocation resourceLocation, Function<Item.Properties, Item> itemFunction, Item.Properties properties, ResourceKey<CreativeModeTab> creativeModeTabResourceKey, boolean lastItem) {
+		staticRegisterItem(modEventBusObject, resourceLocation, itemFunction, properties, creativeModeTabResourceKey, lastItem);
 	}
 
     @Override
@@ -33,14 +33,14 @@ public class NeoForgeRegisterItemHelper implements RegisterItemHelper {
 		return registeredItems.get(resourceLocation).get();
 	}
 
-	public static <T extends Item> DeferredItem<Item> staticRegisterItem(Object modEventBusObject, ResourceLocation resourceLocation, Supplier<T> itemSupplier, ResourceKey<CreativeModeTab> creativeModeTabResourceKey, boolean lastItem) {
+	public static <T extends Item> DeferredItem<Item> staticRegisterItem(Object modEventBusObject, ResourceLocation resourceLocation, Function<Item.Properties, Item> itemFunction, Item.Properties properties, ResourceKey<CreativeModeTab> creativeModeTabResourceKey, boolean lastItem) {
 		String namespace = resourceLocation.getNamespace();
 		if (!deferredItemRegisterMap.containsKey(namespace)) {
 			DeferredRegister.Items deferredItemRegister = DeferredRegister.createItems(namespace);
 			deferredItemRegisterMap.put(namespace, deferredItemRegister);
 		}
 
-		DeferredItem<Item> deferredItemObject = deferredItemRegisterMap.get(namespace).register(resourceLocation.getPath(), itemSupplier);
+		DeferredItem<Item> deferredItemObject = deferredItemRegisterMap.get(namespace).registerItem(resourceLocation.getPath(), itemFunction, properties);
 
 		registeredItems.put(resourceLocation, deferredItemObject);
 

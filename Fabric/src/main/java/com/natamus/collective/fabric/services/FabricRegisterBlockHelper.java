@@ -4,24 +4,26 @@ import com.mojang.datafixers.util.Pair;
 import com.natamus.collective.services.helpers.RegisterBlockHelper;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockBehaviour;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
-import java.util.function.Supplier;
+import java.util.function.Function;
 
 public class FabricRegisterBlockHelper implements RegisterBlockHelper {
 	private static final HashMap<ResourceLocation, Block> registeredBlocksWithoutItem = new HashMap<>();
 	private static final HashMap<ResourceLocation, Pair<Block, Item>> registeredBlockWithItemPairs = new HashMap<>();
 
     @Override
-	public <T extends Block> void registerBlockWithoutItem(Object modEventBusObject, ResourceLocation resourceLocation, Supplier<T> blockSupplier, boolean lastBlock) {
-		staticRegisterBlock(modEventBusObject, resourceLocation, blockSupplier, null, lastBlock, false);
+	public <T extends Block> void registerBlockWithoutItem(Object modEventBusObject, ResourceLocation resourceLocation, Function<BlockBehaviour.Properties, Block> blockFunction, BlockBehaviour.Properties properties, boolean lastBlock) {
+		staticRegisterBlock(modEventBusObject, resourceLocation, blockFunction, properties, null, lastBlock, false);
     }
 
 	@Override
@@ -30,8 +32,8 @@ public class FabricRegisterBlockHelper implements RegisterBlockHelper {
 	}
 
     @Override
-	public <T extends Block> void registerBlockWithItem(Object modEventBusObject, ResourceLocation resourceLocation, Supplier<T> blockSupplier, ResourceKey<CreativeModeTab> creativeModeTabResourceKey, boolean lastBlock) {
-		staticRegisterBlock(modEventBusObject, resourceLocation, blockSupplier, creativeModeTabResourceKey, lastBlock, true);
+	public <T extends Block> void registerBlockWithItem(Object modEventBusObject, ResourceLocation resourceLocation, Function<BlockBehaviour.Properties, Block> blockFunction, BlockBehaviour.Properties properties, ResourceKey<CreativeModeTab> creativeModeTabResourceKey, boolean lastBlock) {
+		staticRegisterBlock(modEventBusObject, resourceLocation, blockFunction, properties, creativeModeTabResourceKey, lastBlock, true);
     }
 
 	@Override
@@ -62,13 +64,14 @@ public class FabricRegisterBlockHelper implements RegisterBlockHelper {
         }
 	}
 
-	public static <T extends Block> void staticRegisterBlock(Object modEventBusObject, ResourceLocation resourceLocation, Supplier<T> blockSupplier, ResourceKey<CreativeModeTab> creativeModeTabResourceKey, boolean lastBlock, boolean registerAsItem) {
-		Block block = blockSupplier.get();
+	public static <T extends Block> void staticRegisterBlock(Object modEventBusObject, ResourceLocation resourceLocation, Function<BlockBehaviour.Properties, Block> blockFunction, BlockBehaviour.Properties properties, ResourceKey<CreativeModeTab> creativeModeTabResourceKey, boolean lastBlock, boolean registerAsItem) {
+		ResourceKey<Block> resourceKey = ResourceKey.create(Registries.BLOCK, resourceLocation);
+		Block block = blockFunction.apply(properties.setId(resourceKey));
 
-		Registry.register(BuiltInRegistries.BLOCK, resourceLocation, block);
+		Registry.register(BuiltInRegistries.BLOCK, resourceKey, block);
 
 		if (registerAsItem) {
-			Item item = FabricRegisterItemHelper.staticRegisterItem(modEventBusObject, resourceLocation, () -> new BlockItem(block, new Item.Properties()), creativeModeTabResourceKey);
+			Item item = FabricRegisterItemHelper.staticRegisterItem(modEventBusObject, resourceLocation, (itemProperties) -> new BlockItem(block, itemProperties), new Item.Properties().useBlockDescriptionPrefix(), creativeModeTabResourceKey);
 
 			registeredBlockWithItemPairs.put(resourceLocation, Pair.of(block, item));
 		}
