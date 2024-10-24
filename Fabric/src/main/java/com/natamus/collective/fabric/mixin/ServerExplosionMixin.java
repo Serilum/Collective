@@ -15,7 +15,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class ServerExplosionMixin {
 	@Final @Shadow private Entity source;
 	
-	@Inject(method = "explode()V", at = @At(value = "TAIL"))
+	@Inject(method = "explode()V", at = @At(value = "HEAD"))
 	public void Explosion_explode(CallbackInfo ci) {
 		Explosion explosion = (Explosion)(Object)this;
 		CollectiveExplosionEvents.EXPLOSION_DETONATE.invoker().onDetonate(explosion.level(), source, explosion);
