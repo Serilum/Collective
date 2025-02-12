@@ -1,5 +1,6 @@
 package com.natamus.collective.forge.services;
 
+import com.natamus.collective.forge.bundle.ForgeBundleConfigCheck;
 import com.natamus.collective.forge.bundle.ForgeBundleJarJarCheck;
 import com.natamus.collective.services.helpers.ModLoaderHelper;
 import net.minecraftforge.api.distmarker.Dist;
@@ -37,5 +38,10 @@ public class ForgeModLoaderHelper implements ModLoaderHelper {
     @Override
     public boolean isJarJard(String modId) {
         return ForgeBundleJarJarCheck.isModJarJard(modId);
+    }
+
+    @Override
+    public boolean isBundleModEnabled(String modId) {
+        return ForgeBundleConfigCheck.isBundleModEnabled(modId);
     }
 }

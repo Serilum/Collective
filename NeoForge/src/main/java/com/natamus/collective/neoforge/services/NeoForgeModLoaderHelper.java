@@ -1,6 +1,7 @@
 package com.natamus.collective.neoforge.services;
 
 
+import com.natamus.collective.neoforge.bundle.NeoForgeBundleConfigCheck;
 import com.natamus.collective.neoforge.bundle.NeoForgeBundleJarJarCheck;
 import com.natamus.collective.services.helpers.ModLoaderHelper;
 import net.neoforged.api.distmarker.Dist;
@@ -38,5 +39,10 @@ public class NeoForgeModLoaderHelper implements ModLoaderHelper {
     @Override
     public boolean isJarJard(String modId) {
         return NeoForgeBundleJarJarCheck.isModJarJard(modId);
+    }
+
+    @Override
+    public boolean isBundleModEnabled(String modId) {
+        return NeoForgeBundleConfigCheck.isBundleModEnabled(modId);
     }
 }
