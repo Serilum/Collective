@@ -1,6 +1,6 @@
-package com.natamus.collective.bundle;
+package com.natamus.collective.forge.bundle;
 
-import com.natamus.collective.functions.DataFunctions;
+import net.minecraftforge.fml.loading.FMLPaths;
 
 import java.io.File;
 import java.io.IOException;
@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class BundleConfigCheck {
+public class ForgeBundleConfigCheck {
 	private static final HashMap<String, Boolean> bundleConfigCache = new HashMap<>();
 	private static final Pattern quotePattern = Pattern.compile("\"([^\"]*)\"");
 
@@ -18,7 +18,7 @@ public class BundleConfigCheck {
 			return bundleConfigCache.get(modId);
 		}
 
-		File configDir = new File(DataFunctions.getConfigDirectory());
+		File configDir = new File(FMLPaths.GAMEDIR.get().toString() + File.separator + "config");
 
 		File[] listOfFiles = configDir.listFiles();
 		if (listOfFiles == null) {
