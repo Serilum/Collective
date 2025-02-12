@@ -1,5 +1,6 @@
 package com.natamus.collective.fabric.services;
 
+import com.natamus.collective.fabric.bundle.FabricBundleConfigCheck;
 import com.natamus.collective.fabric.bundle.FabricBundleJarJarCheck;
 import com.natamus.collective.fabric.data.GlobalFabricObjects;
 import com.natamus.collective.services.helpers.ModLoaderHelper;
@@ -34,5 +35,10 @@ public class FabricModLoaderHelper implements ModLoaderHelper {
     @Override
     public boolean isJarJard(String modId) {
         return FabricBundleJarJarCheck.isModJarJard(modId);
+    }
+
+    @Override
+    public boolean isBundleModEnabled(String modId) {
+        return FabricBundleConfigCheck.isBundleModEnabled(modId);
     }
 }
