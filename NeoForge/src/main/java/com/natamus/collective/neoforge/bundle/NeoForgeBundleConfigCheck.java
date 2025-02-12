@@ -42,7 +42,7 @@ public class NeoForgeBundleConfigCheck {
 							String configKey = matcher.group(1);
 							if (configKey.startsWith("enable")) {
 								String configModId = configKey.replaceFirst("enable", "").strip();
-								bundleConfigCache.put(configModId, strippedLine.endsWith("true,"));
+								bundleConfigCache.put(configModId, strippedLine.contains(":true"));
 							}
 						}
 					}
