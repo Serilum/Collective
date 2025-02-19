@@ -5,15 +5,18 @@ import com.natamus.collective.implementations.networking.NetworkSetup;
 import com.natamus.collective.implementations.networking.PacketRegistrationHandler;
 import com.natamus.collective.implementations.networking.data.Side;
 import com.natamus.collective.neoforge.config.NeoForgeCollectiveConfigScreen;
+import com.natamus.collective.neoforge.events.RegisterCollectiveNeoForgeClientEvents;
 import com.natamus.collective.neoforge.events.RegisterCollectiveNeoForgeEvents;
 import com.natamus.collective.neoforge.networking.NeoForgeNetworkHandler;
 import com.natamus.collective.neoforge.services.NeoForgeRegisterItemHelper;
 import com.natamus.collective.util.CollectiveReference;
+import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModLoadingContext;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLLoadCompleteEvent;
+import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.neoforge.common.NeoForge;
 
@@ -46,6 +49,10 @@ public class CollectiveNeoForge {
 
     private void loadComplete(final FMLLoadCompleteEvent event) {
     	NeoForge.EVENT_BUS.register(RegisterCollectiveNeoForgeEvents.class);
+
+        if (FMLEnvironment.dist.equals(Dist.CLIENT)) {
+            NeoForge.EVENT_BUS.register(RegisterCollectiveNeoForgeClientEvents.class);
+        }
 	}
 
     private static void setGlobalConstants() {

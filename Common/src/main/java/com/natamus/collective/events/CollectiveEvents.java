@@ -9,10 +9,7 @@ import com.natamus.collective.config.CollectiveConfigHandler;
 import com.natamus.collective.data.Constants;
 import com.natamus.collective.data.GlobalVariables;
 import com.natamus.collective.features.PlayerHeadCacheFeature;
-import com.natamus.collective.functions.BlockPosFunctions;
-import com.natamus.collective.functions.EntityFunctions;
-import com.natamus.collective.functions.HeadFunctions;
-import com.natamus.collective.functions.SpawnEntityFunctions;
+import com.natamus.collective.functions.*;
 import com.natamus.collective.objects.SAMObject;
 import com.natamus.collective.util.CollectiveReference;
 import net.minecraft.core.BlockPos;
@@ -20,11 +17,8 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.TickTask;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.entity.AgeableMob;
-import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.Entity.RemovalReason;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.animal.horse.AbstractHorse;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
@@ -43,21 +37,22 @@ import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class CollectiveEvents {
-	public static WeakHashMap<ServerLevel, List<Entity>> entitiesToSpawn = new WeakHashMap<ServerLevel, List<Entity>>();
-	public static WeakHashMap<ServerLevel, WeakHashMap<Entity, Entity>> entitiesToRide = new WeakHashMap<ServerLevel, WeakHashMap<Entity, Entity>>();
-	public static CopyOnWriteArrayList<Pair<Integer, Runnable>> scheduledRunnables = new CopyOnWriteArrayList<Pair<Integer, Runnable>>();
+	public static WeakHashMap<ServerLevel, List<Entity>> entitiesToSpawn = new WeakHashMap<>();
+	public static WeakHashMap<ServerLevel, WeakHashMap<Entity, Entity>> entitiesToRide = new WeakHashMap<>();
+
+	public static CopyOnWriteArrayList<Pair<Integer, Runnable>> scheduledServerRunnables = new CopyOnWriteArrayList<>();
 
 	public static void onWorldLoad(Level level) {
 		Constants.initConstantData(level);
 	}
 
 	public static void onWorldTick(ServerLevel serverLevel) {
-		if (entitiesToSpawn.computeIfAbsent(serverLevel, k -> new ArrayList<Entity>()).size() > 0) {
+		if (!entitiesToSpawn.computeIfAbsent(serverLevel, k -> new ArrayList<>()).isEmpty()) {
 			Entity tospawn = entitiesToSpawn.get(serverLevel).getFirst();
 
 			serverLevel.addFreshEntityWithPassengers(tospawn);
 
-			if (entitiesToRide.computeIfAbsent(serverLevel, k -> new WeakHashMap<Entity, Entity>()).containsKey(tospawn)) {
+			if (entitiesToRide.computeIfAbsent(serverLevel, k -> new WeakHashMap<>()).containsKey(tospawn)) {
 				Entity rider = entitiesToRide.get(serverLevel).get(tospawn);
 
 				rider.startRiding(tospawn);
@@ -71,10 +66,10 @@ public class CollectiveEvents {
 
 	public static void onServerTick(MinecraftServer minecraftServer) {
 		int serverTickCount = minecraftServer.getTickCount();
-		for (Pair<Integer, Runnable> pair : scheduledRunnables) {
+		for (Pair<Integer, Runnable> pair : scheduledServerRunnables) {
 			if (pair.getFirst() <= serverTickCount) {
-				minecraftServer.tell(new TickTask(minecraftServer.getTickCount(), pair.getSecond()));
-				scheduledRunnables.remove(pair);
+				minecraftServer.execute(new TickTask(serverTickCount, pair.getSecond()));
+				scheduledServerRunnables.remove(pair);
 			}
 		}
 	}
@@ -84,10 +79,9 @@ public class CollectiveEvents {
 			return true;
 		}
 
-		if (entity instanceof Player) {
-			Player player = (Player)entity;
+		if (entity instanceof Player player) {
 
-			if (RegisterMod.shouldDoCheck) {
+            if (RegisterMod.shouldDoCheck) {
 				RegisterMod.joinWorldProcess(level, player);
 			}
 
@@ -117,7 +111,7 @@ public class CollectiveEvents {
 
 		boolean isFromSpawner = tags.contains(CollectiveReference.MOD_ID + ".fromspawner");
 
-		List<SAMObject> possibles = new ArrayList<SAMObject>();
+		List<SAMObject> possibles = new ArrayList<>();
 		for (SAMObject sam : GlobalVariables.globalSAMs) {
 			if (sam == null) {
 				continue;
@@ -173,17 +167,15 @@ public class CollectiveEvents {
 
 			to.setPos(eVec.x, eVec.y, eVec.z);
 
-			if (ageable && to instanceof AgeableMob) {
-				AgeableMob am = (AgeableMob)to;
-				am.setAge(((AgeableMob)entity).getAge());
+			if (ageable && to instanceof AgeableMob am) {
+                am.setAge(((AgeableMob)entity).getAge());
 				to = am;
 			}
 
 			boolean ignoreMainhand = false;
 			if (sam.itemToHold != null) {
-				if (to instanceof LivingEntity) {
-					LivingEntity le = (LivingEntity)to;
-					if (!le.getMainHandItem().getItem().equals(sam.itemToHold)) {
+				if (to instanceof LivingEntity le) {
+                    if (!le.getMainHandItem().getItem().equals(sam.itemToHold)) {
 						le.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(sam.itemToHold, 1));
 						ignoreMainhand = true;
 					}
@@ -203,13 +195,11 @@ public class CollectiveEvents {
 				}
 			}
 
-			if (!(level instanceof ServerLevel)) {
+			if (!(level instanceof ServerLevel serverLevel)) {
 				return true;
 			}
 
-			ServerLevel serverLevel = (ServerLevel)level;
-
-			if (ride) {
+            if (ride) {
 				SpawnEntityFunctions.startRidingEntityOnNextTick(serverLevel, to, entity);
 			}
 			else {
@@ -237,32 +227,24 @@ public class CollectiveEvents {
 			}
 
 			BlockEntity targetBlockEntity = level.getBlockEntity(pos);
-			if (!(targetBlockEntity instanceof SkullBlockEntity)) {
+			if (!(targetBlockEntity instanceof SkullBlockEntity skullBlockEntity)) {
 				return true;
 			}
 
-			SkullBlockEntity skullBlockEntity = (SkullBlockEntity)targetBlockEntity;
-			if (skullBlockEntity == null) {
-				return true;
-			}
-
-			ResolvableProfile resolvableProfile = skullBlockEntity.getOwnerProfile();
+            ResolvableProfile resolvableProfile = skullBlockEntity.getOwnerProfile();
 			if (resolvableProfile == null) {
 				return true;
 			}
 
 			GameProfile gameProfile = resolvableProfile.gameProfile();
-			if (gameProfile == null) {
-				return true;
-			}
 
-			UUID uuid = gameProfile.getId();
+            UUID uuid = gameProfile.getId();
 			if (uuid.toString().startsWith("ffffffff")) { // Old player head format
 				return true;
 			}
 
 			ItemStack namedHeadStack = null;
-			if (!gameProfile.getName().equals("")) {
+			if (!gameProfile.getName().isEmpty()) {
 				namedHeadStack = HeadFunctions.getNewPlayerHead(gameProfile, 1);
 			}
 
@@ -280,7 +262,7 @@ public class CollectiveEvents {
 
 					uuidGameProfile = uuidProfileResult.profile();
 
-					if (uuidGameProfile.getName().equals("")) {
+					if (uuidGameProfile.getName().isEmpty()) {
 						return true;
 					}
 
