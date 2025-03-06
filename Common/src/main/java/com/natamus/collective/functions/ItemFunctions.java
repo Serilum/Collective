@@ -4,6 +4,8 @@ import com.natamus.collective.config.CollectiveConfigHandler;
 import com.natamus.collective.data.GlobalVariables;
 import com.natamus.collective.fakeplayer.FakePlayer;
 import com.natamus.collective.fakeplayer.FakePlayerFactory;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceKey;
@@ -21,6 +23,7 @@ import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -28,8 +31,10 @@ import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
+import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -193,4 +198,18 @@ public class ItemFunctions {
 	}
 
 	public static void setItemCategory(Item item, CreativeModeTab category) { }
+
+	// UseOnContext
+	public static UseOnContext getUseOnContext(Player player, InteractionHand interactionHand, BlockHitResult blockHitResult) {
+		return getUseOnContext(player.level(), player, interactionHand, player.getItemInHand(interactionHand), blockHitResult);
+	}
+	public static UseOnContext getUseOnContext(Player player, InteractionHand interactionHand, BlockPos blockPos, Direction direction) {
+		return getUseOnContext(player.level(), player, interactionHand, player.getItemInHand(interactionHand), blockPos, direction);
+	}
+	public static UseOnContext getUseOnContext(Level level, @Nullable Player player, InteractionHand interactionHand, ItemStack itemStack, BlockPos blockPos, Direction direction) {
+		return getUseOnContext(level, player, interactionHand, itemStack, new BlockHitResult(Vec3.atCenterOf(blockPos), direction, blockPos, false));
+	}
+	public static UseOnContext getUseOnContext(Level level, @Nullable Player player, InteractionHand interactionHand, ItemStack itemStack, BlockHitResult blockHitResult) {
+		return new UseOnContext(level, player, interactionHand, itemStack, blockHitResult);
+	}
 }
