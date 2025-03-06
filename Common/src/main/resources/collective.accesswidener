@@ -32,3 +32,4 @@ accessible method net/minecraft/world/level/block/TrapDoorBlock getType ()Lnet/m
 accessible method net/minecraft/world/level/ServerExplosion calculateExplodedPositions ()Ljava/util/List;
 accessible field net/minecraft/world/level/ServerExplosion radius F
 mutable field net/minecraft/world/level/ServerExplosion radius F
+accessible method net/minecraft/world/item/context/UseOnContext <init> (Lnet/minecraft/world/level/Level;Lnet/minecraft/world/entity/player/Player;Lnet/minecraft/world/InteractionHand;Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/phys/BlockHitResult;)V
