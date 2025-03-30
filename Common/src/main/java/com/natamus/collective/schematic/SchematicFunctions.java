@@ -11,32 +11,32 @@ import java.io.InputStream;
 import java.util.zip.GZIPInputStream;
 
 public class SchematicFunctions {
-    public static CompoundTag readCompressed(InputStream $$0) throws IOException {
-        DataInputStream dataInputStream = createDecompressorStream($$0);
+    public static CompoundTag readCompressed(InputStream inputStream) throws IOException {
+        DataInputStream dataInputStream = createDecompressorStream(inputStream);
 
-        CompoundTag var2;
+        CompoundTag compoundTag;
         try {
-            var2 = NbtIo.read(dataInputStream, NbtAccounter.unlimitedHeap());
-        } catch (Throwable var5) {
+            compoundTag = NbtIo.read(dataInputStream, NbtAccounter.unlimitedHeap());
+        } catch (Throwable t1) {
             if (dataInputStream != null) {
                 try {
                     dataInputStream.close();
-                } catch (Throwable var4) {
-                    var5.addSuppressed(var4);
+                } catch (Throwable t2) {
+                    t1.addSuppressed(t2);
                 }
             }
 
-            throw var5;
+            throw t1;
         }
 
         if (dataInputStream != null) {
             dataInputStream.close();
         }
 
-        return var2;
+        return compoundTag;
     }
 
-    private static DataInputStream createDecompressorStream(InputStream $$0) throws IOException {
-        return new DataInputStream(new FastBufferedInputStream(new GZIPInputStream($$0)));
+    private static DataInputStream createDecompressorStream(InputStream inputStream) throws IOException {
+        return new DataInputStream(new FastBufferedInputStream(new GZIPInputStream(inputStream)));
     }
 }

@@ -10,6 +10,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 
+import javax.annotation.Nullable;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,8 +20,11 @@ public class ParseSchematicFile {
     public static ParsedSchematicObject getParsedSchematicObject(InputStream schematicInputStream, Level level, BlockPos centerPos, int extraYOffset, boolean skipAir) {
         return getParsedSchematicObject(schematicInputStream, level, centerPos, extraYOffset, skipAir, true);
     }
-    public static ParsedSchematicObject getParsedSchematicObject(InputStream schematicInputStream, Level level, BlockPos centerPos, int extraYOffset, boolean skipAir, boolean automaticCenter) {
+    public static @Nullable ParsedSchematicObject getParsedSchematicObject(InputStream schematicInputStream, Level level, BlockPos centerPos, int extraYOffset, boolean skipAir, boolean automaticCenter) {
         Schematic schematic = new Schematic(schematicInputStream, level);
+        if (!schematic.wasParsedCorrectly()) {
+            return null;
+        }
 
         int maxBuildHeight = level.getMaxY();
         int length = schematic.getLength();
