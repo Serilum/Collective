@@ -9,6 +9,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 
+import javax.annotation.Nullable;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,8 +19,11 @@ public class ParseSchematicFile {
     public static ParsedSchematicObject getParsedSchematicObject(InputStream schematicInputStream, Level level, BlockPos centerPos, int extraYOffset, boolean skipAir) {
         return getParsedSchematicObject(schematicInputStream, level, centerPos, extraYOffset, skipAir, true);
     }
-    public static ParsedSchematicObject getParsedSchematicObject(InputStream schematicInputStream, Level level, BlockPos centerPos, int extraYOffset, boolean skipAir, boolean automaticCenter) {
+    public static @Nullable ParsedSchematicObject getParsedSchematicObject(InputStream schematicInputStream, Level level, BlockPos centerPos, int extraYOffset, boolean skipAir, boolean automaticCenter) {
         Schematic schematic = new Schematic(schematicInputStream, level);
+        if (!schematic.wasParsedCorrectly()) {
+            return null;
+        }
 
         int maxBuildHeight = level.getMaxBuildHeight();
         int length = schematic.getLength();
@@ -42,7 +46,7 @@ public class ParseSchematicFile {
             yoffset += schematic.getOffsetY();
         }
 
-        List<Pair<BlockPos, BlockState>> blocks = new ArrayList<Pair<BlockPos, BlockState>>();
+        List<Pair<BlockPos, BlockState>> blocks = new ArrayList<>();
         for (SchematicBlockObject blockObject : schematic.getBlocks()) {
             if (blockObject == null) {
                 continue;
@@ -53,21 +57,21 @@ public class ParseSchematicFile {
                 continue;
             }
 
-            blocks.add(new Pair<BlockPos, BlockState>(blockObject.getPosition().offset(centerPos.getX() + xoffset, yoffset, centerPos.getZ() + zoffset).immutable(), blockState));
+            blocks.add(new Pair<>(blockObject.getPosition().offset(centerPos.getX() + xoffset, yoffset, centerPos.getZ() + zoffset).immutable(), blockState));
         }
 
-        List<Pair<BlockPos, Entity>> entities = new ArrayList<Pair<BlockPos, Entity>>();
+        List<Pair<BlockPos, Entity>> entities = new ArrayList<>();
         for (Pair<BlockPos, CompoundTag> rawEntityPair : schematic.getEntityRelativePosPairs()) {
             Optional<Entity> optionalNewEntity = EntityType.create(rawEntityPair.getSecond(), level);
             if (optionalNewEntity.isPresent()) {
                 BlockPos actualEntityPosition = rawEntityPair.getFirst().offset(centerPos.getX() + xoffset, yoffset, centerPos.getZ() + zoffset).immutable();
                 Entity newEntity = optionalNewEntity.get();
                 newEntity.setPos(actualEntityPosition.getX()+0.5, actualEntityPosition.getY(), actualEntityPosition.getZ()+0.5);
-                entities.add(new Pair<BlockPos, Entity>(actualEntityPosition, newEntity));
+                entities.add(new Pair<>(actualEntityPosition, newEntity));
             }
         }
 
-        List<BlockPos> blockEntityPositions = new ArrayList<BlockPos>();
+        List<BlockPos> blockEntityPositions = new ArrayList<>();
         for (CompoundTag blockEntityCompoundTag : schematic.getBlockEntities()) {
             blockEntityPositions.add(schematic.getBlockPosFromCompoundTag(blockEntityCompoundTag).offset(centerPos.getX() + xoffset, yoffset, centerPos.getZ() + zoffset));
         }

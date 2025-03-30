@@ -37,6 +37,7 @@ public class Schematic {
 	private SchematicBlockObject[] blockObjects;
 	private List<CompoundTag> blockEntities;
 	private List<Pair<BlockPos, CompoundTag>> entities;
+	private boolean parsedCorrectly = false;
 
 	public Schematic(InputStream inputStream) {
 		new Schematic(inputStream, null);
@@ -51,6 +52,10 @@ public class Schematic {
 		try {
 			CompoundTag nbtdata = NbtIo.readCompressed(inputStream);
 			inputStream.close();
+
+			if (nbtdata.contains("Schematic")) {
+				nbtdata = nbtdata.getCompound("Schematic");
+			}
 
 			if (nbtdata.contains("Length")) {
 				width = nbtdata.getShort("Width");
@@ -77,12 +82,40 @@ public class Schematic {
 			}
 
 			this.blockObjects = new SchematicBlockObject[size];
-			this.entities = new ArrayList<Pair<BlockPos, CompoundTag>>();
+			this.entities = new ArrayList<>();
 
 			switch (type) {
 				case "schem" -> {
 					int[] blockData = new int[width * height * length];
-					byte[] blockDataRaw = nbtdata.getByteArray("BlockData");
+
+					byte[] blockDataRaw;
+					CompoundTag palette;
+					ListTag tileentitynbtlist;
+
+					if (nbtdata.getInt("Version") == 2) {
+						blockDataRaw = nbtdata.getByteArray("BlockData");
+						palette = nbtdata.getCompound("Palette");
+
+						tileentitynbtlist = nbtdata.getList("BlockEntities", Tag.TAG_COMPOUND);
+
+						CompoundTag offsetCompoundTag = nbtdata.getCompound("Metadata");
+						offsetX = offsetCompoundTag.getInt("WEOffsetX");
+						offsetY = offsetCompoundTag.getInt("WEOffsetY");
+						offsetZ = offsetCompoundTag.getInt("WEOffsetZ");
+					}
+					else {
+						CompoundTag blocksCompoundTag = nbtdata.getCompound("Blocks");
+
+						blockDataRaw = blocksCompoundTag.getByteArray("Data");
+						palette = blocksCompoundTag.getCompound("Palette");
+						tileentitynbtlist = blocksCompoundTag.getList("BlockEntities", Tag.TAG_COMPOUND);
+
+						int[] offsetArray = nbtdata.getIntArray("Offset");
+
+						offsetX = offsetArray[0];
+						offsetY = offsetArray[1];
+						offsetZ = offsetArray[2];
+					}
 
 					int index = 0;
 					int i = 0;
@@ -105,8 +138,7 @@ public class Schematic {
 						index++;
 					}
 
-					CompoundTag palette = nbtdata.getCompound("Palette");
-					this.palette = new HashMap<Integer, String>();
+					this.palette = new HashMap<>();
 					for (String k : palette.getAllKeys()) {
 						this.palette.put(palette.getInt(k), k);
 					}
@@ -130,18 +162,13 @@ public class Schematic {
 						}
 					}
 
-					ListTag tileentitynbtlist = nbtdata.getList("BlockEntities", Tag.TAG_COMPOUND);
-					this.blockEntities = new ArrayList<CompoundTag>();
+					this.blockEntities = new ArrayList<>();
 
 					for (int t = 0; t < tileentitynbtlist.size(); t++) {
 						this.blockEntities.add(tileentitynbtlist.getCompound(t));
 					}
 
-					CompoundTag offsetCompoundTag = nbtdata.getCompound("Metadata");
-					offsetX = offsetCompoundTag.getInt("WEOffsetX");
-					offsetY = offsetCompoundTag.getInt("WEOffsetY");
-					offsetZ = offsetCompoundTag.getInt("WEOffsetZ");
-
+					parsedCorrectly = true;
 					return;
 				}
 				case "schematic" -> {
@@ -166,7 +193,7 @@ public class Schematic {
 					}
 
 					ListTag tileentitynbtlist = nbtdata.getList("TileEntities", Tag.TAG_COMPOUND);
-					this.blockEntities = new ArrayList<CompoundTag>();
+					this.blockEntities = new ArrayList<>();
 
 					for (int i = 0; i < tileentitynbtlist.size(); i++) {
 						CompoundTag compound = tileentitynbtlist.getCompound(i);
@@ -181,12 +208,13 @@ public class Schematic {
 					offsetY = nbtdata.getInt("WEOffsetY");
 					offsetZ = nbtdata.getInt("WEOffsetZ");
 
+					parsedCorrectly = true;
 					return;
 				}
 				case "nbt" -> {
 					ListTag paletteNBTList = nbtdata.getList("palette", Tag.TAG_COMPOUND);
 
-					this.palette = new HashMap<Integer, String>();
+					this.palette = new HashMap<>();
 					for (int i = 0; i < paletteNBTList.size(); i++) {
 						CompoundTag compound = paletteNBTList.getCompound(i);
 						String value = compound.getString("Name");
@@ -210,7 +238,7 @@ public class Schematic {
 						this.palette.put(i, value);
 					}
 
-					this.blockEntities = new ArrayList<CompoundTag>();
+					this.blockEntities = new ArrayList<>();
 
 					ListTag blocksNBTList = nbtdata.getList("blocks", Tag.TAG_COMPOUND);
 					for (int i = 0; i < blocksNBTList.size(); i++) {
@@ -246,13 +274,14 @@ public class Schematic {
 						int i1 = posList.getInt(1);
 						int i2 = posList.getInt(2);
 
-						this.entities.add(new Pair<BlockPos, CompoundTag>(new BlockPos(i0, i1, i2), entityCompound));
+						this.entities.add(new Pair<>(new BlockPos(i0, i1, i2), entityCompound));
 					}
 
 					offsetX = 0;
 					offsetY = 0;
 					offsetZ = 0;
 
+					parsedCorrectly = true;
 					return;
 				}
 			}
@@ -260,7 +289,7 @@ public class Schematic {
 			Constants.LOG.warn("[" + CollectiveReference.NAME + "] Something went wrong while parsing the schematic.");
 		}
 
-		Constants.LOG.warn("Can't load " + type + " Schematic file.");
+        Constants.LOG.warn("Can't load {} Schematic file.", type);
 		this.width = 0;
 		this.height = 0;
 		this.length = 0;
@@ -291,11 +320,11 @@ public class Schematic {
 	}
 
 	public int getSize() {
-		return size;
+		return this.size;
 	}
 
 	public SchematicBlockObject[] getBlocks() {
-		return blockObjects;
+		return this.blockObjects;
 	}
 
 	public BlockState getStateFromID(Registry<Block> blockRegistry, int id) {
@@ -350,5 +379,9 @@ public class Schematic {
 	}
 	public int getOffsetZ() {
 		return offsetZ;
+	}
+
+	public boolean wasParsedCorrectly() {
+		return this.parsedCorrectly;
 	}
 }
