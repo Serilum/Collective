@@ -5,19 +5,20 @@
   "plugin": "com.natamus.collective.neoforge.mixin.plugin.NeoForgeMixinConfigPlugin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
-	"BaseSpawnerMixin",
-	"BlockEntityMixin",
-	"BoneMealItemMixin",
-	"PrimaryLevelDataMixin"
+    "BaseSpawnerMixin",
+    "BlockEntityMixin",
+    "BoneMealItemMixin",
+    "PrimaryLevelDataMixin"
   ],
   "client": [
-	"GuiMixin",
-	"TitleScreenMixin",
-	"WorldOpenFlowsMixin"
+    "ClientPacketListenerMixin",
+    "GuiMixin",
+    "TitleScreenMixin",
+    "WorldOpenFlowsMixin"
   ],
   "server": [
   ],
   "injectors": {
-	"defaultRequire": 1
+    "defaultRequire": 1
   }
 }
