@@ -234,12 +234,15 @@ public class BlockPosFunctions {
 		return getNearbyVillage(serverLevel, new BlockPos(0, 0, 0));
 	}
 	public static BlockPos getNearbyVillage(ServerLevel serverLevel, BlockPos nearPos) {
+		return getNearbyVillage(serverLevel, nearPos, "#minecraft:village");
+	}
+	public static BlockPos getNearbyVillage(ServerLevel serverLevel, BlockPos nearPos, String villageTag) {
 		BlockPos closestvillage = null;
 		if (!serverLevel.getServer().getWorldData().worldGenOptions().generateStructures()) {
 			return null;
 		}
 
-		String rawOutput = CommandFunctions.getRawCommandOutput(serverLevel, Vec3.atBottomCenterOf(nearPos), "/locate structure #minecraft:village");
+		String rawOutput = CommandFunctions.getRawCommandOutput(serverLevel, Vec3.atBottomCenterOf(nearPos), "/locate structure " + villageTag);
 
 		if (rawOutput.contains("[") && rawOutput.contains("]") && rawOutput.contains(", ")) {
 			String[] coords;
