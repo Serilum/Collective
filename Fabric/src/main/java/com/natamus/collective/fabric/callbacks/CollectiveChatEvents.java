@@ -1,8 +1,8 @@
 package com.natamus.collective.fabric.callbacks;
 
 import com.mojang.datafixers.util.Pair;
-import com.natamus.collective.implementations.event.Event;
-import com.natamus.collective.implementations.event.EventFactory;
+import net.fabricmc.fabric.api.event.Event;
+import net.fabricmc.fabric.api.event.EventFactory;
 import net.minecraft.network.chat.ChatType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;

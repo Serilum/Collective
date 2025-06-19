@@ -1,7 +1,7 @@
 package com.natamus.collective.fabric.callbacks;
 
-import com.natamus.collective.implementations.event.Event;
-import com.natamus.collective.implementations.event.EventFactory;
+import net.fabricmc.fabric.api.event.Event;
+import net.fabricmc.fabric.api.event.EventFactory;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LightningBolt;

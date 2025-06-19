@@ -1,7 +1,7 @@
 package com.natamus.collective.fabric.callbacks;
 
-import com.natamus.collective.implementations.event.Event;
-import com.natamus.collective.implementations.event.EventFactory;
+import net.fabricmc.fabric.api.event.Event;
+import net.fabricmc.fabric.api.event.EventFactory;
 import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.client.sounds.SoundEngine;
 
