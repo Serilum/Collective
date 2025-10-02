@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "id": "collective",
-  "version": "8.4",
+  "version": "8.5",
 
   "name": "Collective",
   "description": "Collective is a shared library with common code for all of Serilum's mods.",
@@ -57,6 +57,7 @@
 	  " Michael W. S.",
 	  " t128",
 	  " Tyler Behl",
-	  " XAgent"
+	  " XAgent",
+	  " ตัวตรึง พระนคร"
   ]
 }
