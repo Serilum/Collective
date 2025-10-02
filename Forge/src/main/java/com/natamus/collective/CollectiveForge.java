@@ -6,12 +6,14 @@ import com.natamus.collective.forge.events.RegisterCollectiveForgeClientEvents;
 import com.natamus.collective.forge.events.RegisterCollectiveForgeEvents;
 import com.natamus.collective.forge.networking.ForgeNetworkHandler;
 import com.natamus.collective.forge.services.ForgeRegisterItemHelper;
+import com.natamus.collective.forge.services.ForgeRegisterKeyMappingHelper;
 import com.natamus.collective.implementations.networking.NetworkSetup;
 import com.natamus.collective.implementations.networking.data.Side;
 import com.natamus.collective.util.CollectiveReference;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -36,6 +38,7 @@ public class CollectiveForge {
 		modEventBus.addListener(this::commonSetupEvent);
         modEventBus.addListener(this::loadComplete);
 		modEventBus.addListener(ForgeRegisterItemHelper::addItemsToCreativeInventory);
+        DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> modEventBus.addListener(ForgeRegisterKeyMappingHelper::registerKeyMappings));
         
         RegisterMod.register(CollectiveReference.NAME, CollectiveReference.MOD_ID, CollectiveReference.VERSION, CollectiveReference.ACCEPTED_VERSIONS);
     }
