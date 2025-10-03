@@ -40,3 +40,4 @@ accessible method net/minecraft/world/entity/decoration/Painting setVariant (Lne
 accessible method net/minecraft/world/entity/animal/Rabbit setVariant (Lnet/minecraft/world/entity/animal/Rabbit$Variant;)V
 accessible class net/minecraft/world/level/BaseCommandBlock$CloseableCommandBlockSource
 accessible method net/minecraft/world/level/BaseCommandBlock$CloseableCommandBlockSource <init> (Lnet/minecraft/world/level/BaseCommandBlock;)V
+accessible field net/minecraft/world/level/block/entity/SkullBlockEntity owner Lnet/minecraft/world/item/component/ResolvableProfile;
