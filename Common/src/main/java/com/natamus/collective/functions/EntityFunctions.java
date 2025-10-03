@@ -1,5 +1,6 @@
 package com.natamus.collective.functions;
 
+import com.mojang.authlib.GameProfile;
 import com.natamus.collective.data.GlobalVariables;
 import com.natamus.collective.util.CollectiveReference;
 import net.minecraft.network.chat.Component;
@@ -21,6 +22,7 @@ import net.minecraft.world.entity.projectile.FishingHook;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.trading.MerchantOffer;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.SkullBlockEntity;
 
 public class EntityFunctions {
 	// START: CHECK functions
@@ -191,5 +193,10 @@ public class EntityFunctions {
 	}
 	public static GoalSelector getTargetSelector(Mob mob) {
 		return mob.targetSelector;
+	}
+
+	// SkullBlock
+	public static void setSkullBlockOwner(SkullBlockEntity skullBlockEntity, GameProfile gameProfile) {
+		skullBlockEntity.setOwner(gameProfile);
 	}
 }
