@@ -3,7 +3,6 @@ package com.natamus.collective.data;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.natamus.collective.util.CollectiveReference;
-import net.minecraft.client.KeyMapping.Category;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.ItemStack;
@@ -17,7 +16,6 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 public class Constants {
     public static final Logger LOG = LoggerFactory.getLogger(CollectiveReference.NAME);
@@ -27,15 +25,6 @@ public class Constants {
 
     public static final ItemStack normalPickaxeStack = new ItemStack(Items.NETHERITE_PICKAXE);
     public static final ItemStack silkPickaxeStack = new ItemStack(Items.NETHERITE_PICKAXE);
-
-	public static final Map<String, Category> keyMappingCategories = Map.of(
-		"key.categories.creative", Category.CREATIVE,
-		"key.categories.gameplay", Category.GAMEPLAY,
-		"key.categories.inventory", Category.INVENTORY,
-		"key.categories.misc", Category.MISC,
-		"key.categories.movement", Category.MOVEMENT,
-		"key.categories.multiplayer", Category.MULTIPLAYER
-	);
 
 	private static boolean ranInit = false;
     public static void initConstantData(Level level) {

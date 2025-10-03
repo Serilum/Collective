@@ -1,5 +1,7 @@
 package com.natamus.collective.functions;
 
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.minecraft.MinecraftSessionService;
 import com.mojang.authlib.properties.Property;
@@ -85,9 +87,15 @@ public class HeadFunctions {
 		ItemStack texturedHeadStack = new ItemStack(Items.PLAYER_HEAD, amount);
 
 		GameProfile gameProfile = new GameProfile(uuid, entityName.replace(" ", "_"));
-		gameProfile.properties().put("textures", new Property("textures", texture));
 
-		texturedHeadStack.set(DataComponents.PROFILE, ResolvableProfile.createResolved(gameProfile));
+		PropertyMap propertyMap = gameProfile.properties();
+		Multimap<String, Property> mutableProperties = HashMultimap.create(propertyMap);
+
+		mutableProperties.put("textures", new Property("textures", texture));
+
+		GameProfile newGameProfile = new GameProfile(uuid, entityName.replace(" ", "_"), new PropertyMap(mutableProperties));
+
+		texturedHeadStack.set(DataComponents.PROFILE, ResolvableProfile.createResolved(newGameProfile));
 
 		if (!noteBlockSound.isEmpty()) {
 			texturedHeadStack.set(DataComponents.NOTE_BLOCK_SOUND, ResourceLocation.parse(noteBlockSound));
