@@ -11,7 +11,6 @@ import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.entity.living.MobSpawnEvent;
-import net.minecraftforge.event.level.BlockEvent;
 import net.minecraftforge.event.level.LevelEvent;
 import net.minecraftforge.event.server.ServerAboutToStartEvent;
 import net.minecraftforge.eventbus.api.bus.BusGroup;
@@ -72,16 +71,6 @@ public class RegisterCollectiveForgeEvents {
     @SubscribeEvent
     public static boolean onEntityJoinLevel(EntityJoinLevelEvent e) {
         return !CollectiveEvents.onEntityJoinLevel(e.getLevel(), e.getEntity());
-    }
-
-	@SubscribeEvent
-	public static boolean onBlockBreak(BlockEvent.BreakEvent e) {
-		Level level = WorldFunctions.getWorldIfInstanceOfAndNotRemote(e.getLevel());
-		if (level == null) {
-			return false;
-		}
-
-        return !CollectiveEvents.onBlockBreak(level, e.getPlayer(), e.getPos(), e.getState(), null);
     }
 
     @SubscribeEvent

@@ -10,7 +10,6 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
-import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.neoforge.event.level.LevelEvent;
 import net.neoforged.neoforge.event.server.ServerAboutToStartEvent;
 import net.neoforged.neoforge.event.tick.LevelTickEvent;
@@ -54,18 +53,6 @@ public class RegisterCollectiveNeoForgeEvents {
             e.setCanceled(true);
         }
     }
-
-	@SubscribeEvent
-	public static void onBlockBreak(BlockEvent.BreakEvent e) {
-		Level level = WorldFunctions.getWorldIfInstanceOfAndNotRemote(e.getLevel());
-		if (level == null) {
-			return;
-		}
-
-		if (!CollectiveEvents.onBlockBreak(level, e.getPlayer(), e.getPos(), e.getState(), null)) {
-			e.setCanceled(true);
-		}
-	}
 
 	@SubscribeEvent
 	public static void registerCommands(RegisterCommandsEvent e) {

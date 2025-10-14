@@ -1,8 +1,5 @@
 package com.natamus.collective.events;
 
-import com.mojang.authlib.GameProfile;
-import com.mojang.authlib.minecraft.MinecraftSessionService;
-import com.mojang.authlib.yggdrasil.ProfileResult;
 import com.mojang.datafixers.util.Pair;
 import com.natamus.collective.check.RegisterMod;
 import com.natamus.collective.config.CollectiveConfigHandler;
@@ -11,11 +8,9 @@ import com.natamus.collective.data.GlobalVariables;
 import com.natamus.collective.features.PlayerHeadCacheFeature;
 import com.natamus.collective.functions.BlockPosFunctions;
 import com.natamus.collective.functions.EntityFunctions;
-import com.natamus.collective.functions.HeadFunctions;
 import com.natamus.collective.functions.SpawnEntityFunctions;
 import com.natamus.collective.objects.SAMObject;
 import com.natamus.collective.util.CollectiveReference;
-import net.minecraft.core.BlockPos;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.TickTask;
 import net.minecraft.server.level.ServerLevel;
@@ -23,23 +18,15 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.Entity.RemovalReason;
 import net.minecraft.world.entity.animal.horse.AbstractHorse;
-import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
-import net.minecraft.world.item.component.ResolvableProfile;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.SkullBlock;
-import net.minecraft.world.level.block.WallSkullBlock;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.entity.SkullBlockEntity;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
-import java.util.*;
-import java.util.concurrent.CompletableFuture;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.WeakHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class CollectiveEvents {
@@ -220,75 +207,6 @@ public class CollectiveEvents {
 			SpawnEntityFunctions.spawnEntityOnNextTick(serverLevel, to);
 
 			return ride;
-		}
-
-		return true;
-	}
-
-	public static boolean onBlockBreak(Level level, Player player, BlockPos pos, BlockState state, BlockEntity blockEntity) {
-		if (level.isClientSide()) {
-			return true;
-		}
-
-		Block block = state.getBlock();
-		if (block instanceof SkullBlock || block instanceof WallSkullBlock) {
-			if (player.isCreative()) {
-				return true;
-			}
-
-			BlockEntity targetBlockEntity = level.getBlockEntity(pos);
-			if (!(targetBlockEntity instanceof SkullBlockEntity skullBlockEntity)) {
-				return true;
-			}
-
-            ResolvableProfile resolvableProfile = skullBlockEntity.getOwnerProfile();
-			if (resolvableProfile == null) {
-				return true;
-			}
-
-			CompletableFuture<GameProfile> gameProfileFuture = resolvableProfile.resolveProfile(level.getServer().services().profileResolver());
-
-			gameProfileFuture.thenAccept(gameProfile -> {
-				UUID uuid = gameProfile.id();
-				if (uuid.toString().startsWith("ffffffff")) { // Old player head format
-					return;
-				}
-
-				ItemStack namedHeadStack = null;
-				if (!gameProfile.name().isEmpty()) {
-					namedHeadStack = HeadFunctions.getNewPlayerHead(gameProfile, 1);
-				}
-
-				if (namedHeadStack == null) {
-					GameProfile uuidGameProfile;
-					if (PlayerHeadCacheFeature.cachedGameProfileMap.containsKey(uuid)) {
-						uuidGameProfile = PlayerHeadCacheFeature.cachedGameProfileMap.get(uuid);
-					} else {
-						MinecraftSessionService minecraftSessionService = ((ServerLevel)level).getServer().services().sessionService();
-
-						ProfileResult uuidProfileResult = minecraftSessionService.fetchProfile(uuid, false);
-						if (uuidProfileResult == null) {
-							return;
-						}
-
-						uuidGameProfile = uuidProfileResult.profile();
-
-						if (uuidGameProfile.name().isEmpty()) {
-							return;
-						}
-
-						PlayerHeadCacheFeature.cachedGameProfileMap.put(uuid, uuidGameProfile);
-					}
-
-					namedHeadStack = HeadFunctions.getNewPlayerHead(uuidGameProfile, 1);
-				}
-
-				if (namedHeadStack != null) {
-					level.getEntitiesOfClass(ItemEntity.class, new AABB(pos).inflate(1.0), e -> e.getItem().is(Items.PLAYER_HEAD)).forEach(Entity::discard);
-
-					level.addFreshEntity(new ItemEntity(level, pos.getX(), pos.getY()+0.5, pos.getZ(), namedHeadStack));
-				}
-			});
 		}
 
 		return true;
