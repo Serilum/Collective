@@ -14,7 +14,6 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerWorldEvents;
-import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 
@@ -44,10 +43,6 @@ public class CollectiveFabric implements ModInitializer {
 		
 		ServerEntityEvents.ENTITY_LOAD.register((entity, serverLevel) -> {
 			CollectiveEvents.onEntityJoinLevel(serverLevel, entity);
-		});
-
-		PlayerBlockBreakEvents.BEFORE.register((world, player, pos, state, entity) -> {
-			return CollectiveEvents.onBlockBreak(world, player, pos, state, entity);
 		});
 
 		CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
