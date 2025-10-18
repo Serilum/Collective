@@ -77,22 +77,37 @@ public class HeadFunctions {
 		return getNewTexturedHead(entityName, texture, uuid, "", amount);
 	}
 	public static ItemStack getNewTexturedHead(String entityName, String texture, UUID uuid, String noteBlockSound, Integer amount) {
-		if (entityName.length() > 16) {
-			entityName = entityName.substring(0, 16);
-		}
-
 		ItemStack texturedHeadStack = new ItemStack(Items.PLAYER_HEAD, amount);
 
-		GameProfile gameProfile = new GameProfile(uuid, entityName.replace(" ", "_"));
-		gameProfile.getProperties().put("textures", new Property("textures", texture));
+		GameProfile gameProfile = getTexturedHeadGameProfile(entityName, texture, uuid);
 
 		texturedHeadStack.set(DataComponents.PROFILE, new ResolvableProfile(gameProfile));
 
-		if (!noteBlockSound.equals("")) {
+		if (!noteBlockSound.isEmpty()) {
 			texturedHeadStack.set(DataComponents.NOTE_BLOCK_SOUND, ResourceLocation.parse(noteBlockSound));
 		}
 
 		return texturedHeadStack;
+	}
+
+	public static GameProfile getTexturedHeadGameProfile(String entityName, String texture, String uuidString) {
+		return getTexturedHeadGameProfile(entityName, texture, UUIDFunctions.getUUIDFromStringLenient(uuidString));
+	}
+	public static GameProfile getTexturedHeadGameProfile(String entityName, String texture, UUID uuid) {
+		if (entityName.length() > 16) {
+			entityName = entityName.substring(0, 16);
+		}
+
+		GameProfile gameProfile = new GameProfile(uuid, entityName.replace(" ", "_"));
+		gameProfile.getProperties().put("textures", new Property("textures", texture));
+
+		return gameProfile;
+	}
+	public static ResolvableProfile getTexturedHeadResolvableProfile(String entityName, String texture, String uuidString) {
+		return getTexturedHeadResolvableProfile(entityName, texture, UUIDFunctions.getUUIDFromStringLenient(uuidString));
+	}
+	public static ResolvableProfile getTexturedHeadResolvableProfile(String entityName, String texture, UUID uuid) {
+		return new ResolvableProfile(getTexturedHeadGameProfile(entityName, texture, uuid));
 	}
 
 	public static GameProfile getGameProfileFromPlayerName(ServerLevel serverLevel, String playerName) {
