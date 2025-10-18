@@ -88,13 +88,27 @@ public class HeadFunctions {
 		CompoundTag skullOwnerCompoundTag = getSkullOwnerCompoundTag(entityName.replace(" ", "_"), texture, idIntArray);
 		texturedHeadCompoundTag.put("SkullOwner", skullOwnerCompoundTag);
 
-		if (!noteBlockSound.equals("")) {
+		if (!noteBlockSound.isEmpty()) {
 			texturedHeadCompoundTag.put("note_block_sound", StringTag.valueOf(noteBlockSound));
 		}
 
 		texturedHeadStack.setTag(texturedHeadCompoundTag);
 
 		return texturedHeadStack;
+	}
+
+	public static GameProfile getTexturedHeadGameProfile(String entityName, String texture, String uuidString) {
+		return getTexturedHeadGameProfile(entityName, texture, UUIDFunctions.getUUIDFromStringLenient(uuidString));
+	}
+	public static GameProfile getTexturedHeadGameProfile(String entityName, String texture, UUID uuid) {
+		if (entityName.length() > 16) {
+			entityName = entityName.substring(0, 16);
+		}
+
+		GameProfile gameProfile = new GameProfile(uuid, entityName.replace(" ", "_"));
+		gameProfile.getProperties().put("textures", new Property("textures", texture));
+
+		return gameProfile;
 	}
 
 	public static GameProfile getGameProfileFromPlayerName(ServerLevel serverLevel, String playerName) {
@@ -152,7 +166,7 @@ public class HeadFunctions {
 			}
 		}
 
-		if (textures.equals("")) {
+		if (textures.isEmpty()) {
 			return null;
 		}
 
