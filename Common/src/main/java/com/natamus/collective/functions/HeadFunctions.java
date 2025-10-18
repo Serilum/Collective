@@ -80,11 +80,26 @@ public class HeadFunctions {
 		return getNewTexturedHead(entityName, texture, uuid, "", amount);
 	}
 	public static ItemStack getNewTexturedHead(String entityName, String texture, UUID uuid, String noteBlockSound, Integer amount) {
+		ItemStack texturedHeadStack = new ItemStack(Items.PLAYER_HEAD, amount);
+
+		GameProfile gameProfile = getTexturedHeadGameProfile(entityName, texture, uuid);
+
+		texturedHeadStack.set(DataComponents.PROFILE, ResolvableProfile.createResolved(gameProfile));
+
+		if (!noteBlockSound.isEmpty()) {
+			texturedHeadStack.set(DataComponents.NOTE_BLOCK_SOUND, ResourceLocation.parse(noteBlockSound));
+		}
+
+		return texturedHeadStack;
+	}
+
+	public static GameProfile getTexturedHeadGameProfile(String entityName, String texture, String uuidString) {
+		return getTexturedHeadGameProfile(entityName, texture, UUIDFunctions.getUUIDFromStringLenient(uuidString));
+	}
+	public static GameProfile getTexturedHeadGameProfile(String entityName, String texture, UUID uuid) {
 		if (entityName.length() > 16) {
 			entityName = entityName.substring(0, 16);
 		}
-
-		ItemStack texturedHeadStack = new ItemStack(Items.PLAYER_HEAD, amount);
 
 		GameProfile gameProfile = new GameProfile(uuid, entityName.replace(" ", "_"));
 
@@ -93,15 +108,13 @@ public class HeadFunctions {
 
 		mutableProperties.put("textures", new Property("textures", texture));
 
-		GameProfile newGameProfile = new GameProfile(uuid, entityName.replace(" ", "_"), new PropertyMap(mutableProperties));
-
-		texturedHeadStack.set(DataComponents.PROFILE, ResolvableProfile.createResolved(newGameProfile));
-
-		if (!noteBlockSound.isEmpty()) {
-			texturedHeadStack.set(DataComponents.NOTE_BLOCK_SOUND, ResourceLocation.parse(noteBlockSound));
-		}
-
-		return texturedHeadStack;
+		return new GameProfile(uuid, entityName.replace(" ", "_"), new PropertyMap(mutableProperties));
+	}
+	public static ResolvableProfile getTexturedHeadResolvableProfile(String entityName, String texture, String uuidString) {
+		return getTexturedHeadResolvableProfile(entityName, texture, UUIDFunctions.getUUIDFromStringLenient(uuidString));
+	}
+	public static ResolvableProfile getTexturedHeadResolvableProfile(String entityName, String texture, UUID uuid) {
+		return ResolvableProfile.createResolved(getTexturedHeadGameProfile(entityName, texture, uuid));
 	}
 
 	public static GameProfile getGameProfileFromPlayerName(ServerLevel serverLevel, String playerName) {
