@@ -552,9 +552,6 @@ public abstract class DuskConfig {
 		public void render(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float delta) {
 			super.render(guiGraphics, mouseX, mouseY, delta);
 
-			if (this.minecraft == null || Objects.requireNonNull(minecraft).level == null) {
-				// guiGraphics.pose().translate(0, 0, -100);
-			}
 			this.list.render(guiGraphics, mouseX, mouseY, delta);
 			guiGraphics.drawCenteredString(font, title, width / 2, 15, 0xFFFFFFFF);
 		}
