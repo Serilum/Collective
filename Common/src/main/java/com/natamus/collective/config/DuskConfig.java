@@ -486,7 +486,7 @@ public abstract class DuskConfig {
 						this.list.addButton(List.of(Button.builder(widget.getValue().apply(info.value), widget.getKey()).pos(width - 160, 0).size(150, 20).build(), resetButton), name, info);
 					} else if (info.field.getType() == List.class) {
 						if (!reload) info.index = 0;
-						EditBox widget = new EditBox(font, width - 160, 0, 150, 20, null);
+						EditBox widget = new EditBox(font, width - 160, 0, 150, 20, Component.translatable("options.generic_value"));
 						widget.setMaxLength(Integer.MAX_VALUE);
 						if (info.index < ((List<String>)info.value).size()) widget.setValue((String.valueOf(((List<String>)info.value).get(info.index))));
 						else widget.setValue("");
@@ -505,7 +505,7 @@ public abstract class DuskConfig {
 						}).pos(width - 185, 0).size(20, 20).build();
 						this.list.addButton(List.of(widget, resetButton, cycleButton), name, info);
 					} else if (info.widget != null) {
-						EditBox widget = new EditBox(font, width - 160, 0, 150, 20, null);
+						EditBox widget = new EditBox(font, width - 160, 0, 150, 20, Component.translatable("options.generic_value"));
 						widget.setMaxLength(Integer.MAX_VALUE);
 						widget.setValue(info.tempValue);
 						Predicate<String> processor = ((BiFunction<EditBox, Button, Predicate<String>>) info.widget).apply(widget, done);
@@ -536,7 +536,7 @@ public abstract class DuskConfig {
 					}
 
 					if (!rangeValue.equals("")) {
-						EditBox label = new EditBox(font, width - 155, 0, 145, 20, null);
+						EditBox label = new EditBox(font, width - 155, 0, 145, 20, Component.translatable("options.generic_value"));
 						label.setValue(rangeValue);
 						label.setBordered(false);
 						label.setEditable(false);
