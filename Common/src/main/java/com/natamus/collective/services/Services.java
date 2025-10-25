@@ -6,6 +6,7 @@ import java.util.ServiceLoader;
 
 public class Services {
     public static final BlockTagsHelper BLOCKTAGS = load(BlockTagsHelper.class);
+    public static final ClientUtilsHelper CLIENTUTILS = load(ClientUtilsHelper.class);
     public static final EventTriggerHelper EVENTTRIGGER = load(EventTriggerHelper.class);
     public static final ModLoaderHelper MODLOADER = load(ModLoaderHelper.class);
     public static final RegisterBlockHelper REGISTERBLOCK = load(RegisterBlockHelper.class);
