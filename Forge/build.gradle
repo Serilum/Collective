@@ -1,0 +1,119 @@
+plugins {
+    id 'multiloader-loader'
+    id 'net.minecraftforge.accesstransformers' version '5.0.1'
+    id 'net.minecraftforge.gradle' version '7.0.0-beta.46'
+    id 'net.minecraftforge.jarjar' version '0.2.3'
+    // id 'org.spongepowered.mixin' version '0.7-SNAPSHOT'
+}
+
+repositories {
+    maven minecraft.mavenizer
+    maven fg.forgeMaven
+    maven fg.minecraftLibsMaven
+
+    maven { url "https://repo.spongepowered.org/maven" }
+
+    mavenCentral()
+    mavenLocal()
+}
+
+base {
+    archivesName = "${mod_name}-forge-${minecraft_version}"
+}
+
+// mixin {
+//    config("${mod_id}.mixins.json")
+//    config("${mod_id}.forge.mixins.json")
+// }
+
+minecraft {
+    mappings channel: 'official', version: minecraft_version
+
+    def at = file('src/main/resources/META-INF/accesstransformer.cfg')
+    if (at.exists()) {
+        accessTransformers = '../../../../Common/src/main/resources/META-INF/accesstransformer.cfg'
+    }
+
+    runs {
+        configureEach {
+            workingDir.convention layout.projectDirectory.dir('run')
+
+            //systemProperty 'forge.logging.markers', 'REGISTRIES'
+
+            systemProperty 'forge.logging.console.level', 'debug'
+
+            systemProperty 'eventbus.api.strictRuntimeChecks', 'true'
+
+            //args "-mixin.config=${mod_id}.mixins.json"
+        }
+
+        register('client') {
+            systemProperty 'forge.enabledGameTestNamespaces', mod_id
+        }
+
+        register('server') {
+            systemProperty 'forge.enabledGameTestNamespaces', mod_id
+            args '--nogui'
+        }
+
+        register('gameTestServer') {
+            systemProperty 'forge.enabledGameTestNamespaces', mod_id
+        }
+
+        register('data') {
+            workingDir = layout.projectDirectory.dir('run-data')
+
+            args '--mod', mod_id, '--all', '--output', layout.projectDirectory.dir('src/generated/resources'), '--existing', layout.projectDirectory.dir('src/main/resources')
+        }
+    }
+}
+
+sourceSets.main.resources.srcDir 'src/generated/resources'
+
+dependencies {
+    implementation minecraft.dependency("net.minecraftforge:forge:${minecraft_version}-${forge_version}")
+    annotationProcessor 'net.minecraftforge:eventbus-validator:7.0-beta.10'
+
+    // Forge's hack fix
+    implementation('net.sf.jopt-simple:jopt-simple:5.0.4') { version { strictly '5.0.4' } }
+}
+
+sourceSets.each {
+    def dir = layout.buildDirectory.dir("sourcesSets/$it.name")
+    it.output.resourcesDir = dir
+    it.java.destinationDirectory = dir
+}
+
+// Implement mcgradleconventions loader attribute
+def loaderAttribute = Attribute.of('io.github.mcgradleconventions.loader', String)
+['apiElements', 'runtimeElements', 'sourcesElements', 'javadocElements'].each { variant ->
+    configurations.named("$variant") {
+        attributes {
+            attribute(loaderAttribute, 'forge')
+        }
+    }
+}
+sourceSets.configureEach {
+    [it.compileClasspathConfigurationName, it.runtimeClasspathConfigurationName].each { variant->
+        configurations.named("$variant") {
+            attributes {
+                attribute(loaderAttribute, 'forge')
+            }
+        }
+    }
+}
+
+tasks.named("sourcesJar") {
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
+}
+tasks.processResources {
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
+}
+
+jar {
+    manifest {
+        attributes([
+            "MixinConfigs" : "collective_forge.mixins.json" // mixin
+        ])
+    }
+}
