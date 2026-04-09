@@ -23,6 +23,7 @@
 <li><span style="font-size:18px;color:#000">Contains the access transformers/wideners to use private fields.&nbsp;<span style="font-size:24px"><strong>⁴</strong></span><br></span></li>
 <li><span style="font-size:18px;color:#000">Networking code to send packets via the Common source set.<br></span></li>
 <li><span style="font-size:18px;color:#000">Centralized backwards compatibility for major version changes.<br></span></li>
+<li><span style="font-size:18px;color:#000">Optional async update checker for dependent mods that prints to the console.</span></li>
 <li><span style="font-size:18px;color:#000">And much more!&nbsp;<span style="font-size:24px"><strong>⁵</strong></span></span></li>
 </ul>
 <p><strong><br><br><span style="font-size:24px">Extra Information:</span><br></strong></p>

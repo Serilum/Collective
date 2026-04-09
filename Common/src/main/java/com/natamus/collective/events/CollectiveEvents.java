@@ -3,7 +3,6 @@ package com.natamus.collective.events;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.minecraft.MinecraftSessionService;
 import com.mojang.datafixers.util.Pair;
-import com.natamus.collective.check.RegisterMod;
 import com.natamus.collective.config.CollectiveConfigHandler;
 import com.natamus.collective.data.GlobalVariables;
 import com.natamus.collective.features.PlayerHeadCacheFeature;
@@ -81,11 +80,6 @@ public class CollectiveEvents {
 		}
 
 		if (entity instanceof Player player) {
-
-            if (RegisterMod.shouldDoCheck) {
-				RegisterMod.joinWorldProcess(level, player);
-			}
-
 			if (PlayerHeadCacheFeature.isHeadCachingEnabled()) {
 				PlayerHeadCacheFeature.cachePlayer(player);
 			}
