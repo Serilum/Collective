@@ -4,12 +4,14 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.minecraft.MinecraftSessionService;
 import com.mojang.authlib.yggdrasil.ProfileResult;
 import com.mojang.datafixers.util.Pair;
-import com.natamus.collective.check.RegisterMod;
 import com.natamus.collective.config.CollectiveConfigHandler;
 import com.natamus.collective.data.Constants;
 import com.natamus.collective.data.GlobalVariables;
 import com.natamus.collective.features.PlayerHeadCacheFeature;
-import com.natamus.collective.functions.*;
+import com.natamus.collective.functions.BlockPosFunctions;
+import com.natamus.collective.functions.EntityFunctions;
+import com.natamus.collective.functions.HeadFunctions;
+import com.natamus.collective.functions.SpawnEntityFunctions;
 import com.natamus.collective.objects.SAMObject;
 import com.natamus.collective.util.CollectiveReference;
 import net.minecraft.core.BlockPos;
@@ -17,8 +19,11 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.TickTask;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.AgeableMob;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.Entity.RemovalReason;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.animal.horse.AbstractHorse;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
@@ -80,11 +85,6 @@ public class CollectiveEvents {
 		}
 
 		if (entity instanceof Player player) {
-
-            if (RegisterMod.shouldDoCheck) {
-				RegisterMod.joinWorldProcess(level, player);
-			}
-
 			if (PlayerHeadCacheFeature.isHeadCachingEnabled()) {
 				PlayerHeadCacheFeature.cachePlayer(player);
 			}
