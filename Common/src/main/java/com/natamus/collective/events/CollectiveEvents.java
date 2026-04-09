@@ -1,7 +1,6 @@
 package com.natamus.collective.events;
 
 import com.mojang.datafixers.util.Pair;
-import com.natamus.collective.check.RegisterMod;
 import com.natamus.collective.config.CollectiveConfigHandler;
 import com.natamus.collective.data.Constants;
 import com.natamus.collective.data.GlobalVariables;
@@ -77,11 +76,6 @@ public class CollectiveEvents {
 		}
 
 		if (entity instanceof Player player) {
-
-            if (RegisterMod.shouldDoCheck) {
-				RegisterMod.joinWorldProcess(level, player);
-			}
-
 			if (PlayerHeadCacheFeature.isHeadCachingEnabled()) {
 				PlayerHeadCacheFeature.cachePlayer(player);
 			}
