@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "id": "collective",
-  "version": "8.17",
+  "version": "8.19",
 
   "name": "Collective",
   "description": "Collective is a shared library with common code for all of Serilum's mods.",
@@ -50,15 +50,13 @@
 	  "If you would like to contribute too, check out https://serilum.com/donate.",
 	  " ",
 	  "Membership sponsors:",
-	  " Alister",
+	  " akanealw",
 	  " Andrean Olgo",
 	  " aternosorg",
 	  " Cherriesaurus",
-	  " Michael W. S.",
+	  " MWS",
 	  " t128",
 	  " Tyler Behl",
-	  " William Innes",
-	  " XAgent",
-	  " ตัวตรึง พระนคร"
+	  " XAgent"
   ]
 }
