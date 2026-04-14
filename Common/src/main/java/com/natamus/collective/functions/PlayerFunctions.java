@@ -14,6 +14,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.level.ServerPlayer.RespawnConfig;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -40,13 +41,16 @@ public class PlayerFunctions {
 
 		MinecraftServer server = world.getServer();
 
-        if (serverplayer.wonGame) {
+		if (serverplayer.wonGame) {
 			serverplayer.wonGame = false;
 			serverplayer = server.getPlayerList().respawn(serverplayer, true, Entity.RemovalReason.CHANGED_DIMENSION);
 			CriteriaTriggers.CHANGED_DIMENSION.trigger(serverplayer, Level.END, Level.OVERWORLD);
 		}
 		else if (serverplayer.getHealth() <= 0.0F) {
-			 server.getPlayerList().respawn(serverplayer, false, Entity.RemovalReason.KILLED);
+			server.getPlayerList().respawn(serverplayer, false, Entity.RemovalReason.KILLED);
+		}
+		else if (serverplayer.isSpectator()) {
+			server.getPlayerList().respawn(serverplayer, false, Entity.RemovalReason.KILLED);
 		}
 
 		return true;
@@ -154,20 +158,23 @@ public class PlayerFunctions {
 		BlockPos respawnlocation = globalRespawnPos.pos(); // get spawn point
 		Vec3 respawnvec = new Vec3(respawnlocation.getX(), respawnlocation.getY(), respawnlocation.getZ());
 
-		BlockPos bedpos = serverplayer.getRespawnConfig().respawnData().pos();
-		if (bedpos != null) {
-			TeleportTransition optionalbed = ((ServerPlayer) player).findRespawnPositionAndUseSpawnBlock(true, TeleportTransition.DO_NOTHING);
+		RespawnConfig respawnConfig = serverplayer.getRespawnConfig();
+		if (respawnConfig != null) {
+			BlockPos bedpos = respawnConfig.respawnData().pos();
+			if (bedpos != null) {
+				TeleportTransition optionalbed = ((ServerPlayer) player).findRespawnPositionAndUseSpawnBlock(true, TeleportTransition.DO_NOTHING);
 
-			Vec3 bedvec = optionalbed.position();
-			BlockPos bp = BlockPos.containing(bedvec);
-			Iterator<BlockPos> it = BlockPos.betweenClosedStream(bp.getX()-1, bp.getY()-1, bp.getZ()-1, bp.getX()+1, bp.getY()+1, bp.getZ()+1).iterator();
-			while (it.hasNext()) {
-				BlockPos np = it.next();
-				BlockState state = level.getBlockState(np);
-				Block block = state.getBlock();
-				if (block instanceof BedBlock) { // Found bed
-					respawnvec = bedvec;
-					break;
+				Vec3 bedvec = optionalbed.position();
+				BlockPos bp = BlockPos.containing(bedvec);
+				Iterator<BlockPos> it = BlockPos.betweenClosedStream(bp.getX() - 1, bp.getY() - 1, bp.getZ() - 1, bp.getX() + 1, bp.getY() + 1, bp.getZ() + 1).iterator();
+				while (it.hasNext()) {
+					BlockPos np = it.next();
+					BlockState state = level.getBlockState(np);
+					Block block = state.getBlock();
+					if (block instanceof BedBlock) { // Found bed
+						respawnvec = bedvec;
+						break;
+					}
 				}
 			}
 		}
