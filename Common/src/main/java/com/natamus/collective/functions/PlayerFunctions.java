@@ -28,12 +28,11 @@ import java.util.*;
 
 public class PlayerFunctions {
 	public static boolean respawnPlayer(Level world, Player player) {
-		if (!(player instanceof ServerPlayer)) {
+		if (!(player instanceof ServerPlayer serverplayer)) {
 			return false;
 		}
 
 		MinecraftServer server = world.getServer();
-		ServerPlayer serverplayer = (ServerPlayer)player;
 
 		if (serverplayer.wonGame) {
 			serverplayer.wonGame = false;
@@ -41,7 +40,10 @@ public class PlayerFunctions {
 			CriteriaTriggers.CHANGED_DIMENSION.trigger(serverplayer, Level.END, Level.OVERWORLD);
 		}
 		else if (serverplayer.getHealth() <= 0.0F) {
-			 server.getPlayerList().respawn(serverplayer, false);
+			server.getPlayerList().respawn(serverplayer, false);
+		}
+		else if (serverplayer.isSpectator()) {
+			server.getPlayerList().respawn(serverplayer, false);
 		}
 
 		return true;
