@@ -59,9 +59,6 @@ loom {
 tasks.named('compileJava', JavaCompile).configure {
     source(project(":Common").sourceSets.main.allSource)
 }
-tasks.withType(Javadoc).configureEach {
-    source(project(":Common").sourceSets.main.allJava)
-}
 tasks.named("sourcesJar", Jar) {
     from(project(":Common").sourceSets.main.allSource)
 }

@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "id": "collective",
-  "version": "8.20",
+  "version": "8.21",
 
   "name": "Collective",
   "description": "Collective is a shared library with common code for all of Serilum's mods.",
@@ -55,7 +55,6 @@
 	  " aternosorg",
 	  " Cherriesaurus",
 	  " MWS",
-	  " t128",
 	  " Tyler Behl",
 	  " XAgent"
   ]
