@@ -69,19 +69,19 @@ public class EntityFunctions {
 
 	// START: GET functions
 	public static String getEntityString(Entity entity) {
-		String entitystring = "";
+		String entityString = "";
 
-		Identifier rl = EntityType.getKey(entity.getType());
-		if (rl != null) {
-			entitystring = rl.toString(); // minecraft:villager, minecraft:wandering_trader
-			if (entitystring.contains(":")) {
-				entitystring = entitystring.split(":")[1];
+		Identifier identifier = EntityType.getKey(entity.getType());
+		if (identifier != null && identifier.getPath() != null) {
+			entityString = identifier.toString();
+			if (entityString.contains(":")) {
+				entityString = entityString.split(":")[1];
 			}
 
-			entitystring = StringFunctions.capitalizeEveryWord(entitystring.replace("_", " ")).replace(" ", "").replace("Entity", ""); // Villager, WanderingTrader
+			entityString = StringFunctions.capitalizeEveryWord(entityString.replace("_", " ")).replace(" ", "").replace("Entity", "");
 		}
 
-		return entitystring;
+		return entityString;
 	}
 	// END: GET functions
 
