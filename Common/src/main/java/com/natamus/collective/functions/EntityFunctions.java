@@ -127,6 +127,12 @@ public class EntityFunctions {
 		offer.maxUses = Integer.MAX_VALUE;
 		offer.demand = 0;
 	}
+	public static void resetMerchantOfferUses(MerchantOffer offer) {
+		offer.uses = 0;
+	}
+	public static void resetMerchantOfferDemand(MerchantOffer offer) {
+		offer.demand = 0;
+	}
 
 	public static void forceSetHealth(LivingEntity livingEntity, float health) {
 		livingEntity.getEntityData().set(LivingEntity.DATA_HEALTH_ID, health);
