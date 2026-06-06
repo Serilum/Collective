@@ -126,6 +126,27 @@ public class MessageFunctions {
         serverPlayer.sendSystemMessage(message);
     }
 
+    public static void sendTranslatableMessage(CommandSourceStack source, String key, ChatFormatting colour, Object... args) {
+        sendMessage(source, Component.translatable(key, args).withStyle(colour));
+    }
+    public static void sendTranslatableMessage(Player player, String key, ChatFormatting colour, Object... args) {
+        sendMessage(player, Component.translatable(key, args).withStyle(colour));
+    }
+
+    public static void sendTranslatableMessage(CommandSourceStack source, String key, boolean emptyLine, ChatFormatting colour, Object... args) {
+        sendMessage(source, Component.translatable(key, args).withStyle(colour), emptyLine);
+    }
+    public static void sendTranslatableMessage(Player player, String key, boolean emptyLine, ChatFormatting colour, Object... args) {
+        sendMessage(player, Component.translatable(key, args).withStyle(colour), emptyLine);
+    }
+
+    public static void sendTranslatableMessage(CommandSourceStack source, String indent, String key, ChatFormatting colour, Object... args) {
+        sendMessage(source, Component.literal(indent).append(Component.translatable(key, args)).withStyle(colour));
+    }
+    public static void sendTranslatableMessage(Player player, String indent, String key, ChatFormatting colour, Object... args) {
+        sendMessage(player, Component.literal(indent).append(Component.translatable(key, args)).withStyle(colour));
+    }
+
     public static void broadcastMessage(Level world, String m, ChatFormatting colour) {
         if (m.isEmpty()) {
             return;

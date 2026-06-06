@@ -7,11 +7,13 @@ import com.natamus.collective.forge.events.RegisterCollectiveForgeEvents;
 import com.natamus.collective.forge.networking.ForgeNetworkHandler;
 import com.natamus.collective.forge.services.ForgeRegisterItemHelper;
 import com.natamus.collective.forge.services.ForgeRegisterKeyMappingHelper;
+import com.natamus.collective.forge.translations.ForgePackFinders;
 import com.natamus.collective.implementations.networking.NetworkSetup;
 import com.natamus.collective.implementations.networking.data.Side;
 import com.natamus.collective.util.CollectiveReference;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
+import net.minecraftforge.event.AddPackFindersEvent;
 import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
 import net.minecraftforge.eventbus.api.bus.BusGroup;
 import net.minecraftforge.fml.common.Mod;
@@ -38,7 +40,8 @@ public class CollectiveForge {
         FMLLoadCompleteEvent.getBus(busGroup).addListener(this::loadComplete);
 		BuildCreativeModeTabContentsEvent.BUS.addListener(ForgeRegisterItemHelper::addItemsToCreativeInventory);
         RegisterKeyMappingsEvent.BUS.addListener(ForgeRegisterKeyMappingHelper::registerKeyMappings);
-        
+        AddPackFindersEvent.BUS.addListener(ForgePackFinders::registerTranslationPack);
+
         RegisterMod.register(CollectiveReference.NAME, CollectiveReference.MOD_ID, CollectiveReference.VERSION, CollectiveReference.ACCEPTED_VERSIONS);
     }
 

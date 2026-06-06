@@ -40,12 +40,15 @@
   ],
   "client": [
     "ChatListenerMixin",
+    "ClientLanguageMixin",
     "ClientLevelMixin",
     "ClientPacketListenerMixin",
     "CreateWorldScreenMixin",
     "ItemInHandRendererMixin",
+    "LanguageManagerMixin",
     "MinecraftMixin",
     "MultiPlayerGameModeMixin",
+    "PackRepositoryMixin",
     "SoundEngineMixin",
     "TitleScreenMixin",
     "WorldOpenFlowsMixin"

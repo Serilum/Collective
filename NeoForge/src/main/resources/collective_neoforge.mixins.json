@@ -11,8 +11,10 @@
     "PrimaryLevelDataMixin"
   ],
   "client": [
+    "ClientLanguageMixin",
     "ClientPacketListenerMixin",
     "GuiMixin",
+    "LanguageManagerMixin",
     "TitleScreenMixin",
     "WorldOpenFlowsMixin"
   ],
