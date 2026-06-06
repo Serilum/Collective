@@ -11,6 +11,8 @@
     "PrimaryLevelDataMixin"
   ],
   "client": [
+    "ClientLanguageMixin",
+    "LanguageManagerMixin",
     "ClientPacketListenerMixin",
     "GuiMixin",
     "TitleScreenMixin",
