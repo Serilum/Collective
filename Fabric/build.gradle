@@ -1,5 +1,5 @@
 plugins {
-    id 'fabric-loom' version '1.0-SNAPSHOT'
+    id 'fabric-loom' version '1.5-SNAPSHOT'
     id 'maven-publish'
     id 'idea'
 }
@@ -29,7 +29,7 @@ loom {
     mixin {
         defaultRefmapName.set("${mod_id}_fabric.refmap.json")
     }
-    
+
     runs {
         client {
             client()

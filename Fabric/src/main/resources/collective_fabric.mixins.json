@@ -37,6 +37,9 @@
     "TeleportCommandMixin"
   ],
   "client": [
+    "ClientLanguageMixin",
+    "LanguageManagerMixin",
+    "PackRepositoryMixin",
     "ChatListenerMixin",
     "ClientLevelMixin",
     "CreateWorldScreenMixin",
