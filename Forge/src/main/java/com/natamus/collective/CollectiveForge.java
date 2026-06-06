@@ -7,6 +7,7 @@ import com.natamus.collective.forge.events.RegisterCollectiveForgeEvents;
 import com.natamus.collective.forge.networking.ForgeNetworkHandler;
 import com.natamus.collective.forge.services.ForgeRegisterItemHelper;
 import com.natamus.collective.forge.services.ForgeRegisterKeyMappingHelper;
+import com.natamus.collective.forge.translations.ForgePackFinders;
 import com.natamus.collective.implementations.networking.NetworkSetup;
 import com.natamus.collective.implementations.networking.data.Side;
 import com.natamus.collective.util.CollectiveReference;
@@ -38,6 +39,7 @@ public class CollectiveForge {
 		modEventBus.addListener(this::commonSetupEvent);
         modEventBus.addListener(this::loadComplete);
 		modEventBus.addListener(ForgeRegisterItemHelper::addItemsToCreativeInventory);
+        modEventBus.addListener(ForgePackFinders::registerTranslationPack);
         DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> modEventBus.addListener(ForgeRegisterKeyMappingHelper::registerKeyMappings));
         
         RegisterMod.register(CollectiveReference.NAME, CollectiveReference.MOD_ID, CollectiveReference.VERSION, CollectiveReference.ACCEPTED_VERSIONS);

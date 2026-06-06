@@ -14,6 +14,7 @@ public class CollectiveConfigHandler extends DuskConfig {
     @Entry(min = 1, max = 500) public static int loopsAmountUsedToGetAllEntityDrops = 100;
     @Entry(min = 0, max = 3600000) public static int findABlockCheckAroundEntitiesDelayMs = 30000;
     @Entry public static boolean enablePatronPets = true;
+    @Entry public static boolean downloadNonEnglishTranslations = true;
 
     public static void initConfig() {
         configMetaData.put("enableUpdateChecker", Arrays.asList(
@@ -30,6 +31,9 @@ public class CollectiveConfigHandler extends DuskConfig {
         ));
         configMetaData.put("enablePatronPets", Arrays.asList(
                 "Enables pets for Patrons. Will be added in a future release."
+        ));
+        configMetaData.put("downloadNonEnglishTranslations", Arrays.asList(
+                "Whether Collective should attempt to download translations if the client language is set to something other than English. Uses files from https://github.com/Serilum/.translations, downloaded via https://translations.serilum.com. Hosted via CloudFlare Pages."
         ));
 
         DuskConfig.init(CollectiveReference.NAME, CollectiveReference.MOD_ID, CollectiveConfigHandler.class);

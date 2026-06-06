@@ -469,7 +469,7 @@ public abstract class DuskConfig {
 					String formattedName = StringUtils.capitalize(String.join(" ", correctNameParts));
 
 					Component name = Component.literal(formattedName);
-					Button resetButton = Button.builder(Component.literal("Reset").withStyle(ChatFormatting.RED), button -> {
+					Button resetButton = Button.builder(Component.translatable("collective.collective.gui.reset").withStyle(ChatFormatting.RED), button -> {
 						info.value = info.defaultValue;
 						info.tempValue = info.defaultValue.toString();
 						info.index = 0;

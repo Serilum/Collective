@@ -10,6 +10,7 @@ import com.natamus.collective.neoforge.events.RegisterCollectiveNeoForgeEvents;
 import com.natamus.collective.neoforge.networking.NeoForgeNetworkHandler;
 import com.natamus.collective.neoforge.services.NeoForgeRegisterItemHelper;
 import com.natamus.collective.neoforge.services.NeoForgeRegisterKeyMappingHelper;
+import com.natamus.collective.neoforge.translations.NeoForgePackFinders;
 import com.natamus.collective.util.CollectiveReference;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
@@ -38,6 +39,7 @@ public class CollectiveNeoForge {
 		modEventBus.addListener(this::loadComplete);
 		modEventBus.addListener(NeoForgeRegisterItemHelper::addItemsToCreativeInventory);
         modEventBus.addListener(NeoForgeRegisterKeyMappingHelper::registerKeyMappings);
+        modEventBus.addListener(NeoForgePackFinders::registerTranslationPack);
 
 		handler = new NeoForgeNetworkHandler(FMLLoader.getDist().isClient() ? Side.CLIENT : Side.SERVER);
         modEventBus.register(handler);

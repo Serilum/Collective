@@ -28,7 +28,7 @@ public class CommandCollective {
 				Player player = source.getPlayer();
 
 				if (PlayerHeadCacheFeature.resetPlayerHeadCache()) {
-					MessageFunctions.sendMessage(player, "The player head cache has successfully been reset.", ChatFormatting.DARK_GREEN);
+					MessageFunctions.sendTranslatableMessage(player, "collective.collective.message.headcachereset", ChatFormatting.DARK_GREEN);
 				}
 
 				return 1;
@@ -38,9 +38,9 @@ public class CommandCollective {
 
 	private static int showCommandHelp(CommandSourceStack source) {
 		if (source.hasPermission(2)) {
-			MessageFunctions.sendMessage(source, Component.literal(CollectiveReference.NAME + " Admin Usage:").withStyle(ChatFormatting.GOLD), true);
+			MessageFunctions.sendTranslatableMessage(source, "collective.shared.message.adminusage", true, ChatFormatting.GOLD, CollectiveReference.NAME);
 			MessageFunctions.sendMessage(source, " /collective reset headcache", ChatFormatting.DARK_GREEN);
-			MessageFunctions.sendMessage(source, "     Resets Collective's cached player head data, to for example update skins.", ChatFormatting.GRAY);
+			MessageFunctions.sendTranslatableMessage(source, "     ", "collective.collective.message.headcachehelp", ChatFormatting.GRAY);
 		}
 		return 1;
 	}
