@@ -7,18 +7,21 @@ import java.util.HashMap;
 import java.util.List;
 
 public class CollectiveConfigHandler extends DuskConfig {
-    public static HashMap<String, List<String>> configMetaData = new HashMap<String, List<String>>();
+    public static HashMap<String, List<String>> configMetaData = new HashMap<>();
 
     @Entry public static boolean enableUpdateChecker = true;
+    @Entry public static boolean downloadNonEnglishTranslations = true;
     @Entry public static boolean transferItemsBetweenReplacedEntities = true;
     @Entry(min = 1, max = 500) public static int loopsAmountUsedToGetAllEntityDrops = 100;
     @Entry(min = 0, max = 3600000) public static int findABlockCheckAroundEntitiesDelayMs = 30000;
     @Entry public static boolean enablePatronPets = true;
-    @Entry public static boolean downloadNonEnglishTranslations = true;
 
     public static void initConfig() {
         configMetaData.put("enableUpdateChecker", Arrays.asList(
                 "Whether Collective should show a message in the console if a dependent mod has an update available. Update checks are optional and async."
+        ));
+        configMetaData.put("downloadNonEnglishTranslations", Arrays.asList(
+                "Whether Collective should attempt to download translations if the client language is set to something other than English. Uses files from https://github.com/Serilum/.translations, downloaded via https://translations.serilum.com. Hosted via CloudFlare Pages."
         ));
         configMetaData.put("transferItemsBetweenReplacedEntities", Arrays.asList(
                 "When enabled, transfer the held items and armour from replaced entities by any of the Entity Spawn mods which depend on Collective."
@@ -31,9 +34,6 @@ public class CollectiveConfigHandler extends DuskConfig {
         ));
         configMetaData.put("enablePatronPets", Arrays.asList(
                 "Enables pets for Patrons. Will be added in a future release."
-        ));
-        configMetaData.put("downloadNonEnglishTranslations", Arrays.asList(
-                "Whether Collective should attempt to download translations if the client language is set to something other than English. Uses files from https://github.com/Serilum/.translations, downloaded via https://translations.serilum.com. Hosted via CloudFlare Pages."
         ));
 
         DuskConfig.init(CollectiveReference.NAME, CollectiveReference.MOD_ID, CollectiveConfigHandler.class);
