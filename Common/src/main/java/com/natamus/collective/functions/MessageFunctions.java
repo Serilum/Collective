@@ -8,6 +8,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -104,11 +105,16 @@ public class MessageFunctions {
         sendMessage(player, message, emptyline);
     }
     public static void sendMessage(Player player, MutableComponent message, boolean emptyline) {
-        if (emptyline) {
-            player.sendSystemMessage(Component.literal(""));
+        if (player.level().isClientSide()) {
+            return;
         }
 
-        player.sendSystemMessage(message);
+        ServerPlayer serverPlayer = (ServerPlayer)player;
+        if (emptyline) {
+            serverPlayer.sendSystemMessage(Component.literal(""));
+        }
+
+        serverPlayer.sendSystemMessage(message);
     }
 
     public static void sendTranslatableMessage(CommandSourceStack source, String key, ChatFormatting colour, Object... args) {
@@ -132,6 +138,13 @@ public class MessageFunctions {
         sendMessage(player, Component.literal(indent).append(Component.translatable(key, args)).withStyle(colour));
     }
 
+    public static void sendTranslatableMessage(CommandSourceStack source, String indent, String key, boolean emptyLine, ChatFormatting colour, Object... args) {
+        sendMessage(source, Component.literal(indent).append(Component.translatable(key, args)).withStyle(colour), emptyLine);
+    }
+    public static void sendTranslatableMessage(Player player, String indent, String key, boolean emptyLine, ChatFormatting colour, Object... args) {
+        sendMessage(player, Component.literal(indent).append(Component.translatable(key, args)).withStyle(colour), emptyLine);
+    }
+
     public static void broadcastMessage(Level world, String m, ChatFormatting colour) {
         if (m.isEmpty()) {
             return;
@@ -150,6 +163,10 @@ public class MessageFunctions {
         for (Player player : server.getPlayerList().getPlayers()) {
             sendMessage(player, message);
         }
+    }
+
+    public static void broadcastTranslatableMessage(Level world, String key, ChatFormatting colour, Object... args) {
+        broadcastMessage(world, Component.translatable(key, args).withStyle(colour));
     }
 
     public static void sendMessageToPlayersAround(Level world, BlockPos p, int radius, String message, ChatFormatting colour) {
