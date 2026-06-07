@@ -18,8 +18,8 @@ public class RegisterMod {
 			return;
 		}
 
-		String gameVersion = rawGameVersion.replaceAll("\\[", "").replaceAll("]", "");
-		String slug = modName.toLowerCase().replaceAll("[^a-z0-9 ]", "").replaceAll(" ", "-");
+		String gameVersion = rawGameVersion.replaceAll("\\[", "").replace("]", "");
+		String slug = modName.toLowerCase().replaceAll("[^a-z0-9 ]", "").replace(" ", "-");
 		String loader = Services.MODLOADER.getModLoaderName();
 
 		new Thread(() -> checkForUpdate(slug, modName, modVersion, gameVersion, loader)).start();
@@ -31,15 +31,11 @@ public class RegisterMod {
 			Thread.sleep((long)(Math.random() * 1000));
 
 			String url = "https://update.serilum.com/minecraft/?mc_version=" + gameVersion + "&slug=" + slug + "&mod_version=" + modVersion + "&loader=" + loader;
-
 			HttpRequest request = HttpRequest.newBuilder().uri(URI.create(url)).timeout(Duration.ofSeconds(10)).GET().build();
-
 			HttpResponse<String> response = HTTP_CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
-
 			if (response.statusCode() == 200) {
 				String latestVersion = response.body().trim();
-
-				if (!latestVersion.equals(modVersion)) {
+				if (isNewerVersion(latestVersion, modVersion)) {
 					Constants.LOG.warn("[Update] {} has an update available: {} -> {}", modName, modVersion, latestVersion);
 				}
 			}
@@ -47,4 +43,21 @@ public class RegisterMod {
 		catch (Exception ignored) { }
 	}
 
+	private static boolean isNewerVersion(String latest, String current) {
+		String[] latestParts = latest.split("\\.");
+		String[] currentParts = current.split("\\.");
+		for (int i = 0; i < Math.max(latestParts.length, currentParts.length); i++) {
+			int l = i < latestParts.length ? parsePart(latestParts[i]) : 0;
+			int c = i < currentParts.length ? parsePart(currentParts[i]) : 0;
+			if (l != c) {
+				return l > c;
+			}
+		}
+		return false;
+	}
+
+	private static int parsePart(String part) {
+		part = part.replaceAll("\\D.*", "");
+		return part.isEmpty() ? 0 : Integer.parseInt(part);
+	}
 }
