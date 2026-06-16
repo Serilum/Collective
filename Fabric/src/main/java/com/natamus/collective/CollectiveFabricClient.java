@@ -17,6 +17,8 @@ public class CollectiveFabricClient implements ClientModInitializer {
 	public void onInitializeClient() {
 		new NetworkSetup(new FabricNetworkHandler(Side.CLIENT));
 
+		CollectiveCommon.registerPackets();
+
 		registerEvents();
 	}
 	

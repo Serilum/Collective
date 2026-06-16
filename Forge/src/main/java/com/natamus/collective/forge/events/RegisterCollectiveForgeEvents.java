@@ -4,14 +4,17 @@ import com.natamus.collective.cmds.CommandCollective;
 import com.natamus.collective.config.GenerateJSONFiles;
 import com.natamus.collective.events.CollectiveEvents;
 import com.natamus.collective.functions.WorldFunctions;
+import com.natamus.collective.translations.ServerTranslationPack;
 import com.natamus.collective.util.CollectiveReference;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.TickEvent.Phase;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.entity.living.MobSpawnEvent;
+import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.level.BlockEvent;
 import net.minecraftforge.event.level.LevelEvent;
 import net.minecraftforge.event.server.ServerAboutToStartEvent;
@@ -24,6 +27,7 @@ public class RegisterCollectiveForgeEvents {
     @SubscribeEvent
     public void onServerStarted(ServerAboutToStartEvent e) {
         GenerateJSONFiles.initGeneration(e.getServer());
+        ServerTranslationPack.onServerStarting(e.getServer());
     }
 
 	@SubscribeEvent
@@ -73,6 +77,13 @@ public class RegisterCollectiveForgeEvents {
     public void onEntityJoinLevel(EntityJoinLevelEvent e) {
         if (!CollectiveEvents.onEntityJoinLevel(e.getLevel(), e.getEntity())) {
             e.setCanceled(true);
+        }
+    }
+
+    @SubscribeEvent
+    public void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent e) {
+        if (e.getEntity() instanceof ServerPlayer player) {
+            ServerTranslationPack.onPlayerJoin(player);
         }
     }
 

@@ -86,6 +86,12 @@ public class ForgeNetworkHandler extends PacketRegistrationHandler {
         }
     }
 
+    @SuppressWarnings("unchecked")
+    public <T> boolean isRegisteredOnClient(Class<T> packetClass, ServerPlayer player) {
+        var message = (Message<T>) CHANNELS.get(packetClass);
+        return message != null && message.channel().isRemotePresent(player.connection.getConnection());
+    }
+
     private <T> BiConsumer<T, CustomPayloadEvent.Context> buildHandler(Consumer<PacketContext<T>> handler) {
         return (message, ctx) -> ctx.enqueueWork(() -> {
             try {
