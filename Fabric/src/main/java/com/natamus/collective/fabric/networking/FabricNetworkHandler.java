@@ -104,4 +104,10 @@ public class FabricNetworkHandler extends PacketRegistrationHandler {
             throw new RegistrationException(packet.getClass() + "{} packet not registered on the server, packets need to be registered on both sides!");
         }
     }
+
+    @SuppressWarnings("unchecked")
+    public <T> boolean isRegisteredOnClient(Class<T> packetClass, ServerPlayer player) {
+        PacketContainer<T> container = (PacketContainer<T>) PACKET_MAP.get(packetClass);
+        return container != null && ServerPlayNetworking.canSend(player, container.type().id());
+    }
 }

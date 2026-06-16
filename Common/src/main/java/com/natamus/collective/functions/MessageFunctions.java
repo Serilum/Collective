@@ -1,5 +1,7 @@
 package com.natamus.collective.functions;
 
+import com.natamus.collective.translations.ServerTranslationPack;
+import com.natamus.collective.translations.TranslationResolver;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.core.BlockPos;
@@ -127,31 +129,52 @@ public class MessageFunctions {
     }
 
     public static void sendTranslatableMessage(CommandSourceStack source, String key, ChatFormatting colour, Object... args) {
-        sendMessage(source, Component.translatable(key, args).withStyle(colour));
+        sendMessage(source, translatableComponent(source, key, args).withStyle(colour));
     }
     public static void sendTranslatableMessage(Player player, String key, ChatFormatting colour, Object... args) {
-        sendMessage(player, Component.translatable(key, args).withStyle(colour));
+        sendMessage(player, translatableComponent(player, key, args).withStyle(colour));
     }
 
     public static void sendTranslatableMessage(CommandSourceStack source, String key, boolean emptyLine, ChatFormatting colour, Object... args) {
-        sendMessage(source, Component.translatable(key, args).withStyle(colour), emptyLine);
+        sendMessage(source, translatableComponent(source, key, args).withStyle(colour), emptyLine);
     }
     public static void sendTranslatableMessage(Player player, String key, boolean emptyLine, ChatFormatting colour, Object... args) {
-        sendMessage(player, Component.translatable(key, args).withStyle(colour), emptyLine);
+        sendMessage(player, translatableComponent(player, key, args).withStyle(colour), emptyLine);
     }
 
     public static void sendTranslatableMessage(CommandSourceStack source, String indent, String key, ChatFormatting colour, Object... args) {
-        sendMessage(source, Component.literal(indent).append(Component.translatable(key, args)).withStyle(colour));
+        sendMessage(source, Component.literal(indent).append(translatableComponent(source, key, args)).withStyle(colour));
     }
     public static void sendTranslatableMessage(Player player, String indent, String key, ChatFormatting colour, Object... args) {
-        sendMessage(player, Component.literal(indent).append(Component.translatable(key, args)).withStyle(colour));
+        sendMessage(player, Component.literal(indent).append(translatableComponent(player, key, args)).withStyle(colour));
     }
 
     public static void sendTranslatableMessage(CommandSourceStack source, String indent, String key, boolean emptyLine, ChatFormatting colour, Object... args) {
-        sendMessage(source, Component.literal(indent).append(Component.translatable(key, args)).withStyle(colour), emptyLine);
+        sendMessage(source, Component.literal(indent).append(translatableComponent(source, key, args)).withStyle(colour), emptyLine);
     }
     public static void sendTranslatableMessage(Player player, String indent, String key, boolean emptyLine, ChatFormatting colour, Object... args) {
-        sendMessage(player, Component.literal(indent).append(Component.translatable(key, args)).withStyle(colour), emptyLine);
+        sendMessage(player, Component.literal(indent).append(translatableComponent(player, key, args)).withStyle(colour), emptyLine);
+    }
+
+    public static MutableComponent getTranslatableComponent(String key, Object... args) {
+        if (ServerTranslationPack.useTranslatableForNames()) {
+            return Component.translatable(key, args);
+        }
+        return Component.literal(TranslationResolver.resolve(key, args));
+    }
+
+    private static MutableComponent translatableComponent(Player player, String key, Object... args) {
+        if (player instanceof ServerPlayer serverPlayer && ServerTranslationPack.useTranslatableForMessage(serverPlayer)) {
+            return Component.translatable(key, args);
+        }
+        return Component.literal(TranslationResolver.resolve(key, args));
+    }
+    private static MutableComponent translatableComponent(CommandSourceStack source, String key, Object... args) {
+        ServerPlayer player = source.getPlayer();
+        if (player != null && ServerTranslationPack.useTranslatableForMessage(player)) {
+            return Component.translatable(key, args);
+        }
+        return Component.literal(TranslationResolver.resolve(key, args));
     }
 
     public static void broadcastMessage(Level world, String m, ChatFormatting colour) {
@@ -175,7 +198,14 @@ public class MessageFunctions {
     }
 
     public static void broadcastTranslatableMessage(Level world, String key, ChatFormatting colour, Object... args) {
-        broadcastMessage(world, Component.translatable(key, args).withStyle(colour));
+        MinecraftServer server = world.getServer();
+        if (server == null) {
+            return;
+        }
+
+        for (ServerPlayer player : server.getPlayerList().getPlayers()) {
+            sendMessage(player, translatableComponent(player, key, args).withStyle(colour));
+        }
     }
 
     public static void sendMessageToPlayersAround(Level world, BlockPos p, int radius, String message, ChatFormatting colour) {

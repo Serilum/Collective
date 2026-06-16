@@ -82,6 +82,12 @@ public class NeoForgeNetworkHandler extends PacketRegistrationHandler {
         }
     }
 
+    @SuppressWarnings("unchecked")
+    public <T> boolean isRegisteredOnClient(Class<T> packetClass, ServerPlayer player) {
+        PacketContainer<T> container = (PacketContainer<T>) PACKET_MAP.get(packetClass);
+        return container != null && player.connection.hasChannel(container.type());
+    }
+
     private <T, K extends CommonPacketWrapper<T>> IPayloadHandler<K> buildHandler(Consumer<PacketContext<T>> handler) {
         return (payload, ctx) -> {
             try {
