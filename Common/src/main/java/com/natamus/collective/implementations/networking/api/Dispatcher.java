@@ -49,6 +49,18 @@ public class Dispatcher {
     }
 
     /**
+     * Checks whether the packet's channel is registered on the client.
+     *
+     * @param packetClass - the packet class
+     * @param player      - the player
+     * @param <T>         - The type
+     * @return whether the client has the packet registered
+     */
+    public static <T> boolean isRegisteredOnClient(Class<T> packetClass, ServerPlayer player) {
+        return Network.getNetworkHandler().isRegisteredOnClient(packetClass, player);
+    }
+
+    /**
      * Sends the packet to the client players, only if the players has the packet registered.
      *
      * @param packet  - the packet

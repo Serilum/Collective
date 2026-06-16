@@ -44,6 +44,16 @@ public interface NetworkHandler
     <T> void sendToClient(T packet, ServerPlayer player);
 
     /**
+     * Checks whether the packet's channel is registered on the client, i.e. whether the client can receive it.
+     *
+     * @param packetClass - the packet class
+     * @param player      - the player
+     * @param <T>         - The type
+     * @return whether the client has the packet registered
+     */
+    <T> boolean isRegisteredOnClient(Class<T> packetClass, ServerPlayer player);
+
+    /**
      * Sends the packet to the client players, only if the players has the packet registered.
      *
      * @param packet  - the packet
