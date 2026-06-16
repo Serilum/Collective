@@ -5,9 +5,11 @@ import com.natamus.collective.cmds.CommandCollective;
 import com.natamus.collective.config.GenerateJSONFiles;
 import com.natamus.collective.events.CollectiveEvents;
 import com.natamus.collective.fabric.callbacks.CollectiveBlockEvents;
+import com.natamus.collective.fabric.callbacks.CollectivePlayerEvents;
 import com.natamus.collective.fabric.networking.FabricNetworkHandler;
 import com.natamus.collective.implementations.networking.NetworkSetup;
 import com.natamus.collective.implementations.networking.data.Side;
+import com.natamus.collective.translations.ServerTranslationPack;
 import com.natamus.collective.util.CollectiveReference;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
@@ -15,6 +17,7 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
+import net.minecraft.server.level.ServerPlayer;
 
 public class CollectiveFabric implements ModInitializer { 
 	@Override
@@ -26,6 +29,7 @@ public class CollectiveFabric implements ModInitializer {
 
 		ServerLifecycleEvents.SERVER_STARTING.register((minecraftServer) -> {
 			GenerateJSONFiles.initGeneration(minecraftServer);
+			ServerTranslationPack.onServerStarting(minecraftServer);
 		});
 
 		ServerTickEvents.START_WORLD_TICK.register((serverLevel) -> {
@@ -46,6 +50,12 @@ public class CollectiveFabric implements ModInitializer {
 
 		CollectiveBlockEvents.BLOCK_PLACE.register((level, blockPos, blockState, livingEntity, itemStack) -> {
 			return CollectiveEvents.onEntityBlockPlace(level, blockPos, blockState, livingEntity, itemStack);
+		});
+
+		CollectivePlayerEvents.PLAYER_LOGGED_IN.register((world, player) -> {
+			if (player instanceof ServerPlayer serverPlayer) {
+				ServerTranslationPack.onPlayerJoin(serverPlayer);
+			}
 		});
 
 		CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {

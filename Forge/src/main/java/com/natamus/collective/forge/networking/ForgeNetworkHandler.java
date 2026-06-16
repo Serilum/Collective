@@ -66,6 +66,11 @@ public class ForgeNetworkHandler extends PacketRegistrationHandler {
         }
     }
 
+    public <T> boolean isRegisteredOnClient(Class<T> packetClass, ServerPlayer player) {
+        SimpleChannel channel = CHANNELS.get(packetClass);
+        return channel != null && channel.isRemotePresent(player.connection.connection);
+    }
+
 
     private <T> BiConsumer<T, Supplier<NetworkEvent.Context>> buildHandler(Consumer<PacketContext<T>> handler) {
         return (message, ctx) -> {

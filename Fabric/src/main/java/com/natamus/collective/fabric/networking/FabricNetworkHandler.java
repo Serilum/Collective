@@ -87,5 +87,11 @@ public class FabricNetworkHandler extends PacketRegistrationHandler {
         }
     }
 
+    @SuppressWarnings("unchecked")
+    public <T> boolean isRegisteredOnClient(Class<T> packetClass, ServerPlayer player) {
+        Message<T> message = (Message<T>) CHANNELS.get(packetClass);
+        return message != null && ServerPlayNetworking.canSend(player, message.id());
+    }
+
     public record Message<T>(ResourceLocation id, BiConsumer<T, FriendlyByteBuf> encoder) { }
 }
