@@ -5,13 +5,21 @@ import com.natamus.collective.data.Constants;
 import com.natamus.collective.services.Services;
 
 import java.net.URI;
+import java.net.URLEncoder;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 public class RegisterMod {
 	private static final HttpClient HTTP_CLIENT = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(5)).build();
+	private static final ExecutorService UPDATE_EXECUTOR = createUpdateExecutor();
+	private static final int MAX_CONCURRENT_CHECKS = 10;
 
 	public static void register(String modName, String modId, String modVersion, String rawGameVersion) {
 		if (!CollectiveConfigHandler.enableUpdateChecker) {
@@ -22,15 +30,13 @@ public class RegisterMod {
 		String slug = modName.toLowerCase().replaceAll("[^a-z0-9 ]", "").replace(" ", "-");
 		String loader = Services.MODLOADER.getModLoaderName();
 
-		new Thread(() -> checkForUpdate(slug, modName, modVersion, gameVersion, loader)).start();
+		UPDATE_EXECUTOR.execute(() -> checkForUpdate(slug, modName, modVersion, gameVersion, loader));
 	}
 
 	private static void checkForUpdate(String slug, String modName, String modVersion, String gameVersion, String loader) {
 		try {
-			// Random 0-1s delay so the server doesn't get all the dependent mod requests at the same time.
-			Thread.sleep((long)(Math.random() * 1000));
+			String url = "https://update.serilum.com/minecraft/?mc_version=" + encode(gameVersion) + "&slug=" + encode(slug) + "&mod_version=" + encode(modVersion) + "&loader=" + encode(loader);
 
-			String url = "https://update.serilum.com/minecraft/?mc_version=" + gameVersion + "&slug=" + slug + "&mod_version=" + modVersion + "&loader=" + loader;
 			HttpRequest request = HttpRequest.newBuilder().uri(URI.create(url)).timeout(Duration.ofSeconds(10)).GET().build();
 			HttpResponse<String> response = HTTP_CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
 			if (response.statusCode() == 200) {
@@ -59,5 +65,25 @@ public class RegisterMod {
 	private static int parsePart(String part) {
 		part = part.replaceAll("\\D.*", "");
 		return part.isEmpty() ? 0 : Integer.parseInt(part);
+	}
+
+	private static String encode(String value) {
+		return URLEncoder.encode(value, StandardCharsets.UTF_8);
+	}
+
+	private static ExecutorService createUpdateExecutor() {
+		ThreadPoolExecutor executor = new ThreadPoolExecutor(
+			MAX_CONCURRENT_CHECKS, MAX_CONCURRENT_CHECKS,
+			30L, TimeUnit.SECONDS,
+			new LinkedBlockingQueue<>(),
+			runnable -> {
+				Thread thread = new Thread(runnable, "Collective Update Checker");
+				thread.setDaemon(true);
+				return thread;
+			}
+		);
+
+		executor.allowCoreThreadTimeOut(true);
+		return executor;
 	}
 }
