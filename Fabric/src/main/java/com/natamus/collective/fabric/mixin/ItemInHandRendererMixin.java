@@ -14,8 +14,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(value = ItemInHandRenderer.class, priority = 1001)
 public class ItemInHandRendererMixin {
-	@Inject(method = "renderArmWithItem", at = @At(value = "HEAD"), cancellable = true)
-	private void renderArmWithItem(AbstractClientPlayer abstractClientPlayer, float f, float g, InteractionHand interactionHand, float h, ItemStack itemStack, float i, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, int j, CallbackInfo ci) {
+	@Inject(method = "submitArmWithItem", at = @At(value = "HEAD"), cancellable = true)
+	private void submitArmWithItem(AbstractClientPlayer abstractClientPlayer, float f, float g, InteractionHand interactionHand, float h, ItemStack itemStack, float i, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, int j, CallbackInfo ci) {
 		if (!CollectiveRenderEvents.RENDER_SPECIFIC_HAND.invoker().onRenderSpecificHand(interactionHand, poseStack, itemStack)) {
 			ci.cancel();
 		}

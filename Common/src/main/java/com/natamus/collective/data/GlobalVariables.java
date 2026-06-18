@@ -8,6 +8,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.entity.BlockEntityTypes;
 import net.minecraft.world.level.material.MapColor;
 
 import java.util.*;
@@ -40,8 +41,8 @@ public class GlobalVariables {
 
 	public static void generateHashMaps() {
 		// FAB tile entities.
-		blocksWithTileEntity.put(Blocks.CAMPFIRE, BlockEntityType.CAMPFIRE);
-		blocksWithTileEntity.put(Blocks.OAK_SIGN, BlockEntityType.SIGN);
+		blocksWithTileEntity.put(Blocks.CAMPFIRE, BlockEntityTypes.CAMPFIRE);
+		blocksWithTileEntity.put(Blocks.OAK_SIGN, BlockEntityTypes.SIGN);
 	}
 
 	// Block and item collections

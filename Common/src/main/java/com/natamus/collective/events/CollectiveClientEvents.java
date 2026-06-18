@@ -14,7 +14,7 @@ public class CollectiveClientEvents {
     public static int clientTickCount = 0;
     public static void onClientTick() {
 		if (mc.isPaused()) {
-			if (!(mc.screen instanceof DeathScreen)) {
+			if (!(mc.gui.screen() instanceof DeathScreen)) {
 				return;
 			}
 		}

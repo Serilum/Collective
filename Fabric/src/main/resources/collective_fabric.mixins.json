@@ -43,7 +43,7 @@
     "ClientLevelMixin",
     "ClientPacketListenerMixin",
     "CreateWorldScreenMixin",
-    "GuiMixin",
+    "HudMixin",
     "ItemInHandRendererMixin",
     "LanguageManagerMixin",
     "MinecraftMixin",

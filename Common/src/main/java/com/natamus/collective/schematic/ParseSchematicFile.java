@@ -6,6 +6,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.ProblemReporter;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntitySpawnReason;
+import net.minecraft.world.entity.EntitySpawnRequest;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
@@ -65,7 +66,7 @@ public class ParseSchematicFile {
 
         List<Pair<BlockPos, Entity>> entities = new ArrayList<>();
         for (Pair<BlockPos, CompoundTag> rawEntityPair : schematic.getEntityRelativePosPairs()) {
-            Optional<Entity> optionalNewEntity = EntityType.create(TagValueInput.create(new ProblemReporter.Collector(), level.registryAccess(), rawEntityPair.getSecond()), level, EntitySpawnReason.STRUCTURE);
+            Optional<Entity> optionalNewEntity = EntityType.create(TagValueInput.create(new ProblemReporter.Collector(), level.registryAccess(), rawEntityPair.getSecond()), level, new EntitySpawnRequest(EntitySpawnReason.STRUCTURE, true));
             if (optionalNewEntity.isPresent()) {
                 BlockPos actualEntityPosition = rawEntityPair.getFirst().offset(centerPos.getX() + xoffset, yoffset, centerPos.getZ() + zoffset).immutable();
                 Entity newEntity = optionalNewEntity.get();

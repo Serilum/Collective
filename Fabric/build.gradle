@@ -14,7 +14,7 @@ dependencies {
     implementation "net.fabricmc:fabric-loader:${fabric_loader_version}"
     implementation "net.fabricmc.fabric-api:fabric-api:${fabric_api_version}"
 
-    api("com.terraformersmc:modmenu:18.0.0-alpha.7") { exclude(module: "fabric-api") }
+    api("com.terraformersmc:modmenu:20.0.0-beta.2") { exclude(module: "fabric-api") }
 }
 
 loom {

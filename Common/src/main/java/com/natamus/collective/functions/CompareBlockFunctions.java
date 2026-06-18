@@ -1,6 +1,7 @@
 package com.natamus.collective.functions;
 
 import net.minecraft.tags.BlockTags;
+import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.block.*;
 
@@ -27,10 +28,7 @@ public class CompareBlockFunctions {
 				return true;
 			}
 		}
-		if (block instanceof BushBlock) {
-			return !(block instanceof CropBlock) && !(block instanceof ShortDryGrassBlock) && !(block instanceof TallDryGrassBlock) && !(block instanceof DoublePlantBlock) && !(block instanceof FlowerBlock) && !(block instanceof SaplingBlock) && !(block instanceof StemBlock) && !(block instanceof AttachedStemBlock) && !(block instanceof SweetBerryBushBlock) && !(block instanceof TallGrassBlock);
-		}
-		return false;
+		return block instanceof BushBlock;
 	}
 	public static boolean isTreeLeaf(Block block) {
 		return isTreeLeaf(block, true);
@@ -41,7 +39,7 @@ public class CompareBlockFunctions {
 	}
 	
 	public static boolean isSapling(Block block) {
-		return blockIsInRegistryHolder(block, BlockTags.SAPLINGS) || block instanceof SaplingBlock;
+		return CompareItemFunctions.itemIsInRegistryHolder(block.asItem(), ItemTags.SAPLINGS) || block instanceof SaplingBlock;
 	}
 	
 	public static boolean isDirtBlock(Block block) {

@@ -4,5 +4,5 @@ public class CollectiveReference {
 	public static final String MOD_ID = "collective";
 	public static final String NAME = "Collective";
 	public static final String VERSION = "8.29";
-	public static final String ACCEPTED_VERSIONS = "[26.1.2]";
+	public static final String ACCEPTED_VERSIONS = "[26.2.0]";
 }

@@ -1,5 +1,6 @@
 package com.natamus.collective.functions;
 
+import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
@@ -51,7 +52,7 @@ public class CompareItemFunctions {
 	}
 	
 	public static boolean isSlab(Item item) {
-		return itemIsInRegistryHolder(item, ItemTags.SLABS);
+		return CompareBlockFunctions.blockIsInRegistryHolder(Block.byItem(item), BlockTags.SLABS);
     }
 	public static boolean isSlab(ItemStack itemstack) {
 		return isSlab(itemstack.getItem());

@@ -3,7 +3,7 @@ package com.natamus.collective.functions;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.natamus.collective.data.Constants;
 import com.natamus.collective.util.CollectiveReference;
-import net.minecraft.advancements.CriteriaTriggers;
+import net.minecraft.advancements.triggers.CriteriaTriggers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.GlobalPos;
 import net.minecraft.core.NonNullList;
@@ -34,12 +34,12 @@ import net.minecraft.world.phys.Vec3;
 import java.util.*;
 
 public class PlayerFunctions {
-	public static boolean respawnPlayer(Level world, Player player) {
+	public static boolean respawnPlayer(Level level, Player player) {
 		if (!(player instanceof ServerPlayer serverplayer)) {
 			return false;
 		}
 
-		MinecraftServer server = world.getServer();
+		MinecraftServer server = level.getServer();
 
 		if (serverplayer.wonGame) {
 			serverplayer.wonGame = false;
@@ -59,8 +59,8 @@ public class PlayerFunctions {
 	public static Player matchPlayer(Player player, String other) {
 		return matchPlayer(player.level(), other);
 	}
-	public static Player matchPlayer(Level world, String other) {
-		List<? extends Player> players = world.players();
+	public static Player matchPlayer(Level level, String other) {
+		List<? extends Player> players = level.players();
 
 		for (Player onlineplayer : players) {
 			if (onlineplayer.getName().getString().toLowerCase().equals(other)) {

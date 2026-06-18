@@ -23,7 +23,7 @@ public class MinecraftMixin {
     }
 
     @Inject(method = "createUserApiService", at = @At(value = "HEAD"), cancellable = true)
-    public void Minecraft_createUserApiService(YggdrasilAuthenticationService yggdrasilAuthenticationService, GameConfig gameConfig, CallbackInfoReturnable<UserApiService> cir) {
+    private static void Minecraft_createUserApiService(YggdrasilAuthenticationService yggdrasilAuthenticationService, GameConfig gameConfig, CallbackInfoReturnable<UserApiService> cir) {
         if (FabricLoader.getInstance().isDevelopmentEnvironment()) {
             Constants.LOG.info("Failed to verify authentication");
             cir.setReturnValue(UserApiService.OFFLINE);

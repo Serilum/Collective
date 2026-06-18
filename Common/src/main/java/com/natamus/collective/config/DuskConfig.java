@@ -410,7 +410,7 @@ public abstract class DuskConfig {
 
 			this.addRenderableWidget(Button.builder(CommonComponents.GUI_CANCEL, button -> {
 				loadValues();
-				Objects.requireNonNull(minecraft).setScreen(parent);
+				Objects.requireNonNull(minecraft).setScreenAndShow(parent);
 			}).pos(this.width / 2 - 154, this.height - 28).size(150, 20).build());
 
 			Button done = this.addRenderableWidget(Button.builder(CommonComponents.GUI_DONE, button -> {
@@ -421,7 +421,7 @@ public abstract class DuskConfig {
 						} catch (IllegalAccessException ignored) {}
 					}
 				write(modid);
-				Objects.requireNonNull(minecraft).setScreen(parent);
+				Objects.requireNonNull(minecraft).setScreenAndShow(parent);
 			}).pos(this.width / 2 + 4, this.height - 28).size(150, 20).build());
 
 			this.list = new DuskConfigListWidget(this.minecraft, this.width, this.height, 32, this.height - 32, 25);
@@ -477,7 +477,7 @@ public abstract class DuskConfig {
 						info.index = 0;
 						double scrollAmount = list.scrollAmount();
 						this.reload = true;
-						Objects.requireNonNull(minecraft).setScreen(this);
+						Objects.requireNonNull(minecraft).setScreenAndShow(this);
 						list.setScrollAmount(scrollAmount);
 					}).pos(width - 205, 0).size(40, 20).build();
 
@@ -502,7 +502,7 @@ public abstract class DuskConfig {
 							this.reload = true;
 							info.index = info.index + 1;
 							if (info.index > ((List<String>)info.value).size()) info.index = 0;
-							Objects.requireNonNull(minecraft).setScreen(this);
+							Objects.requireNonNull(minecraft).setScreenAndShow(this);
 							list.setScrollAmount(scrollAmount);
 						}).pos(width - 185, 0).size(20, 20).build();
 						this.list.addButton(List.of(widget, resetButton, cycleButton), name, info);
