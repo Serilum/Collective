@@ -50,35 +50,14 @@ public class MessageFunctions {
             return;
         }
 
-        MutableComponent message = Component.literal(m);
-        message.withStyle(colour);
-        if (m.contains("http") || !url.isEmpty()) {
-            if (url.isEmpty()) {
-                for (String word : m.split(" ")) {
-                    if (word.contains("http")) {
-                        url = word;
-                        break;
-                    }
-                }
-            }
-
-            if (!url.isEmpty()) {
-                Style clickstyle = message.getStyle().withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, url));
-                message.withStyle(clickstyle);
-            }
-        }
-        sendMessage(source, message, emptyline);
+        sendMessage(source, buildMessage(m, colour, url), emptyline);
     }
     public static void sendMessage(CommandSourceStack source, MutableComponent message, boolean emptyline) {
         if (emptyline) {
-            source.sendSuccess(() -> {
-                return Component.literal("");
-            }, false);
+            source.sendSuccess(() -> Component.literal(""), false);
         }
 
-        source.sendSuccess(() -> {
-            return message;
-        }, false);
+        source.sendSuccess(() -> message, false);
     }
 
     public static void sendMessage(Player player, String m, ChatFormatting colour, boolean emptyline, String url) {
@@ -86,25 +65,7 @@ public class MessageFunctions {
             return;
         }
 
-        MutableComponent message = Component.literal(m);
-        message.withStyle(colour);
-        if (m.contains("http") || !url.isEmpty()) {
-            if (url.isEmpty()) {
-                for (String word : m.split(" ")) {
-                    if (word.contains("http")) {
-                        url = word;
-                        break;
-                    }
-                }
-            }
-
-            if (!url.isEmpty()) {
-                Style clickstyle = message.getStyle().withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, url));
-                message.withStyle(clickstyle);
-            }
-        }
-
-        sendMessage(player, message, emptyline);
+        sendMessage(player, buildMessage(m, colour, url), emptyline);
     }
     public static void sendMessage(Player player, MutableComponent message, boolean emptyline) {
         if (player.level().isClientSide()) {
@@ -120,31 +81,31 @@ public class MessageFunctions {
     }
 
     public static void sendTranslatableMessage(CommandSourceStack source, String key, ChatFormatting colour, Object... args) {
-        sendMessage(source, translatableComponent(source, key, args).withStyle(colour));
+        sendMessage(source, withColour(translatableComponent(source, key, args), colour));
     }
     public static void sendTranslatableMessage(Player player, String key, ChatFormatting colour, Object... args) {
-        sendMessage(player, translatableComponent(player, key, args).withStyle(colour));
+        sendMessage(player, withColour(translatableComponent(player, key, args), colour));
     }
 
     public static void sendTranslatableMessage(CommandSourceStack source, String key, boolean emptyLine, ChatFormatting colour, Object... args) {
-        sendMessage(source, translatableComponent(source, key, args).withStyle(colour), emptyLine);
+        sendMessage(source, withColour(translatableComponent(source, key, args), colour), emptyLine);
     }
     public static void sendTranslatableMessage(Player player, String key, boolean emptyLine, ChatFormatting colour, Object... args) {
-        sendMessage(player, translatableComponent(player, key, args).withStyle(colour), emptyLine);
+        sendMessage(player, withColour(translatableComponent(player, key, args), colour), emptyLine);
     }
 
     public static void sendTranslatableMessage(CommandSourceStack source, String indent, String key, ChatFormatting colour, Object... args) {
-        sendMessage(source, Component.literal(indent).append(translatableComponent(source, key, args)).withStyle(colour));
+        sendMessage(source, withColour(Component.literal(indent).append(translatableComponent(source, key, args)), colour));
     }
     public static void sendTranslatableMessage(Player player, String indent, String key, ChatFormatting colour, Object... args) {
-        sendMessage(player, Component.literal(indent).append(translatableComponent(player, key, args)).withStyle(colour));
+        sendMessage(player, withColour(Component.literal(indent).append(translatableComponent(player, key, args)), colour));
     }
 
     public static void sendTranslatableMessage(CommandSourceStack source, String indent, String key, boolean emptyLine, ChatFormatting colour, Object... args) {
-        sendMessage(source, Component.literal(indent).append(translatableComponent(source, key, args)).withStyle(colour), emptyLine);
+        sendMessage(source, withColour(Component.literal(indent).append(translatableComponent(source, key, args)), colour), emptyLine);
     }
     public static void sendTranslatableMessage(Player player, String indent, String key, boolean emptyLine, ChatFormatting colour, Object... args) {
-        sendMessage(player, Component.literal(indent).append(translatableComponent(player, key, args)).withStyle(colour), emptyLine);
+        sendMessage(player, withColour(Component.literal(indent).append(translatableComponent(player, key, args)), colour), emptyLine);
     }
 
     public static MutableComponent getTranslatableComponent(String key, Object... args) {
@@ -168,14 +129,39 @@ public class MessageFunctions {
         return Component.literal(TranslationResolver.resolve(key, args));
     }
 
+    private static MutableComponent withColour(MutableComponent message, ChatFormatting colour) {
+        if (colour != null) {
+            message.withStyle(colour);
+        }
+        return message;
+    }
+
+    private static MutableComponent buildMessage(String m, ChatFormatting colour, String url) {
+        MutableComponent message = withColour(Component.literal(m), colour);
+        if (m.contains("http") || !url.isEmpty()) {
+            if (url.isEmpty()) {
+                for (String word : m.split(" ")) {
+                    if (word.contains("http")) {
+                        url = word;
+                        break;
+                    }
+                }
+            }
+
+            if (!url.isEmpty()) {
+                Style clickstyle = message.getStyle().withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, url));
+                message.withStyle(clickstyle);
+            }
+        }
+        return message;
+    }
+
     public static void broadcastMessage(Level world, String m, ChatFormatting colour) {
         if (m.isEmpty()) {
             return;
         }
 
-        MutableComponent message = Component.literal(m);
-        message.withStyle(colour);
-        broadcastMessage(world, message);
+        broadcastMessage(world, withColour(Component.literal(m), colour));
     }
     public static void broadcastMessage(Level world, MutableComponent message) {
         MinecraftServer server = world.getServer();
@@ -195,7 +181,7 @@ public class MessageFunctions {
         }
 
         for (ServerPlayer player : server.getPlayerList().getPlayers()) {
-            sendMessage(player, translatableComponent(player, key, args).withStyle(colour));
+            sendMessage(player, withColour(translatableComponent(player, key, args), colour));
         }
     }
 
