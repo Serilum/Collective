@@ -12,7 +12,7 @@
   "client": [
     "ClientLanguageMixin",
     "ClientPacketListenerMixin",
-    "GuiMixin",
+    "HudMixin",
     "LanguageManagerMixin",
     "TitleScreenMixin",
     "WorldOpenFlowsMixin"
