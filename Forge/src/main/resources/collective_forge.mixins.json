@@ -5,19 +5,20 @@
   "compatibilityLevel": "JAVA_17",
   "refmap": "collective_forge.refmap.json",
   "mixins": [
-	"BlockEntityMixin",
-	"BoneMealItemMixin",
-	"PrimaryLevelDataMixin"
+    "BlockEntityMixin",
+    "BoneMealItemMixin",
+    "PrimaryLevelDataMixin"
   ],
   "client": [
     "ClientLanguageMixin",
     "LanguageManagerMixin",
-	"TitleScreenMixin",
-	"WorldOpenFlowsMixin"
+    "MinecraftMixin",
+    "TitleScreenMixin",
+    "WorldOpenFlowsMixin"
   ],
   "server": [
   ],
   "injectors": {
-	"defaultRequire": 1
+    "defaultRequire": 1
   }
 }
