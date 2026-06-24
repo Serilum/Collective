@@ -11,9 +11,10 @@
   ],
   "client": [
     "ClientLanguageMixin",
-    "LanguageManagerMixin",
     "ClientPacketListenerMixin",
     "GuiMixin",
+    "LanguageManagerMixin",
+    "MinecraftMixin",
     "TitleScreenMixin",
     "WorldOpenFlowsMixin"
   ],
