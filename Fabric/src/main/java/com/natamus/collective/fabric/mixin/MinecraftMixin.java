@@ -2,8 +2,10 @@ package com.natamus.collective.fabric.mixin;
 
 import com.mojang.authlib.minecraft.UserApiService;
 import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
+import com.natamus.collective.config.CollectiveConfigHandler;
 import com.natamus.collective.data.Constants;
 import com.natamus.collective.fabric.callbacks.CollectiveLifecycleEvents;
+import com.natamus.collective.services.Services;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.main.GameConfig;
@@ -29,4 +31,11 @@ public class MinecraftMixin {
             cir.setReturnValue(UserApiService.OFFLINE);
         }
     }
+
+	@Inject(method = "createTitle", at = @At("RETURN"), cancellable = true)
+	private void Minecraft_createTitle(CallbackInfoReturnable<String> cir) {
+        if (CollectiveConfigHandler.updateMinecraftWindowTitleInDevMode && Services.MODLOADER.isDevelopmentEnvironment()) {
+            cir.setReturnValue("Minecraft · Dev mode · " + Services.MODLOADER.getModLoaderName());
+        }
+	}
 }

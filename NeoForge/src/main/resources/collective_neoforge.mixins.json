@@ -15,6 +15,7 @@
     "ClientPacketListenerMixin",
     "HudMixin",
     "LanguageManagerMixin",
+    "MinecraftMixin",
     "TitleScreenMixin",
     "WorldOpenFlowsMixin"
   ],
