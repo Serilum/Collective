@@ -21,6 +21,8 @@ public class CollectiveConfigHandler extends DuskConfig {
     @Entry public static String serverLanguage = "en_us";
     @Entry public static String itemNameTranslationMode = "auto";
 
+    @Entry public static boolean updateMinecraftWindowTitleInDevMode = false;
+
     public static void initConfig() {
         configMetaData.put("enableUpdateChecker", Arrays.asList(
                 "Whether Collective should show a message in the console if a dependent mod has an update available. Update checks are optional and async."
@@ -52,6 +54,10 @@ public class CollectiveConfigHandler extends DuskConfig {
         ));
         configMetaData.put("itemNameTranslationMode", Arrays.asList(
                 "How custom item names show for players without Collective when the resource pack is off. 'auto' copies the first player to join and remembers it; 'server' always uses the server language; 'client' uses each player's own language, but those without Collective then see raw keys."
+        ));
+
+        configMetaData.put("updateMinecraftWindowTitleInDevMode", Arrays.asList(
+                "Used in my local development flow. Has no effect in production, only when ran from an IDE with Collective installed."
         ));
 
         DuskConfig.init(CollectiveReference.NAME, CollectiveReference.MOD_ID, CollectiveConfigHandler.class);
