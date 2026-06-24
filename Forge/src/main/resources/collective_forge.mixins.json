@@ -5,20 +5,21 @@
   "plugin": "com.natamus.collective.forge.mixin.plugin.ForgeMixinConfigPlugin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
-	"BlockEntityMixin",
-	"BoneMealItemMixin",
-	"PrimaryLevelDataMixin"
+    "BlockEntityMixin",
+    "BoneMealItemMixin",
+    "PrimaryLevelDataMixin"
   ],
   "client": [
     "ClientLanguageMixin",
+    "GuiMixin",
     "LanguageManagerMixin",
-	"GuiMixin",
-	"TitleScreenMixin",
-	"WorldOpenFlowsMixin"
+    "MinecraftMixin",
+    "TitleScreenMixin",
+    "WorldOpenFlowsMixin"
   ],
   "server": [
   ],
   "injectors": {
-	"defaultRequire": 1
+    "defaultRequire": 1
   }
 }
