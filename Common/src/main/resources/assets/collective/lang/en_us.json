@@ -38,6 +38,18 @@
   "collective.beautifiedchatserver.message.removedrank": "Removed rank %s",
   "collective.beautifiedchatserver.message.unknowncolor": "Unknown color: %s",
 
+  "_comment_modname_brandnewday": "Brand New Day",
+  "collective.brandnewday.day": "Day %s",
+  "collective.brandnewday.summary": "Summary:",
+  "collective.brandnewday.stat.mobs_slain": "Mobs slain:",
+  "collective.brandnewday.stat.deaths": "Deaths:",
+  "collective.brandnewday.stat.blocks_broken": "Blocks broken:",
+  "collective.brandnewday.stat.items_crafted": "Items crafted:",
+  "collective.brandnewday.stat.blocks_traveled": "Blocks traveled:",
+  "collective.brandnewday.message.previewing": "Previewing the new day screen.",
+  "collective.brandnewday.message.showinglast": "Showing the last new day screen.",
+  "collective.brandnewday.message.nolast": "There is no previous new day to show.",
+
   "_comment_modname_breedablekillerrabbit": "Breedable Killer Rabbit",
   "collective.breedablekillerrabbit.message.killerrabbitalready": "The killer rabbit has already been tamed.",
   "collective.breedablekillerrabbit.message.killerrabbitborn": "A killer rabbit has been born! Are you far enough away or do you have a golden carrot to share?",
