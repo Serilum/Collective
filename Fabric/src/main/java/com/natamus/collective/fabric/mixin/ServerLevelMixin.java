@@ -1,5 +1,6 @@
 package com.natamus.collective.fabric.mixin;
 
+import com.natamus.collective.data.BlockEntityData;
 import com.natamus.collective.fabric.callbacks.CollectiveBlockEvents;
 import com.natamus.collective.fabric.callbacks.CollectiveEntityEvents;
 import net.minecraft.core.BlockPos;
@@ -18,6 +19,11 @@ import java.util.EnumSet;
 
 @Mixin(value = ServerLevel.class, priority = 1001)
 public class ServerLevelMixin {
+	@Inject(method = "close()V", at = @At(value = "TAIL"))
+	public void serverLevel_close(CallbackInfo ci) {
+		BlockEntityData.removeLevelFromCache((Level)(Object)this);
+	}
+
 	@Inject(method = "addEntity(Lnet/minecraft/world/entity/Entity;)Z", at = @At(value = "HEAD"), cancellable = true)
 	private void serverLevel_addEntity(Entity entity, CallbackInfoReturnable<Boolean> ci) {
 		Level world = entity.getCommandSenderWorld();

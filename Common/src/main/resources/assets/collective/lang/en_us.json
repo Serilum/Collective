@@ -340,7 +340,7 @@
   "collective.seaworthyboats.message.notenough": "You need %s %s to reinforce this boat.",
   "collective.seaworthyboats.message.repaired": "Boat repaired.",
   "collective.seaworthyboats.message.broken": "This boat is broken. Repair it by right-clicking a shipyard.",
-  "collective.seaworthyboats.message.pickuphint": "Sneak and right-click with an empty hand to pick up the boat.",
+  "collective.seaworthyboats.message.pickuphint": "Crouch and right-click with an empty hand to pick up the boat.",
   "collective.seaworthyboats.message.needplanks": "You need %s planks to repair this boat.",
   "collective.seaworthyboats.message.mode.repair": "Shipyard set to repair mode.",
   "collective.seaworthyboats.message.mode.upgrade": "Shipyard set to upgrade mode.",
@@ -364,6 +364,8 @@
   "collective.seaworthyboats.tier.iron": "Iron",
   "collective.seaworthyboats.tier.diamond": "Diamond",
   "collective.seaworthyboats.tier.netherite": "Netherite",
+  "collective.seaworthyboats.message.chestpickupconfirm": "Crouch and right-click again to pick up the boat. The chest's contents will drop.",
+  "collective.seaworthyboats.shipyard.switchhint": "Crouch and right-click to switch modes.",
 
   "_comment_modname_shadowmounts": "Shadow Mounts",
   "item.shadowmounts.shadow_saddle": "Shadow Saddle",
