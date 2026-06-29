@@ -5,6 +5,7 @@ import com.natamus.collective.config.LoadJSONFiles;
 import com.natamus.collective.data.Constants;
 import com.natamus.collective.data.GlobalVariables;
 import com.natamus.collective.networking.PacketRegistration;
+import com.natamus.collective.services.Services;
 import com.natamus.collective.util.CollectiveReference;
 
 public class CollectiveCommon {
@@ -24,6 +25,6 @@ public class CollectiveCommon {
 	}
 
 	public static void loadEvents() {
-
+		Services.ENTITYDATA.init();
 	}
 }

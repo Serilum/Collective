@@ -8,7 +8,9 @@
     "BaseSpawnerMixin",
     "BlockEntityMixin",
     "BoneMealItemMixin",
-    "PrimaryLevelDataMixin"
+    "EntityMixin",
+    "PrimaryLevelDataMixin",
+    "ServerPlayerMixin"
   ],
   "client": [
     "ClientLanguageMixin",

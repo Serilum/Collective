@@ -7,7 +7,6 @@ import com.natamus.collective.util.CollectiveReference;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.permissions.Permissions;
 import net.minecraft.world.entity.player.Player;
 
