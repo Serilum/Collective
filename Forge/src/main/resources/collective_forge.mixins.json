@@ -9,6 +9,7 @@
     "BoneMealItemMixin",
     "EntityMixin",
     "PrimaryLevelDataMixin",
+    "ServerLevelMixin",
     "ServerPlayerMixin"
   ],
   "client": [
