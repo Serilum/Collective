@@ -80,6 +80,18 @@ public class MessageFunctions {
         serverPlayer.sendSystemMessage(message);
     }
 
+    public static void sendClientMessage(Player player, MutableComponent message) {
+        player.sendSystemMessage(message);
+    }
+
+    public static void sendClientTranslatableMessage(Player player, String key, ChatFormatting colour, Object... args) {
+        sendClientMessage(player, withColour(translatableComponent(player, key, args), colour));
+    }
+
+    public static void sendClientTranslatableMessage(Player player, String indent, String key, ChatFormatting colour, Object... args) {
+        sendClientMessage(player, withColour(Component.literal(indent).append(translatableComponent(player, key, args)), colour));
+    }
+
     public static void sendTranslatableMessage(CommandSourceStack source, String key, ChatFormatting colour, Object... args) {
         sendMessage(source, withColour(translatableComponent(source, key, args), colour));
     }
