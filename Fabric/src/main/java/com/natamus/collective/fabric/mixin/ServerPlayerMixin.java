@@ -1,7 +1,9 @@
 package com.natamus.collective.fabric.mixin;
 
+import com.natamus.collective.data.IEntityDataHolder;
 import com.natamus.collective.fabric.callbacks.CollectiveItemEvents;
 import com.natamus.collective.fabric.callbacks.CollectivePlayerEvents;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.damagesource.DamageSource;
@@ -44,5 +46,11 @@ public class ServerPlayerMixin {
 	private void ServerPlayer_drop(ItemStack itemStack, boolean bl, boolean bl2, CallbackInfoReturnable<ItemEntity> ci) {
 		Player player = (Player)(Object)this;
 		CollectiveItemEvents.ON_ITEM_TOSSED.invoker().onItemTossed(player, itemStack);
+	}
+
+	@Inject(method = "restoreFrom(Lnet/minecraft/server/level/ServerPlayer;Z)V", at = @At(value = "TAIL"))
+	public void ServerPlayer_restoreFrom(ServerPlayer oldPlayer, boolean restoreAll, CallbackInfo ci) {
+		CompoundTag stored = ((IEntityDataHolder)oldPlayer).collective_getStored();
+		((IEntityDataHolder)this).collective_setStored(stored);
 	}
 }
