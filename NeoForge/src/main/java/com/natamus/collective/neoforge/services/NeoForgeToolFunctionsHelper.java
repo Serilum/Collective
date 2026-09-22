@@ -1,8 +1,10 @@
 package com.natamus.collective.neoforge.services;
 
+import com.natamus.collective.functions.ItemFunctions;
 import com.natamus.collective.services.helpers.ToolFunctionsHelper;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.item.*;
+import net.minecraft.world.item.component.BlockTransformers;
 import net.neoforged.neoforge.common.ItemAbilities;
 import net.neoforged.neoforge.common.ItemAbility;
 
@@ -31,17 +33,17 @@ public class NeoForgeToolFunctionsHelper implements ToolFunctionsHelper {
 
 	@Override
 	public boolean isAxe(ItemStack itemStack) {
-		return itemStack.getItem() instanceof AxeItem || itemStack.is(ItemTags.AXES) || canPerformOneOfActions(itemStack, ItemAbilities.DEFAULT_AXE_ACTIONS);
+		return ItemFunctions.hasBlockTransformer(itemStack, BlockTransformers.AXE) || itemStack.is(ItemTags.AXES);
 	}
 
 	@Override
 	public boolean isShovel(ItemStack itemStack) {
-		return itemStack.getItem() instanceof ShovelItem || itemStack.is(ItemTags.SHOVELS) || canPerformOneOfActions(itemStack, ItemAbilities.DEFAULT_SHOVEL_ACTIONS);
+		return ItemFunctions.hasBlockTransformer(itemStack, BlockTransformers.SHOVEL) || itemStack.is(ItemTags.SHOVELS);
 	}
 
 	@Override
 	public boolean isHoe(ItemStack itemStack) {
-		return itemStack.getItem() instanceof HoeItem || itemStack.is(ItemTags.HOES) || canPerformOneOfActions(itemStack, ItemAbilities.DEFAULT_HOE_ACTIONS);
+		return ItemFunctions.hasBlockTransformer(itemStack, BlockTransformers.HOE) || itemStack.is(ItemTags.HOES);
 	}
 
 	@Override

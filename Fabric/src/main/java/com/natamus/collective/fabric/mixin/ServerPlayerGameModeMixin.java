@@ -45,8 +45,8 @@ public class ServerPlayerGameModeMixin {
 		}
 	}
 
-	@Inject(method = "handleBlockBreakAction(Lnet/minecraft/core/BlockPos;Lnet/minecraft/network/protocol/game/ServerboundPlayerActionPacket$Action;Lnet/minecraft/core/Direction;II)V", at = @At(value = "INVOKE_ASSIGN", target = "Ljava/util/Objects;equals(Ljava/lang/Object;Ljava/lang/Object;)Z", ordinal = 0), cancellable = true)
-	public void ServerPlayerGameMode_silence_block_mismatch(BlockPos blockPos, ServerboundPlayerActionPacket.Action action, Direction direction, int i, int j, CallbackInfo ci) {
+	@Inject(method = "abortDestroyBlock(Lnet/minecraft/core/BlockPos;I)V", at = @At(value = "INVOKE_ASSIGN", target = "Ljava/util/Objects;equals(Ljava/lang/Object;Ljava/lang/Object;)Z", ordinal = 0), cancellable = true)
+	public void ServerPlayerGameMode_silence_block_mismatch(BlockPos blockPos, int sequence, CallbackInfo ci) {
 		this.level.destroyBlockProgress(this.player.getId(), this.destroyPos, -1);
 		this.player.connection.send(new ClientboundBlockUpdatePacket(this.destroyPos, this.level.getBlockState(this.destroyPos)));
 		this.level.destroyBlockProgress(this.player.getId(), blockPos, -1);

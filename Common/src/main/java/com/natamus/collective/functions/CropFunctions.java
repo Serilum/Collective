@@ -8,6 +8,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.BonemealSource;
 import net.minecraft.world.level.block.BonemealableBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
@@ -20,10 +21,10 @@ public class CropFunctions {
 		BlockState blockstate = world.getBlockState(pos);
 		
 		if (blockstate.getBlock() instanceof BonemealableBlock bonemealableblock) {
-			if (bonemealableblock.isValidBonemealTarget(world, pos, blockstate)) {
+			if (bonemealableblock.isValidBonemealTarget(world, pos, blockstate, BonemealSource.INTERACTION)) {
 				if (world instanceof ServerLevel) {
-					if (bonemealableblock.isBonemealSuccess(world, world.getRandom(), pos, blockstate)) {
-						bonemealableblock.performBonemeal((ServerLevel)world, world.getRandom(), pos, blockstate);
+					if (bonemealableblock.isBonemealSuccess(world, world.getRandom(), pos, blockstate, BonemealSource.INTERACTION)) {
+						bonemealableblock.performBonemeal((ServerLevel)world, world.getRandom(), pos, blockstate, BonemealSource.INTERACTION);
 					}
 					
 					if (!player.isCreative()) {
@@ -52,11 +53,11 @@ public class CropFunctions {
 		Block block = blockState.getBlock();
 
 		if (block instanceof BonemealableBlock igrowable) {
-			while (igrowable.isValidBonemealTarget(level, blockPos, blockState)) {
-				if (!igrowable.isBonemealSuccess(level, level.getRandom(), blockPos, blockState)) {
+			while (igrowable.isValidBonemealTarget(level, blockPos, blockState, BonemealSource.INTERACTION)) {
+				if (!igrowable.isBonemealSuccess(level, level.getRandom(), blockPos, blockState, BonemealSource.INTERACTION)) {
 					break;
 				}
-				igrowable.performBonemeal((ServerLevel)level, level.getRandom(), blockPos, blockState);
+				igrowable.performBonemeal((ServerLevel)level, level.getRandom(), blockPos, blockState, BonemealSource.INTERACTION);
 				blockState = level.getBlockState(blockPos);
 				itemStack.shrink(1);
 				if (itemStack.getCount() == 0) {

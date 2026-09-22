@@ -24,14 +24,14 @@ public class WorldFunctions {
 		}
 
 		ServerClockManager clockManager = serverLevel.getServer().clockManager();
-		long totalTicks = clockManager.getTotalTicks(clock.get());
+		long totalTicks = clockManager.getInstance(clock.get()).totalTicks();
 		long days = totalTicks / 24000L;
 		clockManager.setTotalTicks(clock.get(), time + (days * 24000L));
 	}
 	
 	public static int getTotalTimePassed(ServerLevel serverLevel) {
 		Optional<Holder<WorldClock>> clock = serverLevel.dimensionTypeRegistration().value().defaultClock();
-		return clock.map(worldClockHolder -> (int) serverLevel.getServer().clockManager().getTotalTicks(worldClockHolder)).orElse(0);
+		return clock.map(worldClockHolder -> (int) serverLevel.getServer().clockManager().getInstance(worldClockHolder).totalTicks()).orElse(0);
 	}
 	public static int getTotalDaysPassed(ServerLevel serverLevel) {
 		int currenttime = getTotalTimePassed(serverLevel);

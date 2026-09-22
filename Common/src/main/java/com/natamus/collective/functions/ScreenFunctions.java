@@ -10,6 +10,9 @@ import net.minecraft.client.gui.screens.inventory.MerchantScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.block.entity.SignBlockEntity;
 import net.minecraft.world.level.block.entity.SignText;
+import net.minecraft.world.level.block.entity.SignTextSlot;
+
+import java.util.List;
 
 public class ScreenFunctions {
 	public static void setScreenTitle(Screen screen, Component titleComponent) {
@@ -27,8 +30,8 @@ public class ScreenFunctions {
 		}
 
 		abstractSignEditScreen.messages[newLine] = newMessage;
-		abstractSignEditScreen.text = abstractSignEditScreen.text.setMessage(newLine, Component.literal(newMessage));
-		abstractSignEditScreen.sign.setText(abstractSignEditScreen.text, abstractSignEditScreen.isFrontText);
+		abstractSignEditScreen.text.setLine(newLine, Component.literal(newMessage));
+		abstractSignEditScreen.sign.setText(abstractSignEditScreen.text.asImmutable(), abstractSignEditScreen.slot);
 	}
 
 	public static SignBlockEntity getSignBlockEntityFromScreen(AbstractSignEditScreen abstractSignEditScreen) {
@@ -36,16 +39,22 @@ public class ScreenFunctions {
 	}
 
 	public static SignText getSignTextFromScreen(AbstractSignEditScreen abstractSignEditScreen) {
-		return abstractSignEditScreen.text;
+		return abstractSignEditScreen.text.asImmutable();
 	}
 	public static void setSignTextOnScreen(AbstractSignEditScreen abstractSignEditScreen, String message, int line) {
-		abstractSignEditScreen.text.setMessage(line, Component.literal(message));
+		abstractSignEditScreen.text.setLine(line, Component.literal(message));
 	}
 	public static void setSignTextOnScreen(AbstractSignEditScreen abstractSignEditScreen, Component message, int line) {
-		abstractSignEditScreen.text.setMessage(line, message);
+		abstractSignEditScreen.text.setLine(line, message);
 	}
 	public static void replaceSignTextOnScreen(AbstractSignEditScreen abstractSignEditScreen, SignText signText) {
-		abstractSignEditScreen.text = signText;
+		List<Component> messages = signText.getMessages(false);
+		List<Component> filteredMessages = signText.getMessages(true);
+		for (int i = 0; i < messages.size(); i++) {
+			abstractSignEditScreen.text.setLine(i, messages.get(i), filteredMessages.get(i));
+		}
+
+		abstractSignEditScreen.text.setColor(signText.getColor()).setTextGlowing(signText.hasGlowingText());
 	}
 
 	public static String[] getSignMessagesFromScreen(AbstractSignEditScreen abstractSignEditScreen) {
@@ -74,7 +83,7 @@ public class ScreenFunctions {
 	}
 
 	public static boolean signTextOnScreenisFront(AbstractSignEditScreen abstractSignEditScreen) {
-		return abstractSignEditScreen.isFrontText;
+		return abstractSignEditScreen.slot == SignTextSlot.FRONT;
 	}
 
 	public static <T extends GuiEventListener & Renderable & NarratableEntry> T addRenderableWidget(Screen screen, T renderableWidget) {

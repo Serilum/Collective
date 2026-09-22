@@ -8,7 +8,6 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -44,12 +43,6 @@ public class PlayerMixin {
 		if (newSpeed != -1 && newSpeed != f) {
 			cir.setReturnValue(newSpeed);
 		}
-	}
-	
-	@Inject(method = "drop(Lnet/minecraft/world/item/ItemStack;Z)Lnet/minecraft/world/entity/item/ItemEntity;", at = @At(value = "HEAD"))
-	private void Player_drop(ItemStack itemStack, boolean bl, CallbackInfoReturnable<ItemEntity> ci) {
-		Player player = (Player)(Object)this;
-		CollectiveItemEvents.ON_ITEM_TOSSED.invoker().onItemTossed(player, itemStack);
 	}
 
 	/*@Inject(method = "hurtCurrentlyUsedShield(F)V", at = @At(value = "INVOKE_ASSIGN", target = "Lnet/minecraft/world/item/ItemStack;isEmpty()Z"))

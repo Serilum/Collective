@@ -1,13 +1,10 @@
 package com.natamus.collective.fabric.mixin;
 
 import com.natamus.collective.data.IEntityDataHolder;
-import com.natamus.collective.fabric.callbacks.CollectiveItemEvents;
 import com.natamus.collective.fabric.callbacks.CollectivePlayerEvents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.entity.item.ItemEntity;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.portal.TeleportTransition;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -36,12 +33,6 @@ public class ServerPlayerMixin {
 		ServerPlayer serverPlayer = (ServerPlayer)(Object)this;
 		
 		CollectivePlayerEvents.PLAYER_CHANGE_DIMENSION.invoker().onChangeDimension(serverPlayer.level(), serverPlayer);
-	}
-	
-	@Inject(method = "drop(Lnet/minecraft/world/item/ItemStack;ZZ)Lnet/minecraft/world/entity/item/ItemEntity;", at = @At(value = "TAIL"))
-	private void ServerPlayer_drop(ItemStack itemStack, boolean bl, boolean bl2, CallbackInfoReturnable<ItemEntity> ci) {
-		ServerPlayer serverPlayer = (ServerPlayer)(Object)this;
-		CollectiveItemEvents.ON_ITEM_TOSSED.invoker().onItemTossed(serverPlayer, itemStack);
 	}
 
 	@Inject(method = "restoreFrom(Lnet/minecraft/server/level/ServerPlayer;Z)V", at = @At(value = "TAIL"))

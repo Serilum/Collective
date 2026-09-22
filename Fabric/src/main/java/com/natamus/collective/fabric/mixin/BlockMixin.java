@@ -2,9 +2,9 @@ package com.natamus.collective.fabric.mixin;
 
 import com.natamus.collective.fabric.callbacks.CollectiveBlockEvents;
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.entity.player.Player;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -23,8 +23,8 @@ public class BlockMixin {
 	}*/
 	
 	@Inject(method = "playerDestroy", at = @At(value = "HEAD"), cancellable = true) 
-	public void Block_playerDestroy(Level level, Player player, BlockPos blockPos, BlockState blockState, BlockEntity blockEntity, ItemStack itemStack, CallbackInfo ci) {
-		if (!CollectiveBlockEvents.BLOCK_DESTROY.invoker().onBlockDestroy(level, player, blockPos, blockState, blockEntity, itemStack)) {
+	public void Block_playerDestroy(ServerLevel level, ServerPlayer player, BlockPos pos, BlockState state, BlockEntity blockEntity, ItemStack destroyedWith, CallbackInfo ci) {
+		if (!CollectiveBlockEvents.BLOCK_DESTROY.invoker().onBlockDestroy(level, player, pos, state, blockEntity, destroyedWith)) {
 			ci.cancel();
 		}
 	}

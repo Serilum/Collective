@@ -6,6 +6,9 @@ import com.natamus.collective.fakeplayer.FakePlayer;
 import com.natamus.collective.fakeplayer.FakePlayerFactory;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.Holder;
+import net.minecraft.core.component.BlockTransformer;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
@@ -14,6 +17,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.stats.Stats;
+import net.minecraft.util.Prediction;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.player.Player;
@@ -122,31 +126,31 @@ public class ItemFunctions {
 			}
 		}
 		else if (!player.getInventory().add(give)) {
-			player.drop(give, false);
+			player.drop(give, false, Prediction.SERVER_ONLY);
 		}
 	}
-	
+
 	public static void giveOrDropItemStack(Player player, ItemStack give) {
 		if (!player.getInventory().add(give)) {
-			player.drop(give, false);
+			player.drop(give, false, Prediction.SERVER_ONLY);
 		}
 	}
 
 	public static void itemHurtBreakAndEvent(ItemStack itemStack, ServerPlayer player, InteractionHand hand, int damage) {
-		Level level = player.level();
+		ServerLevel level = player.level();
 		if (level.isClientSide()) {
 			return;
 		}
 
 		if (!(player.getAbilities().instabuild)) {
 			if (itemStack.isDamageableItem()) {
-				itemStack.hurtAndBreak(damage, (ServerLevel)level, player, (Item item) -> {
+				itemStack.hurtAndBreak(damage, level, player, (ItemStack brokenStack) -> {
 					//CollectiveItemEvents.ON_ITEM_DESTROYED.invoker().onItemDestroyed(player, itemStack, hand); // TODO
 
 					itemStack.shrink(1);
 					itemStack.setDamageValue(0);
 
-					player.awardStat(Stats.ITEM_BROKEN.get(item));
+					player.awardStat(Stats.ITEM_BROKEN.get(brokenStack.getItem()));
 				});
 			}
 		}
@@ -154,6 +158,11 @@ public class ItemFunctions {
 	
 	public static boolean isStoneTypeItem(Item item) {
 		return GlobalVariables.stoneblockitems.contains(item);
+	}
+
+	public static boolean hasBlockTransformer(ItemStack itemStack, ResourceKey<BlockTransformer> blockTransformerKey) {
+		Holder<BlockTransformer> blockTransformer = itemStack.get(DataComponents.BLOCK_TRANSFORMER);
+		return blockTransformer != null && blockTransformer.is(blockTransformerKey);
 	}
 	
 	public static String itemToReadableString(Item item, int amount) {

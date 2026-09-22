@@ -3,10 +3,10 @@ package com.natamus.collective.functions;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import com.mojang.authlib.GameProfile;
-import com.mojang.authlib.minecraft.MinecraftSessionService;
+import com.mojang.authlib.minecraft.SessionService;
 import com.mojang.authlib.properties.Property;
 import com.mojang.authlib.properties.PropertyMap;
-import com.mojang.authlib.yggdrasil.ProfileResult;
+import com.mojang.authlib.services.ProfileResult;
 import com.natamus.collective.features.PlayerHeadCacheFeature;
 import net.minecraft.core.UUIDUtil;
 import net.minecraft.core.component.DataComponents;
@@ -118,7 +118,7 @@ public class HeadFunctions {
 	}
 
 	public static GameProfile getGameProfileFromPlayerName(ServerLevel serverLevel, String playerName) {
-		MinecraftSessionService minecraftSessionService = serverLevel.getServer().services().sessionService();
+		SessionService minecraftSessionService = serverLevel.getServer().services().sessionService();
 
 		MinecraftServer minecraftServer = serverLevel.getServer();
 		UserNameToIdResolver userNameToIdResolver = minecraftServer.services().nameToIdCache();

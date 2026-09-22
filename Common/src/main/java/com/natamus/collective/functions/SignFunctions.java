@@ -5,6 +5,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.HangingSignBlockEntity;
 import net.minecraft.world.level.block.entity.SignBlockEntity;
 import net.minecraft.world.level.block.entity.SignText;
+import net.minecraft.world.level.block.entity.SignTextSlot;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -22,10 +23,10 @@ public class SignFunctions {
 	}
 
 	public static List<String> getSignText(SignBlockEntity signBlockEntity) {
-		return getSignText(Arrays.asList(signBlockEntity.getFrontText(), signBlockEntity.getBackText()));
+		return getSignText(Arrays.asList(signBlockEntity.getText(SignTextSlot.FRONT), signBlockEntity.getText(SignTextSlot.BACK)));
 	}
 	public static List<String> getSignText(HangingSignBlockEntity hangingSignBlockEntity) {
-		return getSignText(Arrays.asList(hangingSignBlockEntity.getFrontText(), hangingSignBlockEntity.getBackText()));
+		return getSignText(Arrays.asList(hangingSignBlockEntity.getText(SignTextSlot.FRONT), hangingSignBlockEntity.getText(SignTextSlot.BACK)));
 	}
 
 	public static List<String> getSignText(List<SignText> signTextList) {

@@ -1,12 +1,16 @@
 package com.natamus.collective.fabric.mixin;
 
 import com.natamus.collective.fabric.callbacks.CollectiveEntityEvents;
+import com.natamus.collective.fabric.callbacks.CollectiveItemEvents;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.EntityTypeTags;
+import net.minecraft.util.Prediction;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import org.spongepowered.asm.mixin.Mixin;
@@ -80,6 +84,18 @@ public abstract class LivingEntityMixin {
 		Level world = livingEntity.level();
 		
 		CollectiveEntityEvents.ON_ENTITY_IS_DROPPING_LOOT.invoker().onDroppingLoot(world, livingEntity, damageSource);
+	}
+
+	@Inject(method = "drop(Lnet/minecraft/world/item/ItemStack;ZLnet/minecraft/util/Prediction;)Lnet/minecraft/world/entity/item/ItemEntity;", at = @At(value = "RETURN"))
+	private void LivingEntity_drop(ItemStack itemStack, boolean thrownFromHand, Prediction prediction, CallbackInfoReturnable<ItemEntity> cir) {
+		if (cir.getReturnValue() == null) {
+			return;
+		}
+
+		LivingEntity livingEntity = (LivingEntity)(Object)this;
+		if (livingEntity instanceof Player player) {
+			CollectiveItemEvents.ON_ITEM_TOSSED.invoker().onItemTossed(player, itemStack);
+		}
 	}
 	
 	@Inject(method = "jumpFromGround", at = @At(value = "TAIL"))

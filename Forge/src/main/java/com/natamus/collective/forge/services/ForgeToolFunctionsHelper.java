@@ -1,8 +1,10 @@
 package com.natamus.collective.forge.services;
 
+import com.natamus.collective.functions.ItemFunctions;
 import com.natamus.collective.services.helpers.ToolFunctionsHelper;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.item.*;
+import net.minecraft.world.item.component.BlockTransformers;
 import net.minecraftforge.common.ToolAction;
 import net.minecraftforge.common.ToolActions;
 
@@ -26,22 +28,22 @@ public class ForgeToolFunctionsHelper implements ToolFunctionsHelper {
 
 	@Override
 	public boolean isPickaxe(ItemStack itemStack) {
-		return itemStack.is(ItemTags.PICKAXES) || itemStack.canPerformAction(ToolActions.PICKAXE_DIG);
+		return itemStack.is(ItemTags.PICKAXES);
 	}
 
 	@Override
 	public boolean isAxe(ItemStack itemStack) {
-		return itemStack.getItem() instanceof AxeItem || itemStack.is(ItemTags.AXES) || canPerformOneOfActions(itemStack, ToolActions.DEFAULT_AXE_ACTIONS);
+		return ItemFunctions.hasBlockTransformer(itemStack, BlockTransformers.AXE) || itemStack.is(ItemTags.AXES);
 	}
 
 	@Override
 	public boolean isShovel(ItemStack itemStack) {
-		return itemStack.getItem() instanceof ShovelItem || itemStack.is(ItemTags.SHOVELS) || canPerformOneOfActions(itemStack, ToolActions.DEFAULT_SHOVEL_ACTIONS);
+		return ItemFunctions.hasBlockTransformer(itemStack, BlockTransformers.SHOVEL) || itemStack.is(ItemTags.SHOVELS);
 	}
 
 	@Override
 	public boolean isHoe(ItemStack itemStack) {
-		return itemStack.getItem() instanceof HoeItem || itemStack.is(ItemTags.HOES) || canPerformOneOfActions(itemStack, ToolActions.DEFAULT_HOE_ACTIONS);
+		return ItemFunctions.hasBlockTransformer(itemStack, BlockTransformers.HOE) || itemStack.is(ItemTags.HOES);
 	}
 
 	@Override

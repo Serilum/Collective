@@ -32,7 +32,7 @@ public class CommandFunctions {
 
 			@Override
 			public @NotNull CommandSourceStack createCommandSourceStack(@NotNull ServerLevel serverLevel, @NotNull CommandSource commandSource) {
-				return new CommandSourceStack(commandSource, getPosition(), Vec2.ZERO, serverLevel, PermissionSet.ALL_PERMISSIONS, "dev", Component.literal("dev"), serverLevel.getServer(), null);
+				return new CommandSourceStack(commandSource, getPosition(), Vec2.ZERO, serverLevel, PermissionSet.ALL_PERMISSIONS, Component.literal("dev"), serverLevel.getServer());
 			}
 
 			@Override
@@ -54,7 +54,7 @@ public class CommandFunctions {
 							this.setLastOutput(null);
 
 							try (CloseableCommandBlockSource closedCommandBlockSource = new CloseableCommandBlockSource(serverLevel)) {
-								CommandSource commandSource = (CommandSource) Objects.requireNonNullElse(closedCommandBlockSource, CommandSource.NULL);
+								CommandSource commandSource = Objects.requireNonNullElse(closedCommandBlockSource, CommandSource.NULL);
 								CommandSourceStack commandsourcestack = this.createCommandSourceStack(serverLevel, commandSource).withCallback((b, i) -> {
 									if (b) {
 										this.setSuccessCount(this.getSuccessCount() + 1);

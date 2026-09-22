@@ -22,11 +22,11 @@ accessible method net/minecraft/client/gui/screens/Screen addRenderableWidget (L
 accessible field net/minecraft/client/gui/screens/Screen title Lnet/minecraft/network/chat/Component;
 mutable field net/minecraft/client/gui/screens/Screen title Lnet/minecraft/network/chat/Component;
 accessible field net/minecraft/client/gui/screens/inventory/AbstractSignEditScreen sign Lnet/minecraft/world/level/block/entity/SignBlockEntity;
-accessible field net/minecraft/client/gui/screens/inventory/AbstractSignEditScreen text Lnet/minecraft/world/level/block/entity/SignText;
+accessible field net/minecraft/client/gui/screens/inventory/AbstractSignEditScreen text Lnet/minecraft/world/level/block/entity/SignText$Mutable;
 accessible field net/minecraft/client/gui/screens/inventory/AbstractSignEditScreen messages [Ljava/lang/String;
 accessible field net/minecraft/client/gui/screens/inventory/AbstractSignEditScreen line I
 accessible field net/minecraft/client/gui/screens/inventory/AbstractSignEditScreen signField Lnet/minecraft/client/gui/font/TextFieldHelper;
-accessible field net/minecraft/client/gui/screens/inventory/AbstractSignEditScreen isFrontText Z
+accessible field net/minecraft/client/gui/screens/inventory/AbstractSignEditScreen slot Lnet/minecraft/world/level/block/entity/SignTextSlot;
 accessible method net/minecraft/world/entity/animal/equine/AbstractHorse getFlag (I)Z
 accessible method net/minecraft/world/level/block/TrapDoorBlock getType ()Lnet/minecraft/world/level/block/state/properties/BlockSetType;
 accessible method net/minecraft/world/level/ServerExplosion calculateExplodedPositions ()Ljava/util/List;

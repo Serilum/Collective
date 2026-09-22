@@ -158,9 +158,6 @@ public class FakePlayer extends ServerPlayer {
 		public void handleChat(@NotNull ServerboundChatPacket packet) {}
 
 		@Override
-		public void handleAnimate(@NotNull ServerboundSwingPacket packet) {}
-
-		@Override
 		public void handlePlayerCommand(@NotNull ServerboundPlayerCommandPacket packet) {}
 
 		@Override
