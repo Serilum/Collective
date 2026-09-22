@@ -58,10 +58,10 @@ public class WorldFunctions {
 	public static String getWorldPath(ServerLevel serverLevel) {
 		return getWorldPath(serverLevel.getServer());
 	}
-    public static String getWorldPath(MinecraftServer minecraftServer) {
-        String worldpath = minecraftServer.getWorldPath(LevelResource.ROOT).toString();
-        return worldpath.substring(0, worldpath.length() - 2);
-    }
+	public static String getWorldPath(MinecraftServer minecraftServer) {
+		String worldpath = minecraftServer.getWorldPath(LevelResource.ROOT).toString();
+		return worldpath.substring(0, worldpath.length() - 2);
+	}
 
 	public static String getWorldFolderName(ServerLevel serverLevel) {
 		return getWorldFolderName(serverLevel.getServer());

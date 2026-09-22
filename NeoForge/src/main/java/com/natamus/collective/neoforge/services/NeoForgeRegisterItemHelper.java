@@ -23,12 +23,12 @@ public class NeoForgeRegisterItemHelper implements RegisterItemHelper {
 
 	private static final List<Pair<ResourceKey<CreativeModeTab>, DeferredItem<Item>>> creativeInventoryItemPairs = new ArrayList<>();
 
-    @Override
+	@Override
 	public <T extends Item> void registerItem(Object modEventBusObject, ResourceLocation resourceLocation, Supplier<T> itemSupplier, ResourceKey<CreativeModeTab> creativeModeTabResourceKey, boolean lastItem) {
 		staticRegisterItem(modEventBusObject, resourceLocation, itemSupplier, creativeModeTabResourceKey, lastItem);
 	}
 
-    @Override
+	@Override
 	public Item getRegisteredItem(ResourceLocation resourceLocation) {
 		return registeredItems.get(resourceLocation).get();
 	}

@@ -6,14 +6,14 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.world.level.block.Block;
 
 public class NeoForgeClientUtilsHelper implements ClientUtilsHelper {
-    @SuppressWarnings("deprecation")
+	@SuppressWarnings("deprecation")
 	@Override
-    public void blockSetRenderType(Block block, RenderType renderType) {
-        ItemBlockRenderTypes.setRenderLayer(block, renderType);
-    }
+	public void blockSetRenderType(Block block, RenderType renderType) {
+		ItemBlockRenderTypes.setRenderLayer(block, renderType);
+	}
 
-    @Override
-    public void blockSetRenderCutout(Block block) {
-        blockSetRenderType(block, RenderType.cutout());
-    }
+	@Override
+	public void blockSetRenderCutout(Block block) {
+		blockSetRenderType(block, RenderType.cutout());
+	}
 }

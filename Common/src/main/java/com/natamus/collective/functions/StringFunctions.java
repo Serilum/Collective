@@ -186,8 +186,8 @@ public class StringFunctions {
 			return "";
 		}
 
-	    String name = allnames.get(GlobalVariables.random.nextInt(allnames.size())).toLowerCase();
-	    return capitalizeEveryWord(name);
+		String name = allnames.get(GlobalVariables.random.nextInt(allnames.size())).toLowerCase();
+		return capitalizeEveryWord(name);
 	}
 
 	public static String getPCLocalTime(boolean twentyfour, boolean showseconds) {
@@ -220,9 +220,9 @@ public class StringFunctions {
 
 		int count = 0;
 		while (matcher.find()) {
-		    count++;
+			count++;
 		}
-	    return count;
+		return count;
 	}
 	
 	public static String joinListWithCommaAnd(List<String> inputlist) {

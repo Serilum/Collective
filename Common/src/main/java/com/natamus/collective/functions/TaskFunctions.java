@@ -34,11 +34,11 @@ public class TaskFunctions {
 	}
 
 	public static void enqueueTask(Level world, Runnable task, int delay) {
-    	if (!(world instanceof ServerLevel)) {
-    		return;
-    	}
+		if (!(world instanceof ServerLevel)) {
+			return;
+		}
 
-    	MinecraftServer server = ((ServerLevel)world).getServer();
-    	server.submit(new TickTask(server.getTickCount() + delay, task));
+		MinecraftServer server = ((ServerLevel)world).getServer();
+		server.submit(new TickTask(server.getTickCount() + delay, task));
 	}
 }

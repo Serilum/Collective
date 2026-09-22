@@ -11,32 +11,32 @@ import java.io.InputStream;
 import java.util.zip.GZIPInputStream;
 
 public class SchematicFunctions {
-    public static CompoundTag readCompressed(InputStream inputStream) throws IOException {
-        DataInputStream dataInputStream = createDecompressorStream(inputStream);
+	public static CompoundTag readCompressed(InputStream inputStream) throws IOException {
+		DataInputStream dataInputStream = createDecompressorStream(inputStream);
 
-        CompoundTag compoundTag;
-        try {
-            compoundTag = NbtIo.read(dataInputStream, NbtAccounter.unlimitedHeap());
-        } catch (Throwable t1) {
-            if (dataInputStream != null) {
-                try {
-                    dataInputStream.close();
-                } catch (Throwable t2) {
-                    t1.addSuppressed(t2);
-                }
-            }
+		CompoundTag compoundTag;
+		try {
+			compoundTag = NbtIo.read(dataInputStream, NbtAccounter.unlimitedHeap());
+		} catch (Throwable t1) {
+			if (dataInputStream != null) {
+				try {
+					dataInputStream.close();
+				} catch (Throwable t2) {
+					t1.addSuppressed(t2);
+				}
+			}
 
-            throw t1;
-        }
+			throw t1;
+		}
 
-        if (dataInputStream != null) {
-            dataInputStream.close();
-        }
+		if (dataInputStream != null) {
+			dataInputStream.close();
+		}
 
-        return compoundTag;
-    }
+		return compoundTag;
+	}
 
-    private static DataInputStream createDecompressorStream(InputStream inputStream) throws IOException {
-        return new DataInputStream(new FastBufferedInputStream(new GZIPInputStream(inputStream)));
-    }
+	private static DataInputStream createDecompressorStream(InputStream inputStream) throws IOException {
+		return new DataInputStream(new FastBufferedInputStream(new GZIPInputStream(inputStream)));
+	}
 }

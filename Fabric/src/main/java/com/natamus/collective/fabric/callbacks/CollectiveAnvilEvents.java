@@ -10,16 +10,16 @@ import net.minecraft.world.item.ItemStack;
 public class CollectiveAnvilEvents {
 	private CollectiveAnvilEvents() { }
 	 
-    public static final Event<Anvil_Change> ANVIL_CHANGE = EventFactory.createArrayBacked(Anvil_Change.class, callbacks -> (anvilmenu, left, right, output, itemName, baseCost, player) -> {
-        for (Anvil_Change callback : callbacks) {
-        	Triplet<Integer, Integer, ItemStack> triple = callback.onAnvilChange(anvilmenu, left, right, output, itemName, baseCost, player);
-        	if (triple != null) {
-        		return triple;
-        	}
-        }
+	public static final Event<Anvil_Change> ANVIL_CHANGE = EventFactory.createArrayBacked(Anvil_Change.class, callbacks -> (anvilmenu, left, right, output, itemName, baseCost, player) -> {
+		for (Anvil_Change callback : callbacks) {
+			Triplet<Integer, Integer, ItemStack> triple = callback.onAnvilChange(anvilmenu, left, right, output, itemName, baseCost, player);
+			if (triple != null) {
+				return triple;
+			}
+		}
         
-        return null;
-    });
+		return null;
+	});
     
 	@FunctionalInterface
 	public interface Anvil_Change {

@@ -24,8 +24,8 @@ public class MinecraftMixin {
 
 	@Inject(method = "createTitle", at = @At("RETURN"), cancellable = true)
 	private void Minecraft_createTitle(CallbackInfoReturnable<String> cir) {
-        if (CollectiveConfigHandler.updateMinecraftWindowTitleInDevMode && Services.MODLOADER.isDevelopmentEnvironment()) {
-            cir.setReturnValue("Minecraft · Dev mode · " + Services.MODLOADER.getModLoaderName());
-        }
+		if (CollectiveConfigHandler.updateMinecraftWindowTitleInDevMode && Services.MODLOADER.isDevelopmentEnvironment()) {
+			cir.setReturnValue("Minecraft · Dev mode · " + Services.MODLOADER.getModLoaderName());
+		}
 	}
 }

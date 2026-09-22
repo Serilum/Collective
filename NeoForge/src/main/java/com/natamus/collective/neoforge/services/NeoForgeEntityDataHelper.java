@@ -10,30 +10,30 @@ import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 
 public class NeoForgeEntityDataHelper implements EntityDataHelper {
-    @Override
-    public void init() {
-        NeoForge.EVENT_BUS.addListener(NeoForgeEntityDataHelper::onStartTracking);
-    }
+	@Override
+	public void init() {
+		NeoForge.EVENT_BUS.addListener(NeoForgeEntityDataHelper::onStartTracking);
+	}
 
-    private static void onStartTracking(PlayerEvent.StartTracking event) {
-        if (event.getEntity() instanceof ServerPlayer player) {
-            EntityDataSyncPacket.syncToPlayer(event.getTarget(), player);
-        }
-    }
+	private static void onStartTracking(PlayerEvent.StartTracking event) {
+		if (event.getEntity() instanceof ServerPlayer player) {
+			EntityDataSyncPacket.syncToPlayer(event.getTarget(), player);
+		}
+	}
 
-    @Override
-    public CompoundTag getStored(Entity entity) {
-        // Degrade gracefully if EntityMixin's holder interface isn't applied (e.g. an outdated loader Mixin rejects it).
-        if (entity instanceof IEntityDataHolder holder) {
-            return holder.collective_getStored();
-        }
-        return new CompoundTag();
-    }
+	@Override
+	public CompoundTag getStored(Entity entity) {
+		// Degrade gracefully if EntityMixin's holder interface isn't applied (e.g. an outdated loader Mixin rejects it).
+		if (entity instanceof IEntityDataHolder holder) {
+			return holder.collective_getStored();
+		}
+		return new CompoundTag();
+	}
 
-    @Override
-    public void setStored(Entity entity, CompoundTag data) {
-        if (entity instanceof IEntityDataHolder holder) {
-            holder.collective_setStored(data);
-        }
-    }
+	@Override
+	public void setStored(Entity entity, CompoundTag data) {
+		if (entity instanceof IEntityDataHolder holder) {
+			holder.collective_setStored(data);
+		}
+	}
 }

@@ -21,72 +21,72 @@ import java.util.function.Consumer;
  *  by MysticDrew */
 
 public class NeoForgeNetworkHandler extends PacketRegistrationHandler {
-    public NeoForgeNetworkHandler(Side side) {
-        super(side);
-    }
+	public NeoForgeNetworkHandler(Side side) {
+		super(side);
+	}
 
-    @Override
-    protected <T> void registerPacket(PacketContainer<T> container) {
-        // not needed for neoforge
-    }
+	@Override
+	protected <T> void registerPacket(PacketContainer<T> container) {
+		// not needed for neoforge
+	}
 
-    @SubscribeEvent
-    @SuppressWarnings("unchecked")
-    public void register(final RegisterPayloadHandlersEvent event) {
-        if (!PACKET_MAP.isEmpty()) {
-            PACKET_MAP.forEach((type, container) -> event.registrar(container.getType().id().getNamespace()).optional().commonBidirectional(container.getType(), container.getCodec(), buildHandler(container.handler())));
-        }
-    }
+	@SubscribeEvent
+	@SuppressWarnings("unchecked")
+	public void register(final RegisterPayloadHandlersEvent event) {
+		if (!PACKET_MAP.isEmpty()) {
+			PACKET_MAP.forEach((type, container) -> event.registrar(container.getType().id().getNamespace()).optional().commonBidirectional(container.getType(), container.getCodec(), buildHandler(container.handler())));
+		}
+	}
 
-    public <T> void sendToServer(T packet) {
-        this.sendToServer(packet, false);
-    }
+	public <T> void sendToServer(T packet) {
+		this.sendToServer(packet, false);
+	}
 
-    @SuppressWarnings("unchecked")
-    public <T> void sendToServer(T packet, boolean ignoreCheck) {
-        PacketContainer<T> container = (PacketContainer<T>) PACKET_MAP.get(packet.getClass());
-        if (container != null) {
-            PacketDistributor.sendToServer(new CommonPacketWrapper<>(container, packet));
-        }
-        else {
-            throw new RegistrationException(packet.getClass() + "{} packet not registered on the client, packets need to be registered on both sides!");
-        }
-    }
+	@SuppressWarnings("unchecked")
+	public <T> void sendToServer(T packet, boolean ignoreCheck) {
+		PacketContainer<T> container = (PacketContainer<T>) PACKET_MAP.get(packet.getClass());
+		if (container != null) {
+			PacketDistributor.sendToServer(new CommonPacketWrapper<>(container, packet));
+		}
+		else {
+			throw new RegistrationException(packet.getClass() + "{} packet not registered on the client, packets need to be registered on both sides!");
+		}
+	}
 
-    @SuppressWarnings("unchecked")
-    public <T> void sendToClient(T packet, ServerPlayer player) {
-        PacketContainer<T> container = (PacketContainer<T>) PACKET_MAP.get(packet.getClass());
-        if (container != null) {
-            if (player.connection.hasChannel(container.type())) {
-                PacketDistributor.sendToPlayer(player, new CommonPacketWrapper<>(container, packet));
-            }
-        }
-        else {
-            throw new RegistrationException(packet.getClass() + "{} packet not registered on the server, packets need to be registered on both sides!");
-        }
-    }
+	@SuppressWarnings("unchecked")
+	public <T> void sendToClient(T packet, ServerPlayer player) {
+		PacketContainer<T> container = (PacketContainer<T>) PACKET_MAP.get(packet.getClass());
+		if (container != null) {
+			if (player.connection.hasChannel(container.type())) {
+				PacketDistributor.sendToPlayer(player, new CommonPacketWrapper<>(container, packet));
+			}
+		}
+		else {
+			throw new RegistrationException(packet.getClass() + "{} packet not registered on the server, packets need to be registered on both sides!");
+		}
+	}
 
-    @SuppressWarnings("unchecked")
-    public <T> boolean isRegisteredOnClient(Class<T> packetClass, ServerPlayer player) {
-        PacketContainer<T> container = (PacketContainer<T>) PACKET_MAP.get(packetClass);
-        return container != null && player.connection.hasChannel(container.type());
-    }
+	@SuppressWarnings("unchecked")
+	public <T> boolean isRegisteredOnClient(Class<T> packetClass, ServerPlayer player) {
+		PacketContainer<T> container = (PacketContainer<T>) PACKET_MAP.get(packetClass);
+		return container != null && player.connection.hasChannel(container.type());
+	}
 
-    private <T, K extends CommonPacketWrapper<T>> IPayloadHandler<K> buildHandler(Consumer<PacketContext<T>> handler) {
-        return (payload, ctx) -> {
-            try {
-                Side side = ctx.flow().getReceptionSide().equals(LogicalSide.SERVER) ? Side.SERVER : Side.CLIENT;
-                if (Side.SERVER.equals(side)) {
-                    handler.accept(new PacketContext<>((ServerPlayer)ctx.player(), payload.packet(), side));
-                }
-                else {
-                    handler.accept(new PacketContext<>(payload.packet(), side));
-                }
+	private <T, K extends CommonPacketWrapper<T>> IPayloadHandler<K> buildHandler(Consumer<PacketContext<T>> handler) {
+		return (payload, ctx) -> {
+			try {
+				Side side = ctx.flow().getReceptionSide().equals(LogicalSide.SERVER) ? Side.SERVER : Side.CLIENT;
+				if (Side.SERVER.equals(side)) {
+					handler.accept(new PacketContext<>((ServerPlayer)ctx.player(), payload.packet(), side));
+				}
+				else {
+					handler.accept(new PacketContext<>(payload.packet(), side));
+				}
 
-            }
-            catch (Throwable t) {
-                Constants.LOG.error("Error handling packet: {} -> ", payload.packet().getClass(), t);
-            }
-        };
-    }
+			}
+			catch (Throwable t) {
+				Constants.LOG.error("Error handling packet: {} -> ", payload.packet().getClass(), t);
+			}
+		};
+	}
 }

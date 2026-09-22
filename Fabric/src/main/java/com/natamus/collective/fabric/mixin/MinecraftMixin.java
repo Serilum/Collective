@@ -28,25 +28,25 @@ public class MinecraftMixin {
 		BlockEntityData.removeLevelFromCache(level);
 	}
 
-    @Inject(method = "<init>(Lnet/minecraft/client/main/GameConfig;)V", at = @At(value = "TAIL"))
-    public void Minecraft_init(GameConfig gameConfig, CallbackInfo ci) {
-        ((Minecraft)(Object)this).execute(() -> {
-            CollectiveLifecycleEvents.MINECRAFT_LOADED.invoker().onMinecraftLoad(true);
-        });
-    }
+	@Inject(method = "<init>(Lnet/minecraft/client/main/GameConfig;)V", at = @At(value = "TAIL"))
+	public void Minecraft_init(GameConfig gameConfig, CallbackInfo ci) {
+		((Minecraft)(Object)this).execute(() -> {
+			CollectiveLifecycleEvents.MINECRAFT_LOADED.invoker().onMinecraftLoad(true);
+		});
+	}
 
-    @Inject(method = "createUserApiService", at = @At(value = "HEAD"), cancellable = true)
-    public void Minecraft_createUserApiService(YggdrasilAuthenticationService yggdrasilAuthenticationService, GameConfig gameConfig, CallbackInfoReturnable<UserApiService> cir) {
-        if (FabricLoader.getInstance().isDevelopmentEnvironment()) {
-            Constants.LOG.info("Failed to verify authentication");
-            cir.setReturnValue(UserApiService.OFFLINE);
-        }
-    }
+	@Inject(method = "createUserApiService", at = @At(value = "HEAD"), cancellable = true)
+	public void Minecraft_createUserApiService(YggdrasilAuthenticationService yggdrasilAuthenticationService, GameConfig gameConfig, CallbackInfoReturnable<UserApiService> cir) {
+		if (FabricLoader.getInstance().isDevelopmentEnvironment()) {
+			Constants.LOG.info("Failed to verify authentication");
+			cir.setReturnValue(UserApiService.OFFLINE);
+		}
+	}
 
 	@Inject(method = "createTitle", at = @At("RETURN"), cancellable = true)
 	private void Minecraft_createTitle(CallbackInfoReturnable<String> cir) {
-        if (CollectiveConfigHandler.updateMinecraftWindowTitleInDevMode && Services.MODLOADER.isDevelopmentEnvironment()) {
-            cir.setReturnValue("Minecraft · Dev mode · " + Services.MODLOADER.getModLoaderName());
-        }
+		if (CollectiveConfigHandler.updateMinecraftWindowTitleInDevMode && Services.MODLOADER.isDevelopmentEnvironment()) {
+			cir.setReturnValue("Minecraft · Dev mode · " + Services.MODLOADER.getModLoaderName());
+		}
 	}
 }

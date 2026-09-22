@@ -18,16 +18,16 @@ import java.util.Arrays;
 import java.util.List;
 
 public class Constants {
-    public static final Logger LOG = LoggerFactory.getLogger(CollectiveReference.NAME);
-    public static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
+	public static final Logger LOG = LoggerFactory.getLogger(CollectiveReference.NAME);
+	public static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
 
-    public static final List<EquipmentSlot> equipmentSlots = Arrays.asList(EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET, EquipmentSlot.OFFHAND);
+	public static final List<EquipmentSlot> equipmentSlots = Arrays.asList(EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET, EquipmentSlot.OFFHAND);
 
-    public static final ItemStack normalPickaxeStack = new ItemStack(Items.NETHERITE_PICKAXE);
-    public static final ItemStack silkPickaxeStack = new ItemStack(Items.NETHERITE_PICKAXE);
+	public static final ItemStack normalPickaxeStack = new ItemStack(Items.NETHERITE_PICKAXE);
+	public static final ItemStack silkPickaxeStack = new ItemStack(Items.NETHERITE_PICKAXE);
 
 	private static boolean ranInit = false;
-    public static void initConstantData(Level level) {
+	public static void initConstantData(Level level) {
 		if (ranInit) {
 			return;
 		}
@@ -37,5 +37,5 @@ public class Constants {
 		EnchantmentHelper.setEnchantments(silkPickaxeStack, itemEnchantmentsMutable.toImmutable());
 
 		ranInit = true;
-    }
+	}
 }

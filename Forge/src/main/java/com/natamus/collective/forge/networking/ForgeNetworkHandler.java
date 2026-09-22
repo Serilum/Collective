@@ -25,85 +25,85 @@ import java.util.function.Consumer;
  *  by MysticDrew */
 
 public class ForgeNetworkHandler extends PacketRegistrationHandler {
-    private final Map<Class<?>, Message<?>> CHANNELS = new HashMap<>();
+	private final Map<Class<?>, Message<?>> CHANNELS = new HashMap<>();
 
-    public ForgeNetworkHandler(Side side) {
-        super(side);
-    }
+	public ForgeNetworkHandler(Side side) {
+		super(side);
+	}
 
-    protected <T> void registerPacket(PacketContainer<T> container) {
-        if (CHANNELS.get(container.classType()) == null) {
-            var channel = ChannelBuilder.named(container.type().id()).optional().eventNetworkChannel()
-                    .addListener(event -> {
-                        var payload = event.getPayload();
-                        if (payload.readerIndex() > 0 || (payload.readableBytes() == 0 && payload.writerIndex() > 0)) {
-                            return;
-                        }
-                        T message = container.decoder().apply(payload);
-                        buildHandler(container.handler()).accept(message, event.getSource());
-                    });
-            CHANNELS.put(container.classType(), new Message<>(channel, container.encoder()));
-        }
-    }
+	protected <T> void registerPacket(PacketContainer<T> container) {
+		if (CHANNELS.get(container.classType()) == null) {
+			var channel = ChannelBuilder.named(container.type().id()).optional().eventNetworkChannel()
+					.addListener(event -> {
+						var payload = event.getPayload();
+						if (payload.readerIndex() > 0 || (payload.readableBytes() == 0 && payload.writerIndex() > 0)) {
+							return;
+						}
+						T message = container.decoder().apply(payload);
+						buildHandler(container.handler()).accept(message, event.getSource());
+					});
+			CHANNELS.put(container.classType(), new Message<>(channel, container.encoder()));
+		}
+	}
 
-    public <T> void sendToServer(T packet) {
-        this.sendToServer(packet, false);
-    }
+	public <T> void sendToServer(T packet) {
+		this.sendToServer(packet, false);
+	}
 
-    @SuppressWarnings("unchecked")
+	@SuppressWarnings("unchecked")
 	public <T> void sendToServer(T packet, boolean ignoreCheck) {
-        var message = (Message<T>) CHANNELS.get(packet.getClass());
-        if (message != null) {
-            EventNetworkChannel channel = message.channel();
-            Connection connection = Minecraft.getInstance().getConnection().getConnection();
+		var message = (Message<T>) CHANNELS.get(packet.getClass());
+		if (message != null) {
+			EventNetworkChannel channel = message.channel();
+			Connection connection = Minecraft.getInstance().getConnection().getConnection();
 
-            if (ignoreCheck || channel.isRemotePresent(connection)) {
-                FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
-                message.encoder().accept(packet, buf);
-                channel.send(buf, connection);
-            }
-        }
-        else {
-            throw new RegistrationException(packet.getClass() + "{} packet not registered on the client, packets need to be registered on both sides!");
-        }
+			if (ignoreCheck || channel.isRemotePresent(connection)) {
+				FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
+				message.encoder().accept(packet, buf);
+				channel.send(buf, connection);
+			}
+		}
+		else {
+			throw new RegistrationException(packet.getClass() + "{} packet not registered on the client, packets need to be registered on both sides!");
+		}
 
-    }
+	}
 
-    @SuppressWarnings("unchecked")
+	@SuppressWarnings("unchecked")
 	public <T> void sendToClient(T packet, ServerPlayer player) {
-        var message = (Message<T>) CHANNELS.get(packet.getClass());
-        EventNetworkChannel channel = message.channel();
-        Connection connection = player.connection.getConnection();
-        if (message != null) {
-            if (channel.isRemotePresent(connection)) {
-                FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
-                message.encoder().accept(packet, buf);
-                channel.send(buf, connection);
-            }
-            else {
-                throw new RegistrationException(packet.getClass() + "{} packet not registered on the server, packets need to be registered on both sides!");
-            }
-        }
-    }
+		var message = (Message<T>) CHANNELS.get(packet.getClass());
+		EventNetworkChannel channel = message.channel();
+		Connection connection = player.connection.getConnection();
+		if (message != null) {
+			if (channel.isRemotePresent(connection)) {
+				FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
+				message.encoder().accept(packet, buf);
+				channel.send(buf, connection);
+			}
+			else {
+				throw new RegistrationException(packet.getClass() + "{} packet not registered on the server, packets need to be registered on both sides!");
+			}
+		}
+	}
 
-    @SuppressWarnings("unchecked")
-    public <T> boolean isRegisteredOnClient(Class<T> packetClass, ServerPlayer player) {
-        var message = (Message<T>) CHANNELS.get(packetClass);
-        return message != null && message.channel().isRemotePresent(player.connection.getConnection());
-    }
+	@SuppressWarnings("unchecked")
+	public <T> boolean isRegisteredOnClient(Class<T> packetClass, ServerPlayer player) {
+		var message = (Message<T>) CHANNELS.get(packetClass);
+		return message != null && message.channel().isRemotePresent(player.connection.getConnection());
+	}
 
-    private <T> BiConsumer<T, CustomPayloadEvent.Context> buildHandler(Consumer<PacketContext<T>> handler) {
-        return (message, ctx) -> ctx.enqueueWork(() -> {
-            try {
-                Side side = ctx.isServerSide() ? Side.SERVER : Side.CLIENT;
-                ServerPlayer player = ctx.getSender();
-                handler.accept(new PacketContext<>(player, message, side));
-                ctx.setPacketHandled(true);
-            } catch (Throwable t) {
-                Constants.LOG.error("{} error handling packet", message.getClass(), t);
-            }
-        });
-    }
+	private <T> BiConsumer<T, CustomPayloadEvent.Context> buildHandler(Consumer<PacketContext<T>> handler) {
+		return (message, ctx) -> ctx.enqueueWork(() -> {
+			try {
+				Side side = ctx.isServerSide() ? Side.SERVER : Side.CLIENT;
+				ServerPlayer player = ctx.getSender();
+				handler.accept(new PacketContext<>(player, message, side));
+				ctx.setPacketHandled(true);
+			} catch (Throwable t) {
+				Constants.LOG.error("{} error handling packet", message.getClass(), t);
+			}
+		});
+	}
 
-    public record Message<T>(EventNetworkChannel channel, BiConsumer<T, FriendlyByteBuf> encoder) { }
+	public record Message<T>(EventNetworkChannel channel, BiConsumer<T, FriendlyByteBuf> encoder) { }
 }

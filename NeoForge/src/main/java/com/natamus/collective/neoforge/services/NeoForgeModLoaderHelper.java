@@ -11,38 +11,38 @@ import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.fml.loading.FMLPaths;
 
 public class NeoForgeModLoaderHelper implements ModLoaderHelper {
-    @Override
-    public String getModLoaderName() {
-        return "NeoForge";
-    }
+	@Override
+	public String getModLoaderName() {
+		return "NeoForge";
+	}
 
-    @Override
-    public String getGameDirectory() {
-        return FMLPaths.GAMEDIR.get().toString();
-    }
+	@Override
+	public String getGameDirectory() {
+		return FMLPaths.GAMEDIR.get().toString();
+	}
 
-    @Override
-    public boolean isModLoaded(String modId) {
-        return ModList.get().isLoaded(modId);
-    }
+	@Override
+	public boolean isModLoaded(String modId) {
+		return ModList.get().isLoaded(modId);
+	}
 
-    @Override
-    public boolean isDevelopmentEnvironment() {
-        return !FMLLoader.isProduction();
-    }
+	@Override
+	public boolean isDevelopmentEnvironment() {
+		return !FMLLoader.isProduction();
+	}
 
-    @Override
-    public boolean isClientSide() {
-        return FMLEnvironment.dist.equals(Dist.CLIENT);
-    }
+	@Override
+	public boolean isClientSide() {
+		return FMLEnvironment.dist.equals(Dist.CLIENT);
+	}
 
-    @Override
-    public boolean isJarJard(String modId) {
-        return NeoForgeBundleJarJarCheck.isModJarJard(modId);
-    }
+	@Override
+	public boolean isJarJard(String modId) {
+		return NeoForgeBundleJarJarCheck.isModJarJard(modId);
+	}
 
-    @Override
-    public boolean isBundleModEnabled(String modId) {
-        return NeoForgeBundleConfigCheck.isBundleModEnabled(modId);
-    }
+	@Override
+	public boolean isBundleModEnabled(String modId) {
+		return NeoForgeBundleConfigCheck.isBundleModEnabled(modId);
+	}
 }

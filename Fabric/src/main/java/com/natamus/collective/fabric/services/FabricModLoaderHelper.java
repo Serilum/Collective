@@ -7,38 +7,38 @@ import com.natamus.collective.services.helpers.ModLoaderHelper;
 import net.fabricmc.api.EnvType;
 
 public class FabricModLoaderHelper implements ModLoaderHelper {
-    @Override
-    public String getModLoaderName() {
-        return "Fabric";
-    }
+	@Override
+	public String getModLoaderName() {
+		return "Fabric";
+	}
 
-    @Override
-    public String getGameDirectory() {
-        return GlobalFabricObjects.fabricLoader.getGameDir().toString();
-    }
+	@Override
+	public String getGameDirectory() {
+		return GlobalFabricObjects.fabricLoader.getGameDir().toString();
+	}
 
-    @Override
-    public boolean isModLoaded(String modId) {
-        return GlobalFabricObjects.fabricLoader.isModLoaded(modId);
-    }
+	@Override
+	public boolean isModLoaded(String modId) {
+		return GlobalFabricObjects.fabricLoader.isModLoaded(modId);
+	}
 
-    @Override
-    public boolean isDevelopmentEnvironment() {
-        return GlobalFabricObjects.fabricLoader.isDevelopmentEnvironment();
-    }
+	@Override
+	public boolean isDevelopmentEnvironment() {
+		return GlobalFabricObjects.fabricLoader.isDevelopmentEnvironment();
+	}
 
-    @Override
-    public boolean isClientSide() {
-        return GlobalFabricObjects.fabricLoader.getEnvironmentType() == EnvType.CLIENT;
-    }
+	@Override
+	public boolean isClientSide() {
+		return GlobalFabricObjects.fabricLoader.getEnvironmentType() == EnvType.CLIENT;
+	}
 
-    @Override
-    public boolean isJarJard(String modId) {
-        return FabricBundleJarJarCheck.isModJarJard(modId);
-    }
+	@Override
+	public boolean isJarJard(String modId) {
+		return FabricBundleJarJarCheck.isModJarJard(modId);
+	}
 
-    @Override
-    public boolean isBundleModEnabled(String modId) {
-        return FabricBundleConfigCheck.isBundleModEnabled(modId);
-    }
+	@Override
+	public boolean isBundleModEnabled(String modId) {
+		return FabricBundleConfigCheck.isBundleModEnabled(modId);
+	}
 }

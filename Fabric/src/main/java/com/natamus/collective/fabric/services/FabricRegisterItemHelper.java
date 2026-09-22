@@ -15,10 +15,10 @@ import java.util.function.Supplier;
 public class FabricRegisterItemHelper implements RegisterItemHelper {
 	private static final HashMap<ResourceLocation, Item> itemMap = new HashMap<>();
 
-    @Override
+	@Override
 	public <T extends Item> void registerItem(Object modEventBusObject, ResourceLocation resourceLocation, Supplier<T> itemSupplier, ResourceKey<CreativeModeTab> creativeModeTabResourceKey, boolean lastItem) {
 		staticRegisterItem(modEventBusObject, resourceLocation, itemSupplier, creativeModeTabResourceKey);
-    }
+	}
 
 	public static <T extends Item> Item staticRegisterItem(Object modEventBusObject, ResourceLocation resourceLocation, Supplier<T> itemSupplier, ResourceKey<CreativeModeTab> creativeModeTabResourceKey) {
 		Item item = itemSupplier.get();
@@ -32,7 +32,7 @@ public class FabricRegisterItemHelper implements RegisterItemHelper {
 		itemMap.put(resourceLocation, item);
 
 		return item;
-    }
+	}
 
 	@Override
 	public Item getRegisteredItem(ResourceLocation resourceLocation) {

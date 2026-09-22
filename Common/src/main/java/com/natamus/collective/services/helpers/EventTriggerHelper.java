@@ -5,5 +5,5 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.portal.PortalShape;
 
 public interface EventTriggerHelper {
-    void triggerNetherPortalSpawnEvent(Level level, BlockPos portalPos, PortalShape size);
+	void triggerNetherPortalSpawnEvent(Level level, BlockPos portalPos, PortalShape size);
 }

@@ -14,17 +14,17 @@ import java.util.function.Function;
  *  by MysticDrew */
 
 public record PacketContainer<T>(CustomPacketPayload.Type<? extends CustomPacketPayload> type, Class<T> classType, BiConsumer<T, FriendlyByteBuf> encoder, Function<FriendlyByteBuf, T> decoder, Consumer<PacketContext<T>> handler) {
-    public PacketContainer(ResourceLocation id, Class<T> classType, BiConsumer<T, FriendlyByteBuf> encoder, Function<FriendlyByteBuf, T> decoder, Consumer<PacketContext<T>> handle) {
-        this(new CustomPacketPayload.Type<>(id), classType, encoder, decoder, handle);
-    }
+	public PacketContainer(ResourceLocation id, Class<T> classType, BiConsumer<T, FriendlyByteBuf> encoder, Function<FriendlyByteBuf, T> decoder, Consumer<PacketContext<T>> handle) {
+		this(new CustomPacketPayload.Type<>(id), classType, encoder, decoder, handle);
+	}
 
-    @SuppressWarnings("unchecked")
-    public <K extends CustomPacketPayload> CustomPacketPayload.Type<K> getType() {
-        return (CustomPacketPayload.Type<K>) type();
-    }
+	@SuppressWarnings("unchecked")
+	public <K extends CustomPacketPayload> CustomPacketPayload.Type<K> getType() {
+		return (CustomPacketPayload.Type<K>) type();
+	}
 
-    @SuppressWarnings({"rawtypes", "unchecked"})
+	@SuppressWarnings({"rawtypes", "unchecked"})
 	public StreamCodec<FriendlyByteBuf, CommonPacketWrapper> getCodec() {
-        return CustomPacketPayload.codec((packet, buf) -> this.encoder().accept((T)packet.packet(), buf), (buf) -> new CommonPacketWrapper<>(this, this.decoder().apply(buf)));
-    }
+		return CustomPacketPayload.codec((packet, buf) -> this.encoder().accept((T)packet.packet(), buf), (buf) -> new CommonPacketWrapper<>(this, this.decoder().apply(buf)));
+	}
 }

@@ -7,6 +7,6 @@ import net.neoforged.neoforge.client.event.ClientTickEvent;
 public class RegisterCollectiveNeoForgeClientEvents {
 	@SubscribeEvent
 	public static void onClientTick(ClientTickEvent.Post e) {
-        CollectiveClientEvents.onClientTick();
+		CollectiveClientEvents.onClientTick();
 	}
 }
