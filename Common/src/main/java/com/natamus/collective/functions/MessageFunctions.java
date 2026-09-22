@@ -17,202 +17,202 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 
 public class MessageFunctions {
-    public static void sendMessage(CommandSourceStack source, MutableComponent message) {
-        sendMessage(source, message, false);
-    }
-    public static void sendMessage(Player player, MutableComponent message) {
-        sendMessage(player, message, false);
-    }
+	public static void sendMessage(CommandSourceStack source, MutableComponent message) {
+		sendMessage(source, message, false);
+	}
+	public static void sendMessage(Player player, MutableComponent message) {
+		sendMessage(player, message, false);
+	}
 
-    public static void sendMessage(CommandSourceStack source, String m, ChatFormatting colour) {
-        sendMessage(source, m, colour, false);
-    }
-    public static void sendMessage(Player player, String m, ChatFormatting colour) {
-        sendMessage(player, m, colour, false);
-    }
+	public static void sendMessage(CommandSourceStack source, String m, ChatFormatting colour) {
+		sendMessage(source, m, colour, false);
+	}
+	public static void sendMessage(Player player, String m, ChatFormatting colour) {
+		sendMessage(player, m, colour, false);
+	}
 
-    public static void sendMessage(CommandSourceStack source, String m, ChatFormatting colour, boolean emptyline) {
-        sendMessage(source, m, colour, emptyline, "");
-    }
-    public static void sendMessage(Player player, String m, ChatFormatting colour, boolean emptyline) {
-        sendMessage(player, m, colour, emptyline, "");
-    }
+	public static void sendMessage(CommandSourceStack source, String m, ChatFormatting colour, boolean emptyline) {
+		sendMessage(source, m, colour, emptyline, "");
+	}
+	public static void sendMessage(Player player, String m, ChatFormatting colour, boolean emptyline) {
+		sendMessage(player, m, colour, emptyline, "");
+	}
 
-    public static void sendMessage(CommandSourceStack source, String m, ChatFormatting colour, String url) {
-        sendMessage(source, m, colour, false, url);
-    }
-    public static void sendMessage(Player player, String m, ChatFormatting colour, String url) {
-        sendMessage(player, m, colour, false, url);
-    }
+	public static void sendMessage(CommandSourceStack source, String m, ChatFormatting colour, String url) {
+		sendMessage(source, m, colour, false, url);
+	}
+	public static void sendMessage(Player player, String m, ChatFormatting colour, String url) {
+		sendMessage(player, m, colour, false, url);
+	}
 
-    public static void sendMessage(CommandSourceStack source, String m, ChatFormatting colour, boolean emptyline, String url) {
-        if (m.isEmpty()) {
-            return;
-        }
+	public static void sendMessage(CommandSourceStack source, String m, ChatFormatting colour, boolean emptyline, String url) {
+		if (m.isEmpty()) {
+			return;
+		}
 
-        sendMessage(source, buildMessage(m, colour, url), emptyline);
-    }
-    public static void sendMessage(CommandSourceStack source, MutableComponent message, boolean emptyline) {
-        if (emptyline) {
-            source.sendSuccess(() -> Component.literal(""), false);
-        }
+		sendMessage(source, buildMessage(m, colour, url), emptyline);
+	}
+	public static void sendMessage(CommandSourceStack source, MutableComponent message, boolean emptyline) {
+		if (emptyline) {
+			source.sendSuccess(() -> Component.literal(""), false);
+		}
 
-        source.sendSuccess(() -> message, false);
-    }
+		source.sendSuccess(() -> message, false);
+	}
 
-    public static void sendMessage(Player player, String m, ChatFormatting colour, boolean emptyline, String url) {
-        if (m.isEmpty()) {
-            return;
-        }
+	public static void sendMessage(Player player, String m, ChatFormatting colour, boolean emptyline, String url) {
+		if (m.isEmpty()) {
+			return;
+		}
 
-        sendMessage(player, buildMessage(m, colour, url), emptyline);
-    }
-    public static void sendMessage(Player player, MutableComponent message, boolean emptyline) {
-        if (player.level().isClientSide()) {
-            return;
-        }
+		sendMessage(player, buildMessage(m, colour, url), emptyline);
+	}
+	public static void sendMessage(Player player, MutableComponent message, boolean emptyline) {
+		if (player.level().isClientSide()) {
+			return;
+		}
 
-        ServerPlayer serverPlayer = (ServerPlayer)player;
-        if (emptyline) {
-            serverPlayer.sendSystemMessage(Component.literal(""));
-        }
+		ServerPlayer serverPlayer = (ServerPlayer)player;
+		if (emptyline) {
+			serverPlayer.sendSystemMessage(Component.literal(""));
+		}
 
-        serverPlayer.sendSystemMessage(message);
-    }
+		serverPlayer.sendSystemMessage(message);
+	}
 
-    public static void sendClientMessage(Player player, MutableComponent message) {
-        player.sendSystemMessage(message);
-    }
+	public static void sendClientMessage(Player player, MutableComponent message) {
+		player.sendSystemMessage(message);
+	}
 
-    public static void sendClientTranslatableMessage(Player player, String key, ChatFormatting colour, Object... args) {
-        sendClientMessage(player, withColour(translatableComponent(player, key, args), colour));
-    }
+	public static void sendClientTranslatableMessage(Player player, String key, ChatFormatting colour, Object... args) {
+		sendClientMessage(player, withColour(translatableComponent(player, key, args), colour));
+	}
 
-    public static void sendClientTranslatableMessage(Player player, String indent, String key, ChatFormatting colour, Object... args) {
-        sendClientMessage(player, withColour(Component.literal(indent).append(translatableComponent(player, key, args)), colour));
-    }
+	public static void sendClientTranslatableMessage(Player player, String indent, String key, ChatFormatting colour, Object... args) {
+		sendClientMessage(player, withColour(Component.literal(indent).append(translatableComponent(player, key, args)), colour));
+	}
 
-    public static void sendTranslatableMessage(CommandSourceStack source, String key, ChatFormatting colour, Object... args) {
-        sendMessage(source, withColour(translatableComponent(source, key, args), colour));
-    }
-    public static void sendTranslatableMessage(Player player, String key, ChatFormatting colour, Object... args) {
-        sendMessage(player, withColour(translatableComponent(player, key, args), colour));
-    }
+	public static void sendTranslatableMessage(CommandSourceStack source, String key, ChatFormatting colour, Object... args) {
+		sendMessage(source, withColour(translatableComponent(source, key, args), colour));
+	}
+	public static void sendTranslatableMessage(Player player, String key, ChatFormatting colour, Object... args) {
+		sendMessage(player, withColour(translatableComponent(player, key, args), colour));
+	}
 
-    public static void sendTranslatableMessage(CommandSourceStack source, String key, boolean emptyLine, ChatFormatting colour, Object... args) {
-        sendMessage(source, withColour(translatableComponent(source, key, args), colour), emptyLine);
-    }
-    public static void sendTranslatableMessage(Player player, String key, boolean emptyLine, ChatFormatting colour, Object... args) {
-        sendMessage(player, withColour(translatableComponent(player, key, args), colour), emptyLine);
-    }
+	public static void sendTranslatableMessage(CommandSourceStack source, String key, boolean emptyLine, ChatFormatting colour, Object... args) {
+		sendMessage(source, withColour(translatableComponent(source, key, args), colour), emptyLine);
+	}
+	public static void sendTranslatableMessage(Player player, String key, boolean emptyLine, ChatFormatting colour, Object... args) {
+		sendMessage(player, withColour(translatableComponent(player, key, args), colour), emptyLine);
+	}
 
-    public static void sendTranslatableMessage(CommandSourceStack source, String indent, String key, ChatFormatting colour, Object... args) {
-        sendMessage(source, withColour(Component.literal(indent).append(translatableComponent(source, key, args)), colour));
-    }
-    public static void sendTranslatableMessage(Player player, String indent, String key, ChatFormatting colour, Object... args) {
-        sendMessage(player, withColour(Component.literal(indent).append(translatableComponent(player, key, args)), colour));
-    }
+	public static void sendTranslatableMessage(CommandSourceStack source, String indent, String key, ChatFormatting colour, Object... args) {
+		sendMessage(source, withColour(Component.literal(indent).append(translatableComponent(source, key, args)), colour));
+	}
+	public static void sendTranslatableMessage(Player player, String indent, String key, ChatFormatting colour, Object... args) {
+		sendMessage(player, withColour(Component.literal(indent).append(translatableComponent(player, key, args)), colour));
+	}
 
-    public static void sendTranslatableMessage(CommandSourceStack source, String indent, String key, boolean emptyLine, ChatFormatting colour, Object... args) {
-        sendMessage(source, withColour(Component.literal(indent).append(translatableComponent(source, key, args)), colour), emptyLine);
-    }
-    public static void sendTranslatableMessage(Player player, String indent, String key, boolean emptyLine, ChatFormatting colour, Object... args) {
-        sendMessage(player, withColour(Component.literal(indent).append(translatableComponent(player, key, args)), colour), emptyLine);
-    }
+	public static void sendTranslatableMessage(CommandSourceStack source, String indent, String key, boolean emptyLine, ChatFormatting colour, Object... args) {
+		sendMessage(source, withColour(Component.literal(indent).append(translatableComponent(source, key, args)), colour), emptyLine);
+	}
+	public static void sendTranslatableMessage(Player player, String indent, String key, boolean emptyLine, ChatFormatting colour, Object... args) {
+		sendMessage(player, withColour(Component.literal(indent).append(translatableComponent(player, key, args)), colour), emptyLine);
+	}
 
-    public static MutableComponent getTranslatableComponent(String key, Object... args) {
-        if (ServerTranslationPack.useTranslatableForNames()) {
-            return Component.translatable(key, args);
-        }
-        return Component.literal(TranslationResolver.resolve(key, args));
-    }
+	public static MutableComponent getTranslatableComponent(String key, Object... args) {
+		if (ServerTranslationPack.useTranslatableForNames()) {
+			return Component.translatable(key, args);
+		}
+		return Component.literal(TranslationResolver.resolve(key, args));
+	}
 
-    private static MutableComponent translatableComponent(Player player, String key, Object... args) {
-        if (player instanceof ServerPlayer serverPlayer && ServerTranslationPack.useTranslatableForMessage(serverPlayer)) {
-            return Component.translatable(key, args);
-        }
-        return Component.literal(TranslationResolver.resolve(key, args));
-    }
-    private static MutableComponent translatableComponent(CommandSourceStack source, String key, Object... args) {
-        ServerPlayer player = source.getPlayer();
-        if (player != null && ServerTranslationPack.useTranslatableForMessage(player)) {
-            return Component.translatable(key, args);
-        }
-        return Component.literal(TranslationResolver.resolve(key, args));
-    }
+	private static MutableComponent translatableComponent(Player player, String key, Object... args) {
+		if (player instanceof ServerPlayer serverPlayer && ServerTranslationPack.useTranslatableForMessage(serverPlayer)) {
+			return Component.translatable(key, args);
+		}
+		return Component.literal(TranslationResolver.resolve(key, args));
+	}
+	private static MutableComponent translatableComponent(CommandSourceStack source, String key, Object... args) {
+		ServerPlayer player = source.getPlayer();
+		if (player != null && ServerTranslationPack.useTranslatableForMessage(player)) {
+			return Component.translatable(key, args);
+		}
+		return Component.literal(TranslationResolver.resolve(key, args));
+	}
 
-    private static MutableComponent withColour(MutableComponent message, ChatFormatting colour) {
-        if (colour != null) {
-            message.withStyle(colour);
-        }
-        return message;
-    }
+	private static MutableComponent withColour(MutableComponent message, ChatFormatting colour) {
+		if (colour != null) {
+			message.withStyle(colour);
+		}
+		return message;
+	}
 
-    private static MutableComponent buildMessage(String m, ChatFormatting colour, String url) {
-        MutableComponent message = withColour(Component.literal(m), colour);
-        if (m.contains("http") || !url.isEmpty()) {
-            if (url.isEmpty()) {
-                for (String word : m.split(" ")) {
-                    if (word.contains("http")) {
-                        url = word;
-                        break;
-                    }
-                }
-            }
+	private static MutableComponent buildMessage(String m, ChatFormatting colour, String url) {
+		MutableComponent message = withColour(Component.literal(m), colour);
+		if (m.contains("http") || !url.isEmpty()) {
+			if (url.isEmpty()) {
+				for (String word : m.split(" ")) {
+					if (word.contains("http")) {
+						url = word;
+						break;
+					}
+				}
+			}
 
-            if (!url.isEmpty()) {
-                Style clickstyle = message.getStyle().withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, url));
-                message.withStyle(clickstyle);
-            }
-        }
-        return message;
-    }
+			if (!url.isEmpty()) {
+				Style clickstyle = message.getStyle().withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, url));
+				message.withStyle(clickstyle);
+			}
+		}
+		return message;
+	}
 
-    public static void broadcastMessage(Level world, String m, ChatFormatting colour) {
-        if (m.isEmpty()) {
-            return;
-        }
+	public static void broadcastMessage(Level world, String m, ChatFormatting colour) {
+		if (m.isEmpty()) {
+			return;
+		}
 
-        broadcastMessage(world, withColour(Component.literal(m), colour));
-    }
-    public static void broadcastMessage(Level world, MutableComponent message) {
-        MinecraftServer server = world.getServer();
-        if (server == null) {
-            return;
-        }
+		broadcastMessage(world, withColour(Component.literal(m), colour));
+	}
+	public static void broadcastMessage(Level world, MutableComponent message) {
+		MinecraftServer server = world.getServer();
+		if (server == null) {
+			return;
+		}
 
-        for (Player player : server.getPlayerList().getPlayers()) {
-            sendMessage(player, message);
-        }
-    }
+		for (Player player : server.getPlayerList().getPlayers()) {
+			sendMessage(player, message);
+		}
+	}
 
-    public static void broadcastTranslatableMessage(Level world, String key, ChatFormatting colour, Object... args) {
-        MinecraftServer server = world.getServer();
-        if (server == null) {
-            return;
-        }
+	public static void broadcastTranslatableMessage(Level world, String key, ChatFormatting colour, Object... args) {
+		MinecraftServer server = world.getServer();
+		if (server == null) {
+			return;
+		}
 
-        for (ServerPlayer player : server.getPlayerList().getPlayers()) {
-            sendMessage(player, withColour(translatableComponent(player, key, args), colour));
-        }
-    }
+		for (ServerPlayer player : server.getPlayerList().getPlayers()) {
+			sendMessage(player, withColour(translatableComponent(player, key, args), colour));
+		}
+	}
 
-    public static void sendMessageToPlayersAround(Level world, BlockPos p, int radius, String message, ChatFormatting colour) {
-        if (message.isEmpty()) {
-            return;
-        }
+	public static void sendMessageToPlayersAround(Level world, BlockPos p, int radius, String message, ChatFormatting colour) {
+		if (message.isEmpty()) {
+			return;
+		}
 
-        for (Entity around : world.getEntities(null, new AABB(p.getX() - radius, p.getY() - radius, p.getZ() - radius, p.getX() + radius, p.getY() + radius, p.getZ() + radius))) {
-            if (around instanceof Player) {
-                sendMessage((Player) around, message, colour);
-            }
-        }
-    }
-    public static void sendMessageToPlayersAround(Level world, BlockPos p, int radius, MutableComponent message) {
-        for (Entity around : world.getEntities(null, new AABB(p.getX() - radius, p.getY() - radius, p.getZ() - radius, p.getX() + radius, p.getY() + radius, p.getZ() + radius))) {
-            if (around instanceof Player) {
-                sendMessage((Player) around, message);
-            }
-        }
-    }
+		for (Entity around : world.getEntities(null, new AABB(p.getX() - radius, p.getY() - radius, p.getZ() - radius, p.getX() + radius, p.getY() + radius, p.getZ() + radius))) {
+			if (around instanceof Player) {
+				sendMessage((Player) around, message, colour);
+			}
+		}
+	}
+	public static void sendMessageToPlayersAround(Level world, BlockPos p, int radius, MutableComponent message) {
+		for (Entity around : world.getEntities(null, new AABB(p.getX() - radius, p.getY() - radius, p.getZ() - radius, p.getX() + radius, p.getY() + radius, p.getZ() + radius))) {
+			if (around instanceof Player) {
+				sendMessage((Player) around, message);
+			}
+		}
+	}
 }

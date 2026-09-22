@@ -13,38 +13,38 @@ import java.util.function.Function;
  *  by MysticDrew */
 
 public class NetworkSetup {
-    private final PacketRegistrationHandler packetRegistration;
-    private static DelayedPacketRegistrationHandler delayedHandler;
-    public static NetworkSetup INSTANCE;
+	private final PacketRegistrationHandler packetRegistration;
+	private static DelayedPacketRegistrationHandler delayedHandler;
+	public static NetworkSetup INSTANCE;
 
-    public NetworkSetup(PacketRegistrationHandler packetRegistration) {
-        INSTANCE = this;
-        this.packetRegistration = packetRegistration;
-        getDelayedHandler().registerQueuedPackets(packetRegistration);
-    }
+	public NetworkSetup(PacketRegistrationHandler packetRegistration) {
+		INSTANCE = this;
+		this.packetRegistration = packetRegistration;
+		getDelayedHandler().registerQueuedPackets(packetRegistration);
+	}
 
-    /**
-     * Fabric does not enforce load order, so we may have to delay packet registrations.
-     *
-     * @return the handler;
-     */
-    public static DelayedPacketRegistrationHandler getDelayedHandler() {
-        if (delayedHandler == null) {
-            delayedHandler = new DelayedPacketRegistrationHandler();
-        }
-        return delayedHandler;
-    }
+	/**
+	 * Fabric does not enforce load order, so we may have to delay packet registrations.
+	 *
+	 * @return the handler;
+	 */
+	public static DelayedPacketRegistrationHandler getDelayedHandler() {
+		if (delayedHandler == null) {
+			delayedHandler = new DelayedPacketRegistrationHandler();
+		}
+		return delayedHandler;
+	}
 
-    public static <T> PacketRegistrar registerPacket(ResourceLocation packetIdentifier, Class<T> messageType, BiConsumer<T, FriendlyByteBuf> encoder, Function<FriendlyByteBuf, T> decoder, Consumer<PacketContext<T>> handler) {
-        if (INSTANCE != null) {
-            return INSTANCE.packetRegistration.registerPacket(packetIdentifier, messageType, encoder, decoder, handler);
-        }
-        else {
-            return getDelayedHandler().registerPacket(packetIdentifier, messageType, encoder, decoder, handler);
-        }
-    }
+	public static <T> PacketRegistrar registerPacket(ResourceLocation packetIdentifier, Class<T> messageType, BiConsumer<T, FriendlyByteBuf> encoder, Function<FriendlyByteBuf, T> decoder, Consumer<PacketContext<T>> handler) {
+		if (INSTANCE != null) {
+			return INSTANCE.packetRegistration.registerPacket(packetIdentifier, messageType, encoder, decoder, handler);
+		}
+		else {
+			return getDelayedHandler().registerPacket(packetIdentifier, messageType, encoder, decoder, handler);
+		}
+	}
 
-    public PacketRegistrationHandler getPacketRegistration() {
-        return packetRegistration;
-    }
+	public PacketRegistrationHandler getPacketRegistration() {
+		return packetRegistration;
+	}
 }

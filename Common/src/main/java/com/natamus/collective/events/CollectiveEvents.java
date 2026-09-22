@@ -163,14 +163,14 @@ public class CollectiveEvents {
 			to.setPos(eVec.x, eVec.y, eVec.z);
 
 			if (ageable && to instanceof AgeableMob am) {
-                am.setAge(((AgeableMob)entity).getAge());
+				am.setAge(((AgeableMob)entity).getAge());
 				to = am;
 			}
 
 			boolean ignoreMainhand = false;
 			if (sam.itemToHold != null) {
 				if (to instanceof LivingEntity le) {
-                    if (!le.getMainHandItem().getItem().equals(sam.itemToHold)) {
+					if (!le.getMainHandItem().getItem().equals(sam.itemToHold)) {
 						le.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(sam.itemToHold, 1));
 						ignoreMainhand = true;
 					}
@@ -194,7 +194,7 @@ public class CollectiveEvents {
 				return true;
 			}
 
-            if (ride) {
+			if (ride) {
 				SpawnEntityFunctions.startRidingEntityOnNextTick(serverLevel, to, entity);
 			}
 			else {
@@ -226,7 +226,7 @@ public class CollectiveEvents {
 				return true;
 			}
 
-            GameProfile gameProfile = skullBlockEntity.getOwnerProfile();
+			GameProfile gameProfile = skullBlockEntity.getOwnerProfile();
 			if (gameProfile == null) {
 				return true;
 			}

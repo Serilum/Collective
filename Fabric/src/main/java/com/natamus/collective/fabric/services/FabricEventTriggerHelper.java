@@ -7,8 +7,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.portal.PortalShape;
 
 public class FabricEventTriggerHelper implements EventTriggerHelper {
-    @Override
-    public void triggerNetherPortalSpawnEvent(Level level, BlockPos portalPos, PortalShape size) {
-        CollectiveBlockEvents.ON_NETHER_PORTAL_SPAWN.invoker().onPossiblePortal(level, portalPos, size);
-    }
+	@Override
+	public void triggerNetherPortalSpawnEvent(Level level, BlockPos portalPos, PortalShape size) {
+		CollectiveBlockEvents.ON_NETHER_PORTAL_SPAWN.invoker().onPossiblePortal(level, portalPos, size);
+	}
 }

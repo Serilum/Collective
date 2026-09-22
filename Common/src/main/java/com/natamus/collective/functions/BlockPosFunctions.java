@@ -323,11 +323,11 @@ public class BlockPosFunctions {
 
 	public static BlockPos getBlockPlayerIsLookingAt(Level level, Player player, boolean stopOnLiquid) {
 		HitResult raytraceresult = RayTraceFunctions.rayTrace(level, player, stopOnLiquid);
-        double posX = raytraceresult.getLocation().x;
-        double posY = Math.floor(raytraceresult.getLocation().y);
-        double posZ = raytraceresult.getLocation().z;
+		double posX = raytraceresult.getLocation().x;
+		double posY = Math.floor(raytraceresult.getLocation().y);
+		double posZ = raytraceresult.getLocation().z;
 
-        return BlockPos.containing(posX, posY, posZ);
+		return BlockPos.containing(posX, posY, posZ);
 	}
 
 	public static BlockPos getRandomCoordinatesInNearestUngeneratedChunk(ServerLevel serverLevel, BlockPos aroundPosition) {

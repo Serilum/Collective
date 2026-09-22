@@ -27,51 +27,51 @@ import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 
 @EventBusSubscriber
 public class RegisterCollectiveForgeEvents {
-    @SubscribeEvent
-    public void onServerStarted(ServerAboutToStartEvent e) {
-        GenerateJSONFiles.initGeneration(e.getServer());
-        ServerTranslationPack.onServerStarting(e.getServer());
-    }
+	@SubscribeEvent
+	public void onServerStarted(ServerAboutToStartEvent e) {
+		GenerateJSONFiles.initGeneration(e.getServer());
+		ServerTranslationPack.onServerStarting(e.getServer());
+	}
 
-    @SubscribeEvent
-    public void onWorldTick(TickEvent.LevelTickEvent e) {
-        Level level = e.level;
-        if (level.isClientSide || !e.phase.equals(Phase.END)) {
-            return;
-        }
+	@SubscribeEvent
+	public void onWorldTick(TickEvent.LevelTickEvent e) {
+		Level level = e.level;
+		if (level.isClientSide || !e.phase.equals(Phase.END)) {
+			return;
+		}
 
-        CollectiveEvents.onWorldTick((ServerLevel)level);
-    }
+		CollectiveEvents.onWorldTick((ServerLevel)level);
+	}
 
-    @SubscribeEvent
-    public void onServerTick(TickEvent.ServerTickEvent e) {
-        if (!e.phase.equals(Phase.END)) {
-            return;
-        }
+	@SubscribeEvent
+	public void onServerTick(TickEvent.ServerTickEvent e) {
+		if (!e.phase.equals(Phase.END)) {
+			return;
+		}
 
-        CollectiveEvents.onServerTick(e.getServer());
-    }
+		CollectiveEvents.onServerTick(e.getServer());
+	}
 
-    @SubscribeEvent(priority = EventPriority.HIGHEST)
-    public void onMobSpawnerSpecialSpawn(MobSpawnEvent.FinalizeSpawn e) {
-        Level Level = WorldFunctions.getWorldIfInstanceOfAndNotRemote(e.getLevel());
-        if (Level == null) {
-            return;
-        }
+	@SubscribeEvent(priority = EventPriority.HIGHEST)
+	public void onMobSpawnerSpecialSpawn(MobSpawnEvent.FinalizeSpawn e) {
+		Level Level = WorldFunctions.getWorldIfInstanceOfAndNotRemote(e.getLevel());
+		if (Level == null) {
+			return;
+		}
 
-        if (!e.isSpawnCancelled()) {
-            if (e.getSpawner() != null) {
-                e.getEntity().addTag(CollectiveReference.MOD_ID + ".fromspawner");
-            }
-        }
-    }
+		if (!e.isSpawnCancelled()) {
+			if (e.getSpawner() != null) {
+				e.getEntity().addTag(CollectiveReference.MOD_ID + ".fromspawner");
+			}
+		}
+	}
 
-    @SubscribeEvent
-    public void onEntityJoinLevel(EntityJoinLevelEvent e) {
-        if (!CollectiveEvents.onEntityJoinLevel(e.getLevel(), e.getEntity())) {
-            e.setCanceled(true);
-        }
-    }
+	@SubscribeEvent
+	public void onEntityJoinLevel(EntityJoinLevelEvent e) {
+		if (!CollectiveEvents.onEntityJoinLevel(e.getLevel(), e.getEntity())) {
+			e.setCanceled(true);
+		}
+	}
 
 	@SubscribeEvent
 	public void onBlockBreak(BlockEvent.BreakEvent e) {
@@ -108,15 +108,15 @@ public class RegisterCollectiveForgeEvents {
 		}
 	}
 
-    @SubscribeEvent
-    public void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent e) {
-        if (e.getEntity() instanceof ServerPlayer player) {
-            ServerTranslationPack.onPlayerJoin(player);
-        }
-    }
+	@SubscribeEvent
+	public void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent e) {
+		if (e.getEntity() instanceof ServerPlayer player) {
+			ServerTranslationPack.onPlayerJoin(player);
+		}
+	}
 
-    @SubscribeEvent
-    public void registerCommands(RegisterCommandsEvent e) {
-    	CommandCollective.register(e.getDispatcher());
-    }
+	@SubscribeEvent
+	public void registerCommands(RegisterCommandsEvent e) {
+		CommandCollective.register(e.getDispatcher());
+	}
 }

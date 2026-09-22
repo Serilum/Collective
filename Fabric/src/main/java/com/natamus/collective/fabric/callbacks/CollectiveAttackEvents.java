@@ -12,16 +12,16 @@ import net.minecraft.world.level.Level;
 public class CollectiveAttackEvents {
 	private CollectiveAttackEvents() { }
 	 
-    public static final Event<On_Arrow_Nock> ON_ARROW_NOCK = EventFactory.createArrayBacked(On_Arrow_Nock.class, callbacks -> (item, level, player, hand, hasAmmo) -> {
-        for (On_Arrow_Nock callback : callbacks) {
+	public static final Event<On_Arrow_Nock> ON_ARROW_NOCK = EventFactory.createArrayBacked(On_Arrow_Nock.class, callbacks -> (item, level, player, hand, hasAmmo) -> {
+		for (On_Arrow_Nock callback : callbacks) {
 			InteractionResultHolder<ItemStack> resultHolder = callback.onArrowNock(item, level, player, hand, hasAmmo);
-        	if (!resultHolder.getResult().equals(InteractionResult.PASS)) {
-        		return resultHolder;
-        	}
-        }
+			if (!resultHolder.getResult().equals(InteractionResult.PASS)) {
+				return resultHolder;
+			}
+		}
         
-        return InteractionResultHolder.pass(item);
-    });
+		return InteractionResultHolder.pass(item);
+	});
     
 	@FunctionalInterface
 	public interface On_Arrow_Nock {

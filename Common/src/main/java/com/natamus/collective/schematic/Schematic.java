@@ -289,7 +289,7 @@ public class Schematic {
 			Constants.LOG.warn("[" + CollectiveReference.NAME + "] Something went wrong while parsing the schematic.");
 		}
 
-        Constants.LOG.warn("Can't load {} Schematic file.", type);
+		Constants.LOG.warn("Can't load {} Schematic file.", type);
 		this.width = 0;
 		this.height = 0;
 		this.length = 0;

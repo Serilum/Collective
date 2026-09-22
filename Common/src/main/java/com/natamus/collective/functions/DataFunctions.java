@@ -51,10 +51,10 @@ public class DataFunctions {
 		File[] listOfSubFiles = subFolder.listFiles();
 
 		for (File file : ArrayUtils.addAll(listOfMainFiles, listOfSubFiles)) {
-		    if (file.isFile()) {
-		        String filename = file.getName().replaceAll(" +\\([0-9]+\\)", "");
-		        installedmods.add(filename);
-		    }
+			if (file.isFile()) {
+				String filename = file.getName().replaceAll(" +\\([0-9]+\\)", "");
+				installedmods.add(filename);
+			}
 		}
 
 		return installedmods;
@@ -74,17 +74,17 @@ public class DataFunctions {
 	public static InputStream getDataInputStream(MinecraftServer minecraftServer, String modid, String folder, String fileNameWithoutExtension, String fileExtension) {
 		return getDataInputStream(minecraftServer, modid, folder, fileNameWithoutExtension + fileExtension);
 	}
-    public static InputStream getDataInputStream(MinecraftServer minecraftServer, String modid, String folder, String fileName) {
+	public static InputStream getDataInputStream(MinecraftServer minecraftServer, String modid, String folder, String fileName) {
 		folder = folder.replace("\\", "/").strip();
 		if (!folder.endsWith("/")) {
 			folder = folder + "/";
 		}
 
-        try {
-            Optional<Resource> resourceOptional = minecraftServer.getResourceManager().getResource(new ResourceLocation(modid + ":" + folder + fileName));
-            if (resourceOptional.isPresent()) { Resource resource = resourceOptional.get(); return resource.open(); }
-        }
-        catch (IOException ignored) { }
-        return null;
-    }
+		try {
+			Optional<Resource> resourceOptional = minecraftServer.getResourceManager().getResource(new ResourceLocation(modid + ":" + folder + fileName));
+			if (resourceOptional.isPresent()) { Resource resource = resourceOptional.get(); return resource.open(); }
+		}
+		catch (IOException ignored) { }
+		return null;
+	}
 }

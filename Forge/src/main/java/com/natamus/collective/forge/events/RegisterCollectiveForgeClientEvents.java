@@ -7,10 +7,10 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 public class RegisterCollectiveForgeClientEvents {
 	@SubscribeEvent
 	public static void onClientTick(TickEvent.ClientTickEvent e) {
-        if (!e.phase.equals(TickEvent.Phase.END)) {
-            return;
-        }
+		if (!e.phase.equals(TickEvent.Phase.END)) {
+			return;
+		}
 
-        CollectiveClientEvents.onClientTick();
-    }
+		CollectiveClientEvents.onClientTick();
+	}
 }

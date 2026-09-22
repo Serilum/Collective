@@ -6,18 +6,18 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 
 public class CollectiveInstalledPacket {
-    public static final ResourceLocation CHANNEL = new ResourceLocation(CollectiveReference.MOD_ID, "collective_installed_packet");
+	public static final ResourceLocation CHANNEL = new ResourceLocation(CollectiveReference.MOD_ID, "collective_installed_packet");
 
-    public CollectiveInstalledPacket() {
-    }
+	public CollectiveInstalledPacket() {
+	}
 
-    public static CollectiveInstalledPacket decode(FriendlyByteBuf buf) {
-        return new CollectiveInstalledPacket();
-    }
+	public static CollectiveInstalledPacket decode(FriendlyByteBuf buf) {
+		return new CollectiveInstalledPacket();
+	}
 
-    public void encode(FriendlyByteBuf buf) {
-    }
+	public void encode(FriendlyByteBuf buf) {
+	}
 
-    public static void handle(PacketContext<CollectiveInstalledPacket> ctx) {
-    }
+	public static void handle(PacketContext<CollectiveInstalledPacket> ctx) {
+	}
 }

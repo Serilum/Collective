@@ -192,6 +192,6 @@ public class HeadFunctions {
 	}
 
 	public static boolean hasStandardHead(String mobname) {
-        return mobname.equals("creeper") || mobname.equals("zombie") || mobname.equals("skeleton");
-    }
+		return mobname.equals("creeper") || mobname.equals("zombie") || mobname.equals("skeleton");
+	}
 }

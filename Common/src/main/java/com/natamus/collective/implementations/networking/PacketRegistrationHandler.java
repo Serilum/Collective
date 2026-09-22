@@ -19,31 +19,31 @@ import java.util.function.Function;
  *  by MysticDrew */
 
 public abstract class PacketRegistrationHandler implements NetworkHandler, PacketRegistrar {
-    final Map<Class<?>, PacketContainer<?>> PACKET_MAP = new HashMap<>();
+	final Map<Class<?>, PacketContainer<?>> PACKET_MAP = new HashMap<>();
 
-    protected final Side side;
+	protected final Side side;
 
-    /**
-     * Handles packet registration
-     *
-     * @param side - The side
-     */
-    public PacketRegistrationHandler(Side side) {
-        this.side = side;
-    }
+	/**
+	 * Handles packet registration
+	 *
+	 * @param side - The side
+	 */
+	public PacketRegistrationHandler(Side side) {
+		this.side = side;
+	}
 
-    public <T> PacketRegistrar registerPacket(ResourceLocation packetIdentifier, Class<T> messageType, BiConsumer<T, FriendlyByteBuf> encoder, Function<FriendlyByteBuf, T> decoder, Consumer<PacketContext<T>> handler) {
-        PacketContainer<T> container = new PacketContainer<>(packetIdentifier, messageType, encoder, decoder, handler);
-        PACKET_MAP.put(messageType, container);
-        registerPacket(container);
-        return this;
-    }
+	public <T> PacketRegistrar registerPacket(ResourceLocation packetIdentifier, Class<T> messageType, BiConsumer<T, FriendlyByteBuf> encoder, Function<FriendlyByteBuf, T> decoder, Consumer<PacketContext<T>> handler) {
+		PacketContainer<T> container = new PacketContainer<>(packetIdentifier, messageType, encoder, decoder, handler);
+		PACKET_MAP.put(messageType, container);
+		registerPacket(container);
+		return this;
+	}
 
-    public Side getSide() {
-        return side;
-    }
+	public Side getSide() {
+		return side;
+	}
 
-    protected abstract <T> void registerPacket(PacketContainer<T> container);
+	protected abstract <T> void registerPacket(PacketContainer<T> container);
 
 }
 

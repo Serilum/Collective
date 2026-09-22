@@ -10,15 +10,15 @@ import net.minecraft.world.level.block.Block;
 import java.util.function.Supplier;
 
 public interface RegisterBlockHelper {
-    default <T extends Block> void registerBlockWithoutItem(Object modEventBusObject, ResourceLocation resourceLocation, Supplier<T> blockSupplier) {
-        registerBlockWithoutItem(modEventBusObject, resourceLocation, blockSupplier, false);
-    }
+	default <T extends Block> void registerBlockWithoutItem(Object modEventBusObject, ResourceLocation resourceLocation, Supplier<T> blockSupplier) {
+		registerBlockWithoutItem(modEventBusObject, resourceLocation, blockSupplier, false);
+	}
 	<T extends Block> void registerBlockWithoutItem(Object modEventBusObject, ResourceLocation resourceLocation, Supplier<T> blockSupplier, boolean lastBlock);
 	Block getRegisteredBlockWithoutItem(ResourceLocation resourceLocation);
 
 	default <T extends Block> void registerBlockWithItem(Object modEventBusObject, ResourceLocation resourceLocation, Supplier<T> blockSupplier, ResourceKey<CreativeModeTab> creativeModeTabResourceKey) {
-        registerBlockWithItem(modEventBusObject, resourceLocation, blockSupplier, creativeModeTabResourceKey, false);
-    }
+		registerBlockWithItem(modEventBusObject, resourceLocation, blockSupplier, creativeModeTabResourceKey, false);
+	}
 	<T extends Block> void registerBlockWithItem(Object modEventBusObject, ResourceLocation resourceLocation, Supplier<T> blockSupplier, ResourceKey<CreativeModeTab> creativeModeTabResourceKey, boolean lastBlock);
 	Block getRegisteredBlockWithItem(ResourceLocation resourceLocation);
 

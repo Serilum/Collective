@@ -9,9 +9,9 @@ import net.minecraft.world.level.portal.PortalInfo;
 import net.minecraft.world.phys.Vec3;
 
 public interface TeleportHelper {
-    <T extends Entity> Entity teleportEntity(T entity, ServerLevel serverLevel, PortalInfo portalInfo);
-    <T extends Entity> Entity teleportEntity(T entity, ServerLevel serverLevel, Vec3 vec3);
-    <T extends Entity> Entity teleportEntity(T entity, ServerLevel serverLevel, BlockPos blockPos);
-    <T extends Entity> Entity teleportEntity(T entity, ResourceKey<Level> targetDimension, Vec3 vec3);
-    <T extends Entity> Entity teleportEntity(T entity, ResourceKey<Level> targetDimension, BlockPos blockPos);
+	<T extends Entity> Entity teleportEntity(T entity, ServerLevel serverLevel, PortalInfo portalInfo);
+	<T extends Entity> Entity teleportEntity(T entity, ServerLevel serverLevel, Vec3 vec3);
+	<T extends Entity> Entity teleportEntity(T entity, ServerLevel serverLevel, BlockPos blockPos);
+	<T extends Entity> Entity teleportEntity(T entity, ResourceKey<Level> targetDimension, Vec3 vec3);
+	<T extends Entity> Entity teleportEntity(T entity, ResourceKey<Level> targetDimension, BlockPos blockPos);
 }

@@ -5,5 +5,5 @@ import net.minecraft.world.level.block.Block;
 
 public interface ClientUtilsHelper {
 	void blockSetRenderType(Block block, RenderType renderType);
-    void blockSetRenderCutout(Block block);
+	void blockSetRenderCutout(Block block);
 }

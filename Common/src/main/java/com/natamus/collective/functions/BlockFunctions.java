@@ -37,8 +37,8 @@ public class BlockFunctions {
 		if (specificblock == null || tocheckblock == null) {
 			return false;
 		}
-        return specificblock.equals(tocheckblock);
-    }
+		return specificblock.equals(tocheckblock);
+	}
 	public static Boolean isSpecificBlock(Block specificblock, ItemStack tocheckitemstack) {
 		if (tocheckitemstack == null) {
 			return false;
@@ -107,11 +107,11 @@ public class BlockFunctions {
 	// For bamboo
 	public static boolean isGrowBlock(Block block) {
 		return GlobalVariables.growblocks.contains(block);
-    }
+	}
 	
 	public static boolean isStoneTypeBlock(Block block) {
-        return GlobalVariables.stoneblocks.contains(block);
-    }
+		return GlobalVariables.stoneblocks.contains(block);
+	}
 	
 	public static Boolean isFilledPortalFrame(BlockState blockstate) {
 		Block block = blockstate.getBlock();

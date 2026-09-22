@@ -12,9 +12,9 @@ import java.util.function.Function;
  *  by MysticDrew */
 
 public record PacketContainer<T>(ResourceLocation packetIdentifier,
-                                 Class<T> messageType,
-                                 BiConsumer<T, FriendlyByteBuf> encoder,
-                                 Function<FriendlyByteBuf, T> decoder,
-                                 Consumer<PacketContext<T>> handler)
+								 Class<T> messageType,
+								 BiConsumer<T, FriendlyByteBuf> encoder,
+								 Function<FriendlyByteBuf, T> decoder,
+								 Consumer<PacketContext<T>> handler)
 {
 }
