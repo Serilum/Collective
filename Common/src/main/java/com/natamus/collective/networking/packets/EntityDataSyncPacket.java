@@ -12,52 +12,52 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 
 public class EntityDataSyncPacket {
-    public static final Identifier CHANNEL = Identifier.fromNamespaceAndPath(CollectiveReference.MOD_ID, "entity_data_sync");
+	public static final Identifier CHANNEL = Identifier.fromNamespaceAndPath(CollectiveReference.MOD_ID, "entity_data_sync");
 
-    public final int entityId;
-    public final CompoundTag data;
+	public final int entityId;
+	public final CompoundTag data;
 
-    public EntityDataSyncPacket(int entityId, CompoundTag data) {
-        this.entityId = entityId;
-        this.data = data;
-    }
+	public EntityDataSyncPacket(int entityId, CompoundTag data) {
+		this.entityId = entityId;
+		this.data = data;
+	}
 
-    public static EntityDataSyncPacket decode(FriendlyByteBuf buf) {
-        return new EntityDataSyncPacket(buf.readVarInt(), buf.readNbt());
-    }
+	public static EntityDataSyncPacket decode(FriendlyByteBuf buf) {
+		return new EntityDataSyncPacket(buf.readVarInt(), buf.readNbt());
+	}
 
-    public void encode(FriendlyByteBuf buf) {
-        buf.writeVarInt(entityId);
-        buf.writeNbt(data);
-    }
+	public void encode(FriendlyByteBuf buf) {
+		buf.writeVarInt(entityId);
+		buf.writeNbt(data);
+	}
 
-    public static void handle(PacketContext<EntityDataSyncPacket> ctx) {
-        if (!Side.CLIENT.equals(ctx.side())) {
-            return;
-        }
+	public static void handle(PacketContext<EntityDataSyncPacket> ctx) {
+		if (!Side.CLIENT.equals(ctx.side())) {
+			return;
+		}
 
-        EntityDataSyncClientHandler.apply(ctx.message().entityId, ctx.message().data);
-    }
+		EntityDataSyncClientHandler.apply(ctx.message().entityId, ctx.message().data);
+	}
 
-    public static void syncToTrackers(Entity entity) {
-        if (entity.level().isClientSide()) {
-            return;
-        }
+	public static void syncToTrackers(Entity entity) {
+		if (entity.level().isClientSide()) {
+			return;
+		}
 
-        CompoundTag data = Services.ENTITYDATA.getStored(entity);
-        if (data.isEmpty()) {
-            return;
-        }
+		CompoundTag data = Services.ENTITYDATA.getStored(entity);
+		if (data.isEmpty()) {
+			return;
+		}
 
-        Dispatcher.sendToClientsLoadingChunk(new EntityDataSyncPacket(entity.getId(), data), entity.level().getChunkAt(entity.blockPosition()));
-    }
+		Dispatcher.sendToClientsLoadingChunk(new EntityDataSyncPacket(entity.getId(), data), entity.level().getChunkAt(entity.blockPosition()));
+	}
 
-    public static void syncToPlayer(Entity entity, ServerPlayer player) {
-        CompoundTag data = Services.ENTITYDATA.getStored(entity);
-        if (data.isEmpty()) {
-            return;
-        }
+	public static void syncToPlayer(Entity entity, ServerPlayer player) {
+		CompoundTag data = Services.ENTITYDATA.getStored(entity);
+		if (data.isEmpty()) {
+			return;
+		}
 
-        Dispatcher.sendToClient(new EntityDataSyncPacket(entity.getId(), data), player);
-    }
+		Dispatcher.sendToClient(new EntityDataSyncPacket(entity.getId(), data), player);
+	}
 }

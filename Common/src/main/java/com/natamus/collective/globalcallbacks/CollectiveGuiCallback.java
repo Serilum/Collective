@@ -8,11 +8,11 @@ import net.minecraft.client.gui.GuiGraphicsExtractor;
 public class CollectiveGuiCallback {
 	private CollectiveGuiCallback() { }
 
-    public static final Event<On_Gui_Render> ON_GUI_RENDER = EventFactory.createArrayBacked(On_Gui_Render.class, callbacks -> (guiGraphics, deltaTracker) -> {
-        for (On_Gui_Render callback : callbacks) {
-        	callback.onGuiRender(guiGraphics, deltaTracker);
-        }
-    });
+	public static final Event<On_Gui_Render> ON_GUI_RENDER = EventFactory.createArrayBacked(On_Gui_Render.class, callbacks -> (guiGraphics, deltaTracker) -> {
+		for (On_Gui_Render callback : callbacks) {
+			callback.onGuiRender(guiGraphics, deltaTracker);
+		}
+	});
 
 	@FunctionalInterface
 	public interface On_Gui_Render {

@@ -21,7 +21,7 @@ import java.util.Optional;
 
 @Mixin(value = BaseSpawner.class, priority = 1001)
 public abstract class BaseSpawnerMixin {
-    @Inject(method = "serverTick(Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/core/BlockPos;)V", at = @At(value= "INVOKE", target = "Lnet/minecraft/server/level/ServerLevel;getEntities(Lnet/minecraft/world/level/entity/EntityTypeTest;Lnet/minecraft/world/phys/AABB;Ljava/util/function/Predicate;)Ljava/util/List;"), locals = LocalCapture.CAPTURE_FAILSOFT)
+	@Inject(method = "serverTick(Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/core/BlockPos;)V", at = @At(value= "INVOKE", target = "Lnet/minecraft/server/level/ServerLevel;getEntities(Lnet/minecraft/world/level/entity/EntityTypeTest;Lnet/minecraft/world/phys/AABB;Ljava/util/function/Predicate;)Ljava/util/List;"), locals = LocalCapture.CAPTURE_FAILSOFT)
 	public void BaseSpawner_serverTick(ServerLevel p_151312_, BlockPos p_151313_, CallbackInfo ci, boolean flag, RandomSource randomsource, SpawnData spawndata, int i, ProblemReporter.ScopedCollector problemreporter$scopedcollector, ValueInput valueinput, Optional<?> optional, Vec3 vec3, BlockPos blockpos, Entity entity) {
 		if (entity instanceof Mob) {
 			entity.addTag(CollectiveReference.MOD_ID + ".fromspawner");

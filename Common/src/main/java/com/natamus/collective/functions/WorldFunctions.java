@@ -14,23 +14,23 @@ import java.util.Optional;
 
 public class WorldFunctions {
 	public static void setWorldTime(ServerLevel serverLevel, int time) {
-	    if (time < 0 || time > 24000) {
-	        return;
-	    }
+		if (time < 0 || time > 24000) {
+			return;
+		}
 
-	    Optional<Holder<WorldClock>> clock = serverLevel.dimensionTypeRegistration().value().defaultClock();
-	    if (clock.isEmpty()) {
-	        return;
-	    }
+		Optional<Holder<WorldClock>> clock = serverLevel.dimensionTypeRegistration().value().defaultClock();
+		if (clock.isEmpty()) {
+			return;
+		}
 
-	    ServerClockManager clockManager = serverLevel.getServer().clockManager();
-	    long totalTicks = clockManager.getTotalTicks(clock.get());
-	    long days = totalTicks / 24000L;
-	    clockManager.setTotalTicks(clock.get(), time + (days * 24000L));
+		ServerClockManager clockManager = serverLevel.getServer().clockManager();
+		long totalTicks = clockManager.getTotalTicks(clock.get());
+		long days = totalTicks / 24000L;
+		clockManager.setTotalTicks(clock.get(), time + (days * 24000L));
 	}
 	
 	public static int getTotalTimePassed(ServerLevel serverLevel) {
-	    Optional<Holder<WorldClock>> clock = serverLevel.dimensionTypeRegistration().value().defaultClock();
+		Optional<Holder<WorldClock>> clock = serverLevel.dimensionTypeRegistration().value().defaultClock();
 		return clock.map(worldClockHolder -> (int) serverLevel.getServer().clockManager().getTotalTicks(worldClockHolder)).orElse(0);
 	}
 	public static int getTotalDaysPassed(ServerLevel serverLevel) {
@@ -70,10 +70,10 @@ public class WorldFunctions {
 	public static String getWorldPath(ServerLevel serverLevel) {
 		return getWorldPath(serverLevel.getServer());
 	}
-    public static String getWorldPath(MinecraftServer minecraftServer) {
-        String worldpath = minecraftServer.getWorldPath(LevelResource.ROOT).toString();
-        return worldpath.substring(0, worldpath.length() - 2);
-    }
+	public static String getWorldPath(MinecraftServer minecraftServer) {
+		String worldpath = minecraftServer.getWorldPath(LevelResource.ROOT).toString();
+		return worldpath.substring(0, worldpath.length() - 2);
+	}
 
 	public static String getWorldFolderName(ServerLevel serverLevel) {
 		return getWorldFolderName(serverLevel.getServer());

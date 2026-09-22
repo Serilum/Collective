@@ -31,5 +31,5 @@ public class ForgeRegisterKeyMappingHelper implements RegisterKeyMappingHelper {
 		for (KeyMapping keyMapping : keyMappingsToRegister) {
 			e.register(keyMapping);
 		}
-    }
+	}
 }

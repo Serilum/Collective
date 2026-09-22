@@ -11,37 +11,37 @@ import java.util.Arrays;
 import java.util.List;
 
 public class SignFunctions {
-    public static List<String> getSignText(BlockEntity blockEntity) {
-        if (blockEntity instanceof HangingSignBlockEntity) {
-            return getSignText((HangingSignBlockEntity)blockEntity);
-        }
-        else if (blockEntity instanceof SignBlockEntity) {
-            return getSignText((SignBlockEntity)blockEntity);
-        }
-        return new ArrayList<>();
-    }
+	public static List<String> getSignText(BlockEntity blockEntity) {
+		if (blockEntity instanceof HangingSignBlockEntity) {
+			return getSignText((HangingSignBlockEntity)blockEntity);
+		}
+		else if (blockEntity instanceof SignBlockEntity) {
+			return getSignText((SignBlockEntity)blockEntity);
+		}
+		return new ArrayList<>();
+	}
 
-    public static List<String> getSignText(SignBlockEntity signBlockEntity) {
-        return getSignText(Arrays.asList(signBlockEntity.getFrontText(), signBlockEntity.getBackText()));
-    }
-    public static List<String> getSignText(HangingSignBlockEntity hangingSignBlockEntity) {
-        return getSignText(Arrays.asList(hangingSignBlockEntity.getFrontText(), hangingSignBlockEntity.getBackText()));
-    }
+	public static List<String> getSignText(SignBlockEntity signBlockEntity) {
+		return getSignText(Arrays.asList(signBlockEntity.getFrontText(), signBlockEntity.getBackText()));
+	}
+	public static List<String> getSignText(HangingSignBlockEntity hangingSignBlockEntity) {
+		return getSignText(Arrays.asList(hangingSignBlockEntity.getFrontText(), hangingSignBlockEntity.getBackText()));
+	}
 
-    public static List<String> getSignText(List<SignText> signTextList) {
-        List<String> lines = new ArrayList<>();
+	public static List<String> getSignText(List<SignText> signTextList) {
+		List<String> lines = new ArrayList<>();
 
-        for (SignText signText : signTextList) {
-            for (Component line : signText.getMessages(false)) {
-                if (line.equals(Component.EMPTY)) {
-                    lines.add("");
-                    continue;
-                }
+		for (SignText signText : signTextList) {
+			for (Component line : signText.getMessages(false)) {
+				if (line.equals(Component.EMPTY)) {
+					lines.add("");
+					continue;
+				}
 
-                lines.add(line.getString());
-            }
-        }
+				lines.add(line.getString());
+			}
+		}
 
-        return lines;
-    }
+		return lines;
+	}
 }

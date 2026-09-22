@@ -27,37 +27,37 @@ import net.minecraftforge.fml.loading.FMLLoader;
 public class CollectiveForge {
 	public static CollectiveForge instance;
 	
-    public CollectiveForge(FMLJavaModLoadingContext modLoadingContext) {
-        instance = this;
+	public CollectiveForge(FMLJavaModLoadingContext modLoadingContext) {
+		instance = this;
 
-        setGlobalConstants();
-        CollectiveCommon.init();
-        ForgeCollectiveConfigScreen.registerScreen(modLoadingContext);
+		setGlobalConstants();
+		CollectiveCommon.init();
+		ForgeCollectiveConfigScreen.registerScreen(modLoadingContext);
 
-        BusGroup busGroup = modLoadingContext.getModBusGroup();
+		BusGroup busGroup = modLoadingContext.getModBusGroup();
 
 		FMLCommonSetupEvent.getBus(busGroup).addListener(this::commonSetupEvent);
-        FMLLoadCompleteEvent.getBus(busGroup).addListener(this::loadComplete);
+		FMLLoadCompleteEvent.getBus(busGroup).addListener(this::loadComplete);
 		BuildCreativeModeTabContentsEvent.BUS.addListener(ForgeRegisterItemHelper::addItemsToCreativeInventory);
-        RegisterKeyMappingsEvent.BUS.addListener(ForgeRegisterKeyMappingHelper::registerKeyMappings);
-        AddPackFindersEvent.BUS.addListener(ForgePackFinders::registerTranslationPack);
+		RegisterKeyMappingsEvent.BUS.addListener(ForgeRegisterKeyMappingHelper::registerKeyMappings);
+		AddPackFindersEvent.BUS.addListener(ForgePackFinders::registerTranslationPack);
 
-        RegisterMod.register(CollectiveReference.NAME, CollectiveReference.MOD_ID, CollectiveReference.VERSION, CollectiveReference.ACCEPTED_VERSIONS);
-    }
-
-    private void commonSetupEvent(FMLCommonSetupEvent event) {
-        new NetworkSetup(new ForgeNetworkHandler(FMLLoader.getDist().isClient() ? Side.CLIENT : Side.SERVER));
-    }
-	
-    private void loadComplete(final FMLLoadCompleteEvent event) {
-        RegisterCollectiveForgeEvents.registerEventsInBus();
-
-        if (FMLEnvironment.dist.equals(Dist.CLIENT)) {
-            RegisterCollectiveForgeClientEvents.registerEventsInBus();
-        }
+		RegisterMod.register(CollectiveReference.NAME, CollectiveReference.MOD_ID, CollectiveReference.VERSION, CollectiveReference.ACCEPTED_VERSIONS);
 	}
 
-    private static void setGlobalConstants() {
+	private void commonSetupEvent(FMLCommonSetupEvent event) {
+		new NetworkSetup(new ForgeNetworkHandler(FMLLoader.getDist().isClient() ? Side.CLIENT : Side.SERVER));
+	}
+	
+	private void loadComplete(final FMLLoadCompleteEvent event) {
+		RegisterCollectiveForgeEvents.registerEventsInBus();
 
-    }
+		if (FMLEnvironment.dist.equals(Dist.CLIENT)) {
+			RegisterCollectiveForgeClientEvents.registerEventsInBus();
+		}
+	}
+
+	private static void setGlobalConstants() {
+
+	}
 }

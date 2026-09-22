@@ -21,15 +21,15 @@ public class ScreenFunctions {
 	}
 
 	// Sign Edit Screen
-    public static void signSetMessage(AbstractSignEditScreen abstractSignEditScreen, String newMessage, int newLine, boolean setLine) {
+	public static void signSetMessage(AbstractSignEditScreen abstractSignEditScreen, String newMessage, int newLine, boolean setLine) {
 		if (setLine) {
 			abstractSignEditScreen.line = newLine;
 		}
 
-        abstractSignEditScreen.messages[newLine] = newMessage;
-        abstractSignEditScreen.text = abstractSignEditScreen.text.setMessage(newLine, Component.literal(newMessage));
-        abstractSignEditScreen.sign.setText(abstractSignEditScreen.text, abstractSignEditScreen.isFrontText);
-    }
+		abstractSignEditScreen.messages[newLine] = newMessage;
+		abstractSignEditScreen.text = abstractSignEditScreen.text.setMessage(newLine, Component.literal(newMessage));
+		abstractSignEditScreen.sign.setText(abstractSignEditScreen.text, abstractSignEditScreen.isFrontText);
+	}
 
 	public static SignBlockEntity getSignBlockEntityFromScreen(AbstractSignEditScreen abstractSignEditScreen) {
 		return abstractSignEditScreen.sign;

@@ -14,62 +14,62 @@ import java.util.function.Function;
  *  by MysticDrew */
 
 public record PacketContainer<T>(
-        CustomPacketPayload.Type<? extends CustomPacketPayload> type,
-        Class<T> classType,
-        BiConsumer<T, FriendlyByteBuf> encoder,
-        Function<FriendlyByteBuf, T> decoder,
-        StreamCodec<? super FriendlyByteBuf, T> codec,
-        Consumer<PacketContext<T>> handler,
-        PacketType packetType)
+		CustomPacketPayload.Type<? extends CustomPacketPayload> type,
+		Class<T> classType,
+		BiConsumer<T, FriendlyByteBuf> encoder,
+		Function<FriendlyByteBuf, T> decoder,
+		StreamCodec<? super FriendlyByteBuf, T> codec,
+		Consumer<PacketContext<T>> handler,
+		PacketType packetType)
 {
 
-    public PacketContainer(Identifier id,
-                           Class<T> classType,
-                           BiConsumer<T, FriendlyByteBuf> encoder,
-                           Function<FriendlyByteBuf, T> decoder,
-                           Consumer<PacketContext<T>> handle)
-    {
-        this(new CustomPacketPayload.Type<>(id), classType, encoder, decoder, null, handle, PacketType.PLAY);
-    }
+	public PacketContainer(Identifier id,
+						   Class<T> classType,
+						   BiConsumer<T, FriendlyByteBuf> encoder,
+						   Function<FriendlyByteBuf, T> decoder,
+						   Consumer<PacketContext<T>> handle)
+	{
+		this(new CustomPacketPayload.Type<>(id), classType, encoder, decoder, null, handle, PacketType.PLAY);
+	}
 
-    @SuppressWarnings("unchecked")
-    public <B extends FriendlyByteBuf> PacketContainer(CustomPacketPayload.Type<? extends CustomPacketPayload> type,
-                                                       Class<T> classType,
-                                                       StreamCodec<? super B, T> codec,
-                                                       Consumer<PacketContext<T>> handle,
-                                                       PacketType packetType)
-    {
-        this(type, classType, null, null, (StreamCodec<? super FriendlyByteBuf, T>) codec, handle, packetType );
-    }
+	@SuppressWarnings("unchecked")
+	public <B extends FriendlyByteBuf> PacketContainer(CustomPacketPayload.Type<? extends CustomPacketPayload> type,
+													   Class<T> classType,
+													   StreamCodec<? super B, T> codec,
+													   Consumer<PacketContext<T>> handle,
+													   PacketType packetType)
+	{
+		this(type, classType, null, null, (StreamCodec<? super FriendlyByteBuf, T>) codec, handle, packetType );
+	}
 
-    @SuppressWarnings("unchecked")
-    public <K extends CustomPacketPayload> CustomPacketPayload.Type<K> getType()
-    {
-        return (CustomPacketPayload.Type<K>) type();
-    }
+	@SuppressWarnings("unchecked")
+	public <K extends CustomPacketPayload> CustomPacketPayload.Type<K> getType()
+	{
+		return (CustomPacketPayload.Type<K>) type();
+	}
 
-    @SuppressWarnings({"unchecked", "rawtypes"})
-    public <K extends FriendlyByteBuf> StreamCodec<K, CommonPacketWrapper> getCodec()
-    {
-        if (this.codec() == null)
-        {
-            // builds a codec from the supplied encoder and decoder.
-            return CustomPacketPayload.codec(
-                    (packet, buf) -> this.encoder().accept((T) packet.packet(), buf),
-                    (buf) -> new CommonPacketWrapper<>(this, this.decoder().apply(buf)));
-        }
-        else
-        {
-            return CustomPacketPayload.codec(
+	@SuppressWarnings({"unchecked", "rawtypes"})
+	public <K extends FriendlyByteBuf> StreamCodec<K, CommonPacketWrapper> getCodec()
+	{
+		if (this.codec() == null)
+		{
+			// builds a codec from the supplied encoder and decoder.
+			return CustomPacketPayload.codec(
+					(packet, buf) -> this.encoder().accept((T) packet.packet(), buf),
+					(buf) -> new CommonPacketWrapper<>(this, this.decoder().apply(buf)));
+		}
+		else
+		{
+			return CustomPacketPayload.codec(
 
-                    (packet, buf) -> this.codec().encode(buf, (T) packet.packet()),
-                    (buf) -> new CommonPacketWrapper<>(this, this.codec().decode(buf)));
-        }
-    }
+					(packet, buf) -> this.codec().encode(buf, (T) packet.packet()),
+					(buf) -> new CommonPacketWrapper<>(this, this.codec().decode(buf)));
+		}
+	}
 
-    public enum PacketType
-    {
-        PLAY,
-        CONFIGURATION
-    }
+	public enum PacketType
+	{
+		PLAY,
+		CONFIGURATION
+	}
 }

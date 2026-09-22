@@ -82,7 +82,7 @@ public abstract class DuskConfig {
 	private static final HashMap<String, String> modidToName = new HashMap<>();
 	private static final HashMap<String, Path> pathMap = new HashMap<>();
 	@SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
-    private static final HashMap<String, HashMap<String, List<String>>> modConfigMetaData = new HashMap<>();
+	private static final HashMap<String, HashMap<String, List<String>>> modConfigMetaData = new HashMap<>();
 
 	private static final Gson gson = new GsonBuilder().excludeFieldsWithModifiers(Modifier.TRANSIENT).excludeFieldsWithModifiers(Modifier.PRIVATE).addSerializationExclusionStrategy(new HiddenAnnotationExclusionStrategy()).setPrettyPrinting().create();
 
@@ -361,11 +361,11 @@ public abstract class DuskConfig {
 
 		@Override
 		public void extractBackground(@NotNull GuiGraphicsExtractor guiGraphics, int a, int b, float c) {
-		    if (this.minecraft.level == null) {
-		        this.extractPanorama(guiGraphics, c);
-		    }
+			if (this.minecraft.level == null) {
+				this.extractPanorama(guiGraphics, c);
+			}
 
-		    this.extractBlurredBackground(guiGraphics);
+			this.extractBlurredBackground(guiGraphics);
 		}
 
 		// Real Time config update //
@@ -403,7 +403,7 @@ public abstract class DuskConfig {
 			}
 		}
 		@SuppressWarnings("ExtractMethodRecommender")
-        @Override
+		@Override
 		public void init() {
 			super.init();
 			if (!reload) loadValues();
@@ -492,7 +492,7 @@ public abstract class DuskConfig {
 						if (info.index < ((List<String>)info.value).size()) widget.setValue((String.valueOf(((List<String>)info.value).get(info.index))));
 						else widget.setValue("");
 						widget.setResponder(s -> {
-						    ((BiFunction<EditBox, Button, Predicate<String>>) info.widget).apply(widget, done).test(s);
+							((BiFunction<EditBox, Button, Predicate<String>>) info.widget).apply(widget, done).test(s);
 						});
 						resetButton.setWidth(20);
 						resetButton.setMessage(Component.literal("R").withStyle(ChatFormatting.RED));
@@ -511,7 +511,7 @@ public abstract class DuskConfig {
 						widget.setMaxLength(Integer.MAX_VALUE);
 						widget.setValue(info.tempValue);
 						widget.setResponder(s -> {
-						    ((BiFunction<EditBox, Button, Predicate<String>>) info.widget).apply(widget, done).test(s);
+							((BiFunction<EditBox, Button, Predicate<String>>) info.widget).apply(widget, done).test(s);
 						});
 						if (info.field.getAnnotation(Entry.class).isColor()) {
 							resetButton.setWidth(20);
@@ -552,10 +552,10 @@ public abstract class DuskConfig {
 		}
 		@Override
 		public void extractRenderState(@NotNull GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float delta) {
-		    super.extractRenderState(guiGraphics, mouseX, mouseY, delta);
+			super.extractRenderState(guiGraphics, mouseX, mouseY, delta);
 
-		    this.list.extractRenderState(guiGraphics, mouseX, mouseY, delta);
-		    guiGraphics.centeredText(font, title, width / 2, 15, 0xFFFFFFFF);
+			this.list.extractRenderState(guiGraphics, mouseX, mouseY, delta);
+			guiGraphics.centeredText(font, title, width / 2, 15, 0xFFFFFFFF);
 		}
 	}
 
@@ -618,16 +618,16 @@ public abstract class DuskConfig {
 
 		@Override
 		public void extractContent(@NotNull GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, boolean hovered, float partialTick) {
-		    int entryY = getY();
-		    for (AbstractWidget widget : buttons) {
-		        widget.setY(entryY);
-		        widget.extractRenderState(guiGraphics, mouseX, mouseY, partialTick);
-		    }
+			int entryY = getY();
+			for (AbstractWidget widget : buttons) {
+				widget.setY(entryY);
+				widget.extractRenderState(guiGraphics, mouseX, mouseY, partialTick);
+			}
 
-		    if (text != null && (!text.getString().contains("spacer") || !buttons.isEmpty())) {
-		        int textX = info.centered ? (Minecraft.getInstance().getWindow().getGuiScaledWidth() / 2 - font.width(text) / 2) : 12;
-		        guiGraphics.text(font, text, textX, entryY + 5, 0xFFFFFFFF);
-		    }
+			if (text != null && (!text.getString().contains("spacer") || !buttons.isEmpty())) {
+				int textX = info.centered ? (Minecraft.getInstance().getWindow().getGuiScaledWidth() / 2 - font.width(text) / 2) : 12;
+				guiGraphics.text(font, text, textX, entryY + 5, 0xFFFFFFFF);
+			}
 		}
 	}
 	@Retention(RetentionPolicy.RUNTIME) @Target(ElementType.FIELD) public @interface Entry {

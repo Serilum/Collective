@@ -17,27 +17,27 @@ import java.util.function.Function;
  *  by MysticDrew */
 
 public class DelayedPacketRegistrationHandler implements PacketRegistrar {
-    private static final Map<Class<?>, PacketContainer<?>> QUEUED_PACKET_MAP = new HashMap<>();
+	private static final Map<Class<?>, PacketContainer<?>> QUEUED_PACKET_MAP = new HashMap<>();
 
-    public DelayedPacketRegistrationHandler() { }
+	public DelayedPacketRegistrationHandler() { }
 
-    @Override
-    public Side getSide() {
-        return Side.CLIENT;
-    }
+	@Override
+	public Side getSide() {
+		return Side.CLIENT;
+	}
 
-    @Override
-    public <T> PacketRegistrar registerPacket(Identifier packetIdentifier, Class<T> messageType, BiConsumer<T, FriendlyByteBuf> encoder, Function<FriendlyByteBuf, T> decoder, Consumer<PacketContext<T>> handler) {
-        PacketContainer<T> container = new PacketContainer<>(packetIdentifier, messageType, encoder, decoder, handler);
-        QUEUED_PACKET_MAP.put(messageType, container);
-        return this;
-    }
+	@Override
+	public <T> PacketRegistrar registerPacket(Identifier packetIdentifier, Class<T> messageType, BiConsumer<T, FriendlyByteBuf> encoder, Function<FriendlyByteBuf, T> decoder, Consumer<PacketContext<T>> handler) {
+		PacketContainer<T> container = new PacketContainer<>(packetIdentifier, messageType, encoder, decoder, handler);
+		QUEUED_PACKET_MAP.put(messageType, container);
+		return this;
+	}
 
 
-    public void registerQueuedPackets(PacketRegistrationHandler packetRegistration) {
-        if (!QUEUED_PACKET_MAP.isEmpty()) {
-            packetRegistration.PACKET_MAP.putAll(QUEUED_PACKET_MAP);
-            QUEUED_PACKET_MAP.forEach((aClass, container) -> packetRegistration.registerPacket(container));
-        }
-    }
+	public void registerQueuedPackets(PacketRegistrationHandler packetRegistration) {
+		if (!QUEUED_PACKET_MAP.isEmpty()) {
+			packetRegistration.PACKET_MAP.putAll(QUEUED_PACKET_MAP);
+			QUEUED_PACKET_MAP.forEach((aClass, container) -> packetRegistration.registerPacket(container));
+		}
+	}
 }

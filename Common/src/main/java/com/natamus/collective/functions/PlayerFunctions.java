@@ -102,7 +102,7 @@ public class PlayerFunctions {
 			}
 
 			if (!isempty) {
-                Constants.LOG.debug("[{}] Inventory of {} is not empty, first join is false.", modid, playerName);
+				Constants.LOG.debug("[{}] Inventory of {} is not empty, first join is false.", modid, playerName);
 				return false;
 			}
 		}
@@ -126,7 +126,7 @@ public class PlayerFunctions {
 				spawnPos = respawnConfigRespawnData.pos();
 			}
 
-            Constants.LOG.debug("[{}] Checking for first join of {} with spawn position: {}", modid, playerName, spawnPos.toShortString());
+			Constants.LOG.debug("[{}] Checking for first join of {} with spawn position: {}", modid, playerName, spawnPos.toShortString());
 
 			if (!spawnDimension.equals(player.level().dimension())) {
 				return false;
@@ -136,7 +136,7 @@ public class PlayerFunctions {
 			BlockPos checkPos = new BlockPos(playerPos.getX(), spawnPos.getY(), playerPos.getZ());
 
 			int spawnRadius = serverLevel.getGameRules().get(GameRules.RESPAWN_RADIUS);
-            Constants.LOG.debug("[{}] Checking for first join of {} with spawn radius: {}", modid, playerName, spawnRadius);
+			Constants.LOG.debug("[{}] Checking for first join of {} with spawn radius: {}", modid, playerName, spawnRadius);
 
 			return checkPos.closerThan(spawnPos, spawnRadius * 2);
 		}
@@ -303,7 +303,7 @@ public class PlayerFunctions {
 
 			String[] lspl = line.split(" : ");
 			if (lspl.length != 2) {
-                Constants.LOG.info("[Error] (Collective) setPlayerGearFromString: The line {} is invalid.", line);
+				Constants.LOG.info("[Error] (Collective) setPlayerGearFromString: The line {} is invalid.", line);
 				return;
 			}
 
@@ -340,7 +340,7 @@ public class PlayerFunctions {
 			}
 
 			if (itemStack.isEmpty()) {
-                Constants.LOG.info("[Error] (Collective) setPlayerGearFromString: Unable to get the correct itemstack data from data {}", data);
+				Constants.LOG.info("[Error] (Collective) setPlayerGearFromString: Unable to get the correct itemstack data from data {}", data);
 				return;
 			}
 

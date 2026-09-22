@@ -16,17 +16,17 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(value = ServerGamePacketListenerImpl.class, priority = 1001)
 public abstract class ServerGamePacketListenerImplMixin {
-    @Shadow public ServerPlayer player;
+	@Shadow public ServerPlayer player;
 
-    @Inject(method = "broadcastChatMessage", at = @At(value = "HEAD"), cancellable = true)
-    public void handleChat(PlayerChatMessage playerChatMessage, CallbackInfo ci) {
-        Component message = Component.literal("<" + this.player.getName().getString() + "> " + playerChatMessage.decoratedContent().getString());
+	@Inject(method = "broadcastChatMessage", at = @At(value = "HEAD"), cancellable = true)
+	public void handleChat(PlayerChatMessage playerChatMessage, CallbackInfo ci) {
+		Component message = Component.literal("<" + this.player.getName().getString() + "> " + playerChatMessage.decoratedContent().getString());
 
-        Pair<Boolean, Component> pair = CollectiveChatEvents.SERVER_CHAT_RECEIVED.invoker().onServerChat(this.player, message, player.getUUID());
-        if (pair != null) {
-            Component newMessage = pair.getSecond();
-            MessageFunctions.broadcastMessage(this.player.level(), (MutableComponent) newMessage);
-            ci.cancel();
-        }
-    }
+		Pair<Boolean, Component> pair = CollectiveChatEvents.SERVER_CHAT_RECEIVED.invoker().onServerChat(this.player, message, player.getUUID());
+		if (pair != null) {
+			Component newMessage = pair.getSecond();
+			MessageFunctions.broadcastMessage(this.player.level(), (MutableComponent) newMessage);
+			ci.cancel();
+		}
+	}
 }

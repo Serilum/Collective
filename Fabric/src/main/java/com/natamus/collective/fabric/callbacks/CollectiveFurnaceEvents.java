@@ -7,16 +7,16 @@ import net.minecraft.world.item.ItemStack;
 public class CollectiveFurnaceEvents {
 	private CollectiveFurnaceEvents() { }
 	 
-    public static final Event<Calculate_Furnace_Burn_Time> CALCULATE_FURNACE_BURN_TIME = EventFactory.createArrayBacked(Calculate_Furnace_Burn_Time.class, callbacks -> (itemStack, burntime) -> {
-        for (Calculate_Furnace_Burn_Time callback : callbacks) {
-        	int newburntime = callback.getFurnaceBurnTime(itemStack, burntime);
-        	if (burntime != newburntime) {
-        		return newburntime;
-        	}
-        }
+	public static final Event<Calculate_Furnace_Burn_Time> CALCULATE_FURNACE_BURN_TIME = EventFactory.createArrayBacked(Calculate_Furnace_Burn_Time.class, callbacks -> (itemStack, burntime) -> {
+		for (Calculate_Furnace_Burn_Time callback : callbacks) {
+			int newburntime = callback.getFurnaceBurnTime(itemStack, burntime);
+			if (burntime != newburntime) {
+				return newburntime;
+			}
+		}
         
-        return burntime;
-    });
+		return burntime;
+	});
     
 	@FunctionalInterface
 	public interface Calculate_Furnace_Burn_Time {

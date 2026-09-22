@@ -20,11 +20,11 @@ import net.neoforged.neoforge.event.tick.ServerTickEvent;
 
 @EventBusSubscriber
 public class RegisterCollectiveNeoForgeEvents {
-    @SubscribeEvent
-    public static void onServerStarted(ServerAboutToStartEvent e) {
-        GenerateJSONFiles.initGeneration(e.getServer());
-        ServerTranslationPack.onServerStarting(e.getServer());
-    }
+	@SubscribeEvent
+	public static void onServerStarted(ServerAboutToStartEvent e) {
+		GenerateJSONFiles.initGeneration(e.getServer());
+		ServerTranslationPack.onServerStarting(e.getServer());
+	}
 
 	@SubscribeEvent
 	public static void onWorldLoad(LevelEvent.Load e) {
@@ -36,34 +36,34 @@ public class RegisterCollectiveNeoForgeEvents {
 		CollectiveEvents.onWorldLoad(level);
 	}
 
-    @SubscribeEvent
-    public static void onWorldTick(LevelTickEvent.Post e) {
-        Level level = e.getLevel();
-        if (level.isClientSide()) {
-            return;
-        }
+	@SubscribeEvent
+	public static void onWorldTick(LevelTickEvent.Post e) {
+		Level level = e.getLevel();
+		if (level.isClientSide()) {
+			return;
+		}
 
-        CollectiveEvents.onWorldTick((ServerLevel)level);
-    }
+		CollectiveEvents.onWorldTick((ServerLevel)level);
+	}
 
-    @SubscribeEvent
-    public static void onServerTick(ServerTickEvent.Post e) {
-        CollectiveEvents.onServerTick(e.getServer());
-    }
+	@SubscribeEvent
+	public static void onServerTick(ServerTickEvent.Post e) {
+		CollectiveEvents.onServerTick(e.getServer());
+	}
 
-    @SubscribeEvent
-    public static void onEntityJoinLevel(EntityJoinLevelEvent e) {
-        if (!CollectiveEvents.onEntityJoinLevel(e.getLevel(), e.getEntity())) {
-            e.setCanceled(true);
-        }
-    }
+	@SubscribeEvent
+	public static void onEntityJoinLevel(EntityJoinLevelEvent e) {
+		if (!CollectiveEvents.onEntityJoinLevel(e.getLevel(), e.getEntity())) {
+			e.setCanceled(true);
+		}
+	}
 
-    @SubscribeEvent
-    public static void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent e) {
-        if (e.getEntity() instanceof ServerPlayer player) {
-            ServerTranslationPack.onPlayerJoin(player);
-        }
-    }
+	@SubscribeEvent
+	public static void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent e) {
+		if (e.getEntity() instanceof ServerPlayer player) {
+			ServerTranslationPack.onPlayerJoin(player);
+		}
+	}
 
 	@SubscribeEvent
 	public static void registerCommands(RegisterCommandsEvent e) {

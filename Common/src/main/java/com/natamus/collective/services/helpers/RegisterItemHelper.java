@@ -8,9 +8,9 @@ import net.minecraft.world.item.Item;
 import java.util.function.Function;
 
 public interface RegisterItemHelper {
-    default <T extends Item> void registerItem(Object modEventBusObject, Identifier Identifier, Function<Item.Properties, Item> itemFunction, Item.Properties properties, ResourceKey<CreativeModeTab> creativeModeTabResourceKey) {
-        registerItem(modEventBusObject, Identifier, itemFunction, properties, creativeModeTabResourceKey, false);
-    }
+	default <T extends Item> void registerItem(Object modEventBusObject, Identifier Identifier, Function<Item.Properties, Item> itemFunction, Item.Properties properties, ResourceKey<CreativeModeTab> creativeModeTabResourceKey) {
+		registerItem(modEventBusObject, Identifier, itemFunction, properties, creativeModeTabResourceKey, false);
+	}
 	<T extends Item> void registerItem(Object modEventBusObject, Identifier Identifier, Function<Item.Properties, Item> itemFunction, Item.Properties properties, ResourceKey<CreativeModeTab> creativeModeTabResourceKey, boolean lastItem);
 
 	Item getRegisteredItem(Identifier Identifier);

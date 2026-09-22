@@ -26,21 +26,21 @@ import java.util.Optional;
 @SuppressWarnings({"rawtypes", "unchecked"})
 @Mixin(value = CreateWorldScreen.class, priority = 1001)
 public abstract class CreateWorldScreenMixin {
-    @Shadow
-    private boolean recreated;
+	@Shadow
+	private boolean recreated;
 
-    @Shadow
-    protected abstract boolean createNewWorld(LayeredRegistryAccess<RegistryLayer> layeredRegistryAccess, LevelDataAndDimensions.WorldDataAndGenSettings worldDataAndGenSettings, Optional<GameRules> gameRules);
+	@Shadow
+	protected abstract boolean createNewWorld(LayeredRegistryAccess<RegistryLayer> layeredRegistryAccess, LevelDataAndDimensions.WorldDataAndGenSettings worldDataAndGenSettings, Optional<GameRules> gameRules);
 
-    @Inject(method = "onCreate", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screens/worldselection/WorldOpenFlows;confirmWorldCreation(Lnet/minecraft/client/Minecraft;Lnet/minecraft/client/gui/screens/worldselection/CreateWorldScreen;Lcom/mojang/serialization/Lifecycle;Ljava/lang/Runnable;Z)V"), locals = LocalCapture.CAPTURE_FAILSOFT, cancellable = true)
-    private void onCreate(CallbackInfo ci, WorldCreationContext worldCreationContext, WorldDimensions worldDimensions, WorldDimensions.Complete complete, LayeredRegistryAccess layeredRegistryAccess, FeatureFlagSet enabledFeatures, Lifecycle lifecycleFromFeatures, Lifecycle lifecycleFromRegistries, Lifecycle lifecycle, boolean bl, boolean isDebug, LevelSettings levelSettings, GameRules gameRules, PrimaryLevelData primaryLevelData, WorldOptions options, WorldGenSettings worldGenSettings, LevelDataAndDimensions.WorldDataAndGenSettings worldDataAndGenSettings) {
-        if (this.recreated) {
-            return;
-        }
+	@Inject(method = "onCreate", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screens/worldselection/WorldOpenFlows;confirmWorldCreation(Lnet/minecraft/client/Minecraft;Lnet/minecraft/client/gui/screens/worldselection/CreateWorldScreen;Lcom/mojang/serialization/Lifecycle;Ljava/lang/Runnable;Z)V"), locals = LocalCapture.CAPTURE_FAILSOFT, cancellable = true)
+	private void onCreate(CallbackInfo ci, WorldCreationContext worldCreationContext, WorldDimensions worldDimensions, WorldDimensions.Complete complete, LayeredRegistryAccess layeredRegistryAccess, FeatureFlagSet enabledFeatures, Lifecycle lifecycleFromFeatures, Lifecycle lifecycleFromRegistries, Lifecycle lifecycle, boolean bl, boolean isDebug, LevelSettings levelSettings, GameRules gameRules, PrimaryLevelData primaryLevelData, WorldOptions options, WorldGenSettings worldGenSettings, LevelDataAndDimensions.WorldDataAndGenSettings worldDataAndGenSettings) {
+		if (this.recreated) {
+			return;
+		}
 
-        if (Services.MODLOADER.isDevelopmentEnvironment() || Services.MODLOADER.isModLoaded("hideexperimentalwarning")) {
-            this.createNewWorld(layeredRegistryAccess, worldDataAndGenSettings, Optional.of(gameRules));
-            ci.cancel();
-        }
-    }
+		if (Services.MODLOADER.isDevelopmentEnvironment() || Services.MODLOADER.isModLoaded("hideexperimentalwarning")) {
+			this.createNewWorld(layeredRegistryAccess, worldDataAndGenSettings, Optional.of(gameRules));
+			ci.cancel();
+		}
+	}
 }

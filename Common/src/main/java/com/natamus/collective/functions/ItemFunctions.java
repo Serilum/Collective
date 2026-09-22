@@ -64,7 +64,7 @@ public class ItemFunctions {
 					continue;
 				}
 
-                Optional<ResourceKey<LootTable>> optionalLootTableResourceKey = le.getType().getDefaultLootTable();
+				Optional<ResourceKey<LootTable>> optionalLootTableResourceKey = le.getType().getDefaultLootTable();
 				if (optionalLootTableResourceKey.isEmpty()) {
 					continue;
 				}

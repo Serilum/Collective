@@ -39,7 +39,7 @@ public class JsonFunctions {
 			jsonElement = getJsonElementFromFile(folder, fileName);
 		}
 		catch (IOException ex) {
-            Constants.LOG.warn("[" + CollectiveReference.NAME + "] IOException while trying to parse JSON file: {}{}", folder, fileName);
+			Constants.LOG.warn("[" + CollectiveReference.NAME + "] IOException while trying to parse JSON file: {}{}", folder, fileName);
 			return stringList;
 		}
 
@@ -55,7 +55,7 @@ public class JsonFunctions {
 
 		JsonArray jsonArray = jsonObject.getAsJsonArray(key);
 		if (jsonArray == null) {
-            Constants.LOG.warn("[" + CollectiveReference.NAME + "] Unable to find JSON member with key: {}", key);
+			Constants.LOG.warn("[" + CollectiveReference.NAME + "] Unable to find JSON member with key: {}", key);
 			return stringList;
 		}
 
@@ -65,7 +65,7 @@ public class JsonFunctions {
 				stringList.add(stringElement);
 			}
 			catch (Exception ex) {
-                Constants.LOG.warn("[" + CollectiveReference.NAME + "] Unable to parse '{}' as a String Element.", jE.toString());
+				Constants.LOG.warn("[" + CollectiveReference.NAME + "] Unable to parse '{}' as a String Element.", jE.toString());
 			}
 		}
 

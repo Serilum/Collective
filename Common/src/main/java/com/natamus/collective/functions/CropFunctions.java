@@ -20,7 +20,7 @@ public class CropFunctions {
 		BlockState blockstate = world.getBlockState(pos);
 		
 		if (blockstate.getBlock() instanceof BonemealableBlock bonemealableblock) {
-            if (bonemealableblock.isValidBonemealTarget(world, pos, blockstate)) {
+			if (bonemealableblock.isValidBonemealTarget(world, pos, blockstate)) {
 				if (world instanceof ServerLevel) {
 					if (bonemealableblock.isBonemealSuccess(world, world.getRandom(), pos, blockstate)) {
 						bonemealableblock.performBonemeal((ServerLevel)world, world.getRandom(), pos, blockstate);
@@ -52,7 +52,7 @@ public class CropFunctions {
 		Block block = blockState.getBlock();
 
 		if (block instanceof BonemealableBlock igrowable) {
-            while (igrowable.isValidBonemealTarget(level, blockPos, blockState)) {
+			while (igrowable.isValidBonemealTarget(level, blockPos, blockState)) {
 				if (!igrowable.isBonemealSuccess(level, level.getRandom(), blockPos, blockState)) {
 					break;
 				}
@@ -66,32 +66,32 @@ public class CropFunctions {
 		}
 		else {
 			for (Property.Value<?> pv : blockState.getValues().toList()) {
-			    Property<?> property = pv.property();
-			    if (property instanceof IntegerProperty prop) {
-			        String name = prop.getName();
-			        if (name.equals("age")) {
-			            int value = blockState.getValue(prop);
-			            int max = Collections.max(prop.getPossibleValues());
-			            if (value == max) {
-			                return false;
-			            }
+				Property<?> property = pv.property();
+				if (property instanceof IntegerProperty prop) {
+					String name = prop.getName();
+					if (name.equals("age")) {
+						int value = blockState.getValue(prop);
+						int max = Collections.max(prop.getPossibleValues());
+						if (value == max) {
+							return false;
+						}
 
-			            while (value < max) {
-			                level.setBlockAndUpdate(blockPos, level.getBlockState(blockPos).cycle(property));
-			                if (!player.isCreative()) {
-			                    itemStack.shrink(1);
-			                    if (itemStack.getCount() == 0) {
-			                        break;
-			                    }
-			                }
-			                value += 1;
+						while (value < max) {
+							level.setBlockAndUpdate(blockPos, level.getBlockState(blockPos).cycle(property));
+							if (!player.isCreative()) {
+								itemStack.shrink(1);
+								if (itemStack.getCount() == 0) {
+									break;
+								}
+							}
+							value += 1;
 
-			                if (!player.isCrouching()) {
-			                    break;
-			                }
-			            }
-			        }
-			    }
+							if (!player.isCrouching()) {
+								break;
+							}
+						}
+					}
+				}
 			}
 		}
 		

@@ -23,15 +23,15 @@ import net.minecraftforge.eventbus.api.listener.SubscribeEvent;
 import java.lang.invoke.MethodHandles;
 
 public class RegisterCollectiveForgeEvents {
-    public static void registerEventsInBus() {
-        BusGroup.DEFAULT.register(MethodHandles.lookup(), RegisterCollectiveForgeEvents.class);
-    }
+	public static void registerEventsInBus() {
+		BusGroup.DEFAULT.register(MethodHandles.lookup(), RegisterCollectiveForgeEvents.class);
+	}
 
-    @SubscribeEvent
-    public static void onServerStarted(ServerAboutToStartEvent e) {
-        GenerateJSONFiles.initGeneration(e.getServer());
-        ServerTranslationPack.onServerStarting(e.getServer());
-    }
+	@SubscribeEvent
+	public static void onServerStarted(ServerAboutToStartEvent e) {
+		GenerateJSONFiles.initGeneration(e.getServer());
+		ServerTranslationPack.onServerStarting(e.getServer());
+	}
 
 	@SubscribeEvent
 	public static void onWorldLoad(LevelEvent.Load e) {
@@ -43,49 +43,49 @@ public class RegisterCollectiveForgeEvents {
 		CollectiveEvents.onWorldLoad(level);
 	}
 
-    @SubscribeEvent
-    public static void onWorldTick(TickEvent.LevelTickEvent.Pre e) {
-        Level level = e.level();
-        if (level.isClientSide()) {
-            return;
-        }
+	@SubscribeEvent
+	public static void onWorldTick(TickEvent.LevelTickEvent.Pre e) {
+		Level level = e.level();
+		if (level.isClientSide()) {
+			return;
+		}
 
-        CollectiveEvents.onWorldTick((ServerLevel)level);
-    }
+		CollectiveEvents.onWorldTick((ServerLevel)level);
+	}
 
-    @SubscribeEvent
-    public static void onServerTick(TickEvent.ServerTickEvent.Post e) {
-        CollectiveEvents.onServerTick(e.server());
-    }
+	@SubscribeEvent
+	public static void onServerTick(TickEvent.ServerTickEvent.Post e) {
+		CollectiveEvents.onServerTick(e.server());
+	}
 
-    @SubscribeEvent(priority = Priority.HIGHEST)
-    public static void onMobSpawnerSpecialSpawn(MobSpawnEvent.FinalizeSpawn e) {
-        Level Level = WorldFunctions.getWorldIfInstanceOfAndNotRemote(e.getLevel());
-        if (Level == null) {
-            return;
-        }
+	@SubscribeEvent(priority = Priority.HIGHEST)
+	public static void onMobSpawnerSpecialSpawn(MobSpawnEvent.FinalizeSpawn e) {
+		Level Level = WorldFunctions.getWorldIfInstanceOfAndNotRemote(e.getLevel());
+		if (Level == null) {
+			return;
+		}
 
-        if (!e.isSpawnCancelled()) {
-            if (e.getSpawner() != null) {
-                e.getEntity().addTag(CollectiveReference.MOD_ID + ".fromspawner");
-            }
-        }
-    }
+		if (!e.isSpawnCancelled()) {
+			if (e.getSpawner() != null) {
+				e.getEntity().addTag(CollectiveReference.MOD_ID + ".fromspawner");
+			}
+		}
+	}
 
-    @SubscribeEvent
-    public static boolean onEntityJoinLevel(EntityJoinLevelEvent e) {
-        return !CollectiveEvents.onEntityJoinLevel(e.getLevel(), e.getEntity());
-    }
+	@SubscribeEvent
+	public static boolean onEntityJoinLevel(EntityJoinLevelEvent e) {
+		return !CollectiveEvents.onEntityJoinLevel(e.getLevel(), e.getEntity());
+	}
 
-    @SubscribeEvent
-    public static void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent e) {
-        if (e.getEntity() instanceof ServerPlayer player) {
-            ServerTranslationPack.onPlayerJoin(player);
-        }
-    }
+	@SubscribeEvent
+	public static void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent e) {
+		if (e.getEntity() instanceof ServerPlayer player) {
+			ServerTranslationPack.onPlayerJoin(player);
+		}
+	}
 
-    @SubscribeEvent
-    public static void registerCommands(RegisterCommandsEvent e) {
-    	CommandCollective.register(e.getDispatcher());
-    }
+	@SubscribeEvent
+	public static void registerCommands(RegisterCommandsEvent e) {
+		CommandCollective.register(e.getDispatcher());
+	}
 }

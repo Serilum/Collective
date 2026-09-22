@@ -7,8 +7,8 @@ import net.minecraft.world.level.portal.PortalShape;
 import net.minecraftforge.event.level.BlockEvent;
 
 public class ForgeEventTriggerHelper implements EventTriggerHelper {
-    @Override
-    public void triggerNetherPortalSpawnEvent(Level level, BlockPos portalPos, PortalShape size) {
-        BlockEvent.PortalSpawnEvent.BUS.post(new BlockEvent.PortalSpawnEvent(level, portalPos, level.getBlockState(portalPos), size));
-    }
+	@Override
+	public void triggerNetherPortalSpawnEvent(Level level, BlockPos portalPos, PortalShape size) {
+		BlockEvent.PortalSpawnEvent.BUS.post(new BlockEvent.PortalSpawnEvent(level, portalPos, level.getBlockState(portalPos), size));
+	}
 }

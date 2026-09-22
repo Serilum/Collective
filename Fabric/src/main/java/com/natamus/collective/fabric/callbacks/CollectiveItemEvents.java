@@ -13,23 +13,23 @@ import java.util.List;
 public class CollectiveItemEvents {
 	private CollectiveItemEvents() { }
 	 
-    public static final Event<Item_Expire> ON_ITEM_EXPIRE = EventFactory.createArrayBacked(Item_Expire.class, callbacks -> (itemEntity, itemStack) -> {
-        for (Item_Expire callback : callbacks) {
-        	callback.onItemExpire(itemEntity, itemStack);
-        }
-    });
+	public static final Event<Item_Expire> ON_ITEM_EXPIRE = EventFactory.createArrayBacked(Item_Expire.class, callbacks -> (itemEntity, itemStack) -> {
+		for (Item_Expire callback : callbacks) {
+			callback.onItemExpire(itemEntity, itemStack);
+		}
+	});
     
-    public static final Event<Item_Fished> ON_ITEM_FISHED = EventFactory.createArrayBacked(Item_Fished.class, callbacks -> (loot, hook) -> {
-        for (Item_Fished callback : callbacks) {
-        	callback.onItemFished(loot, hook);
-        }
-    });
+	public static final Event<Item_Fished> ON_ITEM_FISHED = EventFactory.createArrayBacked(Item_Fished.class, callbacks -> (loot, hook) -> {
+		for (Item_Fished callback : callbacks) {
+			callback.onItemFished(loot, hook);
+		}
+	});
     
-    public static final Event<Item_Tossed> ON_ITEM_TOSSED = EventFactory.createArrayBacked(Item_Tossed.class, callbacks -> (player, itemStack) -> {
-        for (Item_Tossed callback : callbacks) {
-        	callback.onItemTossed(player, itemStack);
-        }
-    });
+	public static final Event<Item_Tossed> ON_ITEM_TOSSED = EventFactory.createArrayBacked(Item_Tossed.class, callbacks -> (player, itemStack) -> {
+		for (Item_Tossed callback : callbacks) {
+			callback.onItemTossed(player, itemStack);
+		}
+	});
 
 	public static final Event<Item_Destroyed> ON_ITEM_DESTROYED = EventFactory.createArrayBacked(Item_Destroyed.class, callbacks -> (player, itemStack, hand) -> {
 		for (Item_Destroyed callback : callbacks) {

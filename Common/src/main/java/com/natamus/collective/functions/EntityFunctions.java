@@ -60,7 +60,7 @@ public class EntityFunctions {
 				return false;
 			}
 
-            return !animal.isBaby();
+			return !animal.isBaby();
 		}
 		return false;
 	}
@@ -174,7 +174,7 @@ public class EntityFunctions {
 			return;
 		}
 
-        for(EquipmentSlot equipmentslottype : EquipmentSlot.values()) {
+		for(EquipmentSlot equipmentslottype : EquipmentSlot.values()) {
 			if (ignoremainhand) {
 				if (equipmentslottype.equals(EquipmentSlot.MAINHAND)) {
 					continue;

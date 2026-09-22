@@ -6,8 +6,8 @@ import com.terraformersmc.modmenu.api.ConfigScreenFactory;
 import com.terraformersmc.modmenu.api.ModMenuApi;
 
 public class FabricCollectiveConfigScreen implements ModMenuApi {
-    @Override
-    public ConfigScreenFactory<?> getModConfigScreenFactory() {
-        return parent -> DuskConfig.DuskConfigScreen.getScreen(parent, CollectiveReference.MOD_ID);
-    }
+	@Override
+	public ConfigScreenFactory<?> getModConfigScreenFactory() {
+		return parent -> DuskConfig.DuskConfigScreen.getScreen(parent, CollectiveReference.MOD_ID);
+	}
 }

@@ -10,31 +10,31 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 
 public class FabricTeleportHelper implements TeleportHelper {
-    @Override
-    public boolean teleportEntity(Entity entity, ServerLevel serverLevel, Vec3 vec3) {
-        return entity.teleportTo(serverLevel, vec3.x, vec3.y, vec3.z, Relative.ALL, entity.getYRot(), entity.getXRot(), true);
-    }
+	@Override
+	public boolean teleportEntity(Entity entity, ServerLevel serverLevel, Vec3 vec3) {
+		return entity.teleportTo(serverLevel, vec3.x, vec3.y, vec3.z, Relative.ALL, entity.getYRot(), entity.getXRot(), true);
+	}
 
-    @Override
-    public boolean teleportEntity(Entity entity, ServerLevel serverLevel, BlockPos blockPos) {
-        return entity.teleportTo(serverLevel, blockPos.getX()+0.5, blockPos.getY(), blockPos.getZ()+0.5, Relative.ALL, entity.getYRot(), entity.getXRot(), true);
-    }
+	@Override
+	public boolean teleportEntity(Entity entity, ServerLevel serverLevel, BlockPos blockPos) {
+		return entity.teleportTo(serverLevel, blockPos.getX()+0.5, blockPos.getY(), blockPos.getZ()+0.5, Relative.ALL, entity.getYRot(), entity.getXRot(), true);
+	}
 
-    @Override
-    public boolean teleportEntity(Entity entity, ResourceKey<Level> targetDimension, Vec3 vec3) {
-        if (entity.level().isClientSide()) {
-            return false;
-        }
+	@Override
+	public boolean teleportEntity(Entity entity, ResourceKey<Level> targetDimension, Vec3 vec3) {
+		if (entity.level().isClientSide()) {
+			return false;
+		}
 
-        return teleportEntity(entity, entity.level().getServer().getLevel(targetDimension), vec3);
-    }
+		return teleportEntity(entity, entity.level().getServer().getLevel(targetDimension), vec3);
+	}
 
-    @Override
-    public boolean teleportEntity(Entity entity, ResourceKey<Level> targetDimension, BlockPos blockPos) {
-        if (entity.level().isClientSide()) {
-            return false;
-        }
+	@Override
+	public boolean teleportEntity(Entity entity, ResourceKey<Level> targetDimension, BlockPos blockPos) {
+		if (entity.level().isClientSide()) {
+			return false;
+		}
 
-        return teleportEntity(entity, entity.level().getServer().getLevel(targetDimension), blockPos);
-    }
+		return teleportEntity(entity, entity.level().getServer().getLevel(targetDimension), blockPos);
+	}
 }
