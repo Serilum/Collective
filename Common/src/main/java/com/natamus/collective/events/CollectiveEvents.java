@@ -232,6 +232,10 @@ public class CollectiveEvents {
 			}
 
 			UUID uuid = gameProfile.getId();
+			if (uuid == null) { // Name-only profile, e.g. custom/developer heads from other mods
+				return true;
+			}
+
 			if (uuid.toString().startsWith("ffffffff")) { // Old player head format
 				return true;
 			}
