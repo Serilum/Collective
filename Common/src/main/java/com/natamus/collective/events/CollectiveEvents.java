@@ -232,6 +232,10 @@ public class CollectiveEvents {
 			}
 
 			UUID uuid = gameProfile.getId();
+			if (uuid == null) { // Name-only profile, e.g. custom/developer heads from other mods
+				return true;
+			}
+
 			if (uuid.toString().startsWith("ffffffff")) { // Old player head format
 				return true;
 			}
@@ -296,7 +300,7 @@ public class CollectiveEvents {
 		}
 
 		int[] idIntArray = skullOwner.getIntArray("Id");
-		if (idIntArray[0] != -1) {
+		if (idIntArray.length == 0 || idIntArray[0] != -1) { // Name-only SkullOwner has no Id
 			return true;
 		}
 
