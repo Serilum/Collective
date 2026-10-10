@@ -13,8 +13,8 @@ import net.minecraftforge.network.NetworkEvent;
 import net.minecraftforge.network.NetworkRegistry;
 import net.minecraftforge.network.simple.SimpleChannel;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -26,7 +26,7 @@ import static net.minecraftforge.network.NetworkDirection.PLAY_TO_CLIENT;
  *  by MysticDrew */
 
 public class ForgeNetworkHandler extends PacketRegistrationHandler {
-	private final Map<Class<?>, SimpleChannel> CHANNELS = new HashMap<>();
+	private final Map<Class<?>, SimpleChannel> CHANNELS = new ConcurrentHashMap<>();
 
 	public ForgeNetworkHandler(Side side) {
 		super(side);

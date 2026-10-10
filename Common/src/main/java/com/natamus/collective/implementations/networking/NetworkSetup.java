@@ -14,13 +14,17 @@ import java.util.function.Function;
 
 public class NetworkSetup {
 	private final PacketRegistrationHandler packetRegistration;
-	private static DelayedPacketRegistrationHandler delayedHandler;
-	public static NetworkSetup INSTANCE;
+	private static final DelayedPacketRegistrationHandler delayedHandler = new DelayedPacketRegistrationHandler();
+	public static volatile NetworkSetup INSTANCE;
 
+	// Mods are constructed in parallel on Forge, so registering and setting up share one lock.
 	public NetworkSetup(PacketRegistrationHandler packetRegistration) {
-		INSTANCE = this;
 		this.packetRegistration = packetRegistration;
-		getDelayedHandler().registerQueuedPackets(packetRegistration);
+
+		synchronized (NetworkSetup.class) {
+			INSTANCE = this;
+			delayedHandler.registerQueuedPackets(packetRegistration);
+		}
 	}
 
 	/**
@@ -29,18 +33,17 @@ public class NetworkSetup {
 	 * @return the handler;
 	 */
 	public static DelayedPacketRegistrationHandler getDelayedHandler() {
-		if (delayedHandler == null) {
-			delayedHandler = new DelayedPacketRegistrationHandler();
-		}
 		return delayedHandler;
 	}
 
 	public static <T> PacketRegistrar registerPacket(ResourceLocation packetIdentifier, Class<T> messageType, BiConsumer<T, FriendlyByteBuf> encoder, Function<FriendlyByteBuf, T> decoder, Consumer<PacketContext<T>> handler) {
-		if (INSTANCE != null) {
-			return INSTANCE.packetRegistration.registerPacket(packetIdentifier, messageType, encoder, decoder, handler);
-		}
-		else {
-			return getDelayedHandler().registerPacket(packetIdentifier, messageType, encoder, decoder, handler);
+		synchronized (NetworkSetup.class) {
+			if (INSTANCE != null) {
+				return INSTANCE.packetRegistration.registerPacket(packetIdentifier, messageType, encoder, decoder, handler);
+			}
+			else {
+				return delayedHandler.registerPacket(packetIdentifier, messageType, encoder, decoder, handler);
+			}
 		}
 	}
 

@@ -8,8 +8,8 @@ import com.natamus.collective.implementations.networking.data.Side;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -19,7 +19,7 @@ import java.util.function.Function;
  *  by MysticDrew */
 
 public abstract class PacketRegistrationHandler implements NetworkHandler, PacketRegistrar {
-	final Map<Class<?>, PacketContainer<?>> PACKET_MAP = new HashMap<>();
+	final Map<Class<?>, PacketContainer<?>> PACKET_MAP = new ConcurrentHashMap<>();
 
 	protected final Side side;
 
