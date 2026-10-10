@@ -15,8 +15,8 @@ import net.minecraftforge.event.network.CustomPayloadEvent;
 import net.minecraftforge.network.ChannelBuilder;
 import net.minecraftforge.network.EventNetworkChannel;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
@@ -25,7 +25,7 @@ import java.util.function.Consumer;
  *  by MysticDrew */
 
 public class ForgeNetworkHandler extends PacketRegistrationHandler {
-	private final Map<Class<?>, Message<?>> CHANNELS = new HashMap<>();
+	private final Map<Class<?>, Message<?>> CHANNELS = new ConcurrentHashMap<>();
 
 	public ForgeNetworkHandler(Side side) {
 		super(side);
