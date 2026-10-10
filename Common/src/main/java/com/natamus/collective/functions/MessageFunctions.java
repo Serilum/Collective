@@ -130,6 +130,13 @@ public class MessageFunctions {
 		return Component.literal(TranslationResolver.resolve(key, args));
 	}
 
+	public static MutableComponent getTranslatableMessageComponent(Player player, String key, Object... args) {
+		return translatableComponent(player, key, args);
+	}
+	public static MutableComponent getTranslatableMessageComponent(CommandSourceStack source, String key, Object... args) {
+		return translatableComponent(source, key, args);
+	}
+
 	private static MutableComponent translatableComponent(Player player, String key, Object... args) {
 		if (player instanceof ServerPlayer serverPlayer && ServerTranslationPack.useTranslatableForMessage(serverPlayer)) {
 			return Component.translatable(key, args);
