@@ -147,6 +147,11 @@
   "collective.dailyquests.questtitle.tradevillager": "Trade Villager",
   "collective.dailyquests.questtitle.travelblocks": "Travel Blocks",
   "collective.dailyquests.questtitle.useitem": "Use Item",
+  "collective.dailyquests.introduction.title.collapselist": "Collapse List",
+  "collective.dailyquests.introduction.title.gettingstarted": "Getting Started",
+  "collective.dailyquests.introduction.description.introduction": "Introduction.",
+  "collective.dailyquests.introduction.description.collapselist": "Press the %s key to collapse this list.",
+  "collective.dailyquests.introduction.description.gettingstarted": "Receive your first %s quests next in-game morning!",
 
   "_comment_modname_deathbackup": "Death Backup",
   "collective.deathbackup.message.cannotfindworld": "Cannot find the world's server, unable to load death backup.",
