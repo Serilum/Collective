@@ -6,8 +6,8 @@ import com.natamus.collective.implementations.networking.data.Side;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.Identifier;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -17,7 +17,7 @@ import java.util.function.Function;
  *  by MysticDrew */
 
 public class DelayedPacketRegistrationHandler implements PacketRegistrar {
-	private static final Map<Class<?>, PacketContainer<?>> QUEUED_PACKET_MAP = new HashMap<>();
+	private static final Map<Class<?>, PacketContainer<?>> QUEUED_PACKET_MAP = new ConcurrentHashMap<>();
 
 	public DelayedPacketRegistrationHandler() { }
 
