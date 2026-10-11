@@ -38,6 +38,7 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -61,7 +62,7 @@ public abstract class DuskConfig {
 	private static final Pattern DECIMAL_ONLY = Pattern.compile("-?(\\d+\\.?\\d*|\\d*\\.?\\d+|\\.)");
 	private static final Pattern HEXADECIMAL_ONLY = Pattern.compile("(-?[#0-9a-fA-F]*)");
 
-	private static final HashMap<String, List<EntryInfo>> entryHashMap = new HashMap<String, List<EntryInfo>>();
+	private static final Map<String, List<EntryInfo>> entryHashMap = new ConcurrentHashMap<>();
 
 	protected static class EntryInfo {
 		Field field;
@@ -85,10 +86,10 @@ public abstract class DuskConfig {
 		AbstractWidget colorButton;
 	}
 
-	public static final Map<String,Class<?>> configClass = new HashMap<>();
-	private static final HashMap<String, String> modidToName = new HashMap<String, String>();
-	private static final HashMap<String, Path> pathMap = new HashMap<String, Path>();
-	private static final HashMap<String, HashMap<String, List<String>>> modConfigMetaData = new HashMap<String, HashMap<String, List<String>>>();
+	public static final Map<String,Class<?>> configClass = new ConcurrentHashMap<>();
+	private static final Map<String, String> modidToName = new ConcurrentHashMap<>();
+	private static final Map<String, Path> pathMap = new ConcurrentHashMap<>();
+	private static final Map<String, HashMap<String, List<String>>> modConfigMetaData = new ConcurrentHashMap<>();
 
 	private static final Gson gson = new GsonBuilder().excludeFieldsWithModifiers(Modifier.TRANSIENT).excludeFieldsWithModifiers(Modifier.PRIVATE).addSerializationExclusionStrategy(new HiddenAnnotationExclusionStrategy()).setPrettyPrinting().create();
 
@@ -96,7 +97,8 @@ public abstract class DuskConfig {
 		init(name, modid, config, true);
 	}
 	public static void init(String name, String modid, Class<?> config, Boolean initial) {
-		pathMap.put(modid, DataFunctions.getConfigDirectoryPath().resolve(modid + ".json5"));
+		Path configPath = DataFunctions.getConfigDirectoryPath().resolve(modid + ".json5");
+		pathMap.put(modid, configPath);
 		configClass.put(modid, config);
 		modidToName.put(modid, name);
 		entryHashMap.put(modid, new ArrayList<EntryInfo>());
@@ -135,7 +137,7 @@ public abstract class DuskConfig {
 		}
 
 		try {
-			loadJson(pathMap.get(modid), modid);
+			loadJson(configPath, modid);
 		}
 		catch (Exception e) {
 			write(modid);
@@ -366,6 +368,10 @@ public abstract class DuskConfig {
 		public boolean reload = false;
 
 		public static Screen getScreen(Screen parent, String modid) {
+			if (!entryHashMap.containsKey(modid)) {
+				return parent;
+			}
+
 			return new DuskConfigScreen(parent, modid);
 		}
 

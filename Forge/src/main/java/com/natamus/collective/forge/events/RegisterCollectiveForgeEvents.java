@@ -74,18 +74,6 @@ public class RegisterCollectiveForgeEvents {
 	}
 
 	@SubscribeEvent
-	public void onBlockBreak(BlockEvent.BreakEvent e) {
-		Level level = WorldFunctions.getWorldIfInstanceOfAndNotRemote(e.getLevel());
-		if (level == null) {
-			return;
-		}
-
-		if (!CollectiveEvents.onBlockBreak(level, e.getPlayer(), e.getPos(), e.getState(), null)) {
-			e.setCanceled(true);
-		}
-	}
-
-	@SubscribeEvent
 	public void onEntityBlockPlace(BlockEvent.EntityPlaceEvent e) {
 		Level level = WorldFunctions.getWorldIfInstanceOfAndNotRemote(e.getLevel());
 		if (level == null) {

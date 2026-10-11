@@ -5,7 +5,9 @@ import com.natamus.collective.cmds.CommandCollective;
 import com.natamus.collective.config.GenerateJSONFiles;
 import com.natamus.collective.events.CollectiveEvents;
 import com.natamus.collective.fabric.callbacks.CollectiveBlockEvents;
+import com.natamus.collective.fabric.callbacks.CollectiveEntityEvents;
 import com.natamus.collective.fabric.callbacks.CollectivePlayerEvents;
+import com.natamus.collective.fabric.data.GlobalFabricObjects;
 import com.natamus.collective.fabric.networking.FabricNetworkHandler;
 import com.natamus.collective.implementations.networking.NetworkSetup;
 import com.natamus.collective.implementations.networking.data.Side;
@@ -16,7 +18,6 @@ import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
-import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
 import net.minecraft.server.level.ServerPlayer;
 
 public class CollectiveFabric implements ModInitializer { 
@@ -40,12 +41,12 @@ public class CollectiveFabric implements ModInitializer {
 			CollectiveEvents.onServerTick(minecraftServer);
 		});
 
-		ServerEntityEvents.ENTITY_LOAD.register((entity, serverLevel) -> {
-			CollectiveEvents.onEntityJoinLevel(serverLevel, entity);
+		CollectiveEntityEvents.PRE_ENTITY_JOIN_WORLD.register((level, entity) -> {
+			return CollectiveEvents.onEntityJoinLevel(level, entity);
 		});
 
-		PlayerBlockBreakEvents.BEFORE.register((world, player, pos, state, entity) -> {
-			return CollectiveEvents.onBlockBreak(world, player, pos, state, entity);
+		ServerEntityEvents.ENTITY_LOAD.register((entity, serverLevel) -> {
+			CollectiveEvents.onEntityJoinLevel(serverLevel, entity);
 		});
 
 		CollectiveBlockEvents.BLOCK_PLACE.register((level, blockPos, blockState, livingEntity, itemStack) -> {
@@ -66,6 +67,6 @@ public class CollectiveFabric implements ModInitializer {
 	}
 
 	private static void setGlobalConstants() {
-
+		GlobalFabricObjects.collectiveInitialized = true;
 	}
 }

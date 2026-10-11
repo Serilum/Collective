@@ -1,6 +1,7 @@
 package com.natamus.collective.fabric.mixin;
 
 import com.natamus.collective.fabric.callbacks.CollectiveLifecycleEvents;
+import com.natamus.collective.fabric.data.GlobalFabricObjects;
 import net.minecraft.locale.Language;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -11,6 +12,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public class LanguageMixin {
 	@Inject(method = "loadDefault()Lnet/minecraft/locale/Language;", at = @At(value = "TAIL"))
 	private static void loadDefault(CallbackInfoReturnable<Language> cir) {
+		// Mods like ETF can load Language while ResourceLocation is still initialising, and creating a Fabric event then crashes.
+		if (!GlobalFabricObjects.collectiveInitialized) {
+			return;
+		}
+
 		CollectiveLifecycleEvents.DEFAULT_LANGUAGE_LOADED.invoker().onLanguageLoad();
 	}
 }

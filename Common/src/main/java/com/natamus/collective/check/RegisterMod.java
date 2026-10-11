@@ -11,6 +11,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -20,9 +21,10 @@ public class RegisterMod {
 	private static final HttpClient HTTP_CLIENT = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(5)).build();
 	private static final ExecutorService UPDATE_EXECUTOR = createUpdateExecutor();
 	private static final int MAX_CONCURRENT_CHECKS = 10;
+	private static final CountDownLatch COLLECTIVE_CONFIG_LOADED = new CountDownLatch(1);
 
 	public static void register(String modName, String modId, String modVersion, String rawGameVersion) {
-		if (!CollectiveConfigHandler.enableUpdateChecker) {
+		if (COLLECTIVE_CONFIG_LOADED.getCount() == 0 && !CollectiveConfigHandler.enableUpdateChecker) {
 			return;
 		}
 
@@ -30,7 +32,31 @@ public class RegisterMod {
 		String slug = modName.toLowerCase().replaceAll("[^a-z0-9 ]", "").replace(" ", "-");
 		String loader = Services.MODLOADER.getModLoaderName();
 
-		UPDATE_EXECUTOR.execute(() -> checkForUpdate(slug, modName, modVersion, gameVersion, loader));
+		UPDATE_EXECUTOR.execute(() -> {
+			if (!isUpdateCheckerEnabled()) {
+				return;
+			}
+
+			checkForUpdate(slug, modName, modVersion, gameVersion, loader);
+		});
+	}
+
+	public static void onCollectiveConfigLoaded() {
+		COLLECTIVE_CONFIG_LOADED.countDown();
+	}
+
+	// Mods can register before Collective has read its own config (Forge constructs mods in parallel).
+	private static boolean isUpdateCheckerEnabled() {
+		try {
+			if (!COLLECTIVE_CONFIG_LOADED.await(60, TimeUnit.SECONDS)) {
+				return false;
+			}
+		}
+		catch (InterruptedException ignored) {
+			return false;
+		}
+
+		return CollectiveConfigHandler.enableUpdateChecker;
 	}
 
 	private static void checkForUpdate(String slug, String modName, String modVersion, String gameVersion, String loader) {

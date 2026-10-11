@@ -50,7 +50,12 @@ public class DataFunctions {
 		File subFolder = new File(getModDirectory() + File.separator + getCurrentMinecraftVersion());
 		File[] listOfSubFiles = subFolder.listFiles();
 
-		for (File file : ArrayUtils.addAll(listOfMainFiles, listOfSubFiles)) {
+		File[] listOfAllFiles = ArrayUtils.addAll(listOfMainFiles, listOfSubFiles);
+		if (listOfAllFiles == null) {
+			return installedmods;
+		}
+
+		for (File file : listOfAllFiles) {
 			if (file.isFile()) {
 				String filename = file.getName().replaceAll(" +\\([0-9]+\\)", "");
 				installedmods.add(filename);
