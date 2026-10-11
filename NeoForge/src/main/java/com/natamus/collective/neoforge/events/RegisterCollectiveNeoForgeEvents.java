@@ -5,13 +5,17 @@ import com.natamus.collective.config.GenerateJSONFiles;
 import com.natamus.collective.events.CollectiveEvents;
 import com.natamus.collective.functions.WorldFunctions;
 import com.natamus.collective.translations.ServerTranslationPack;
+import com.natamus.collective.util.CollectiveReference;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.level.Level;
+import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
+import net.neoforged.neoforge.event.entity.living.FinalizeSpawnEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.level.LevelEvent;
 import net.neoforged.neoforge.event.server.ServerAboutToStartEvent;
@@ -49,6 +53,15 @@ public class RegisterCollectiveNeoForgeEvents {
 	@SubscribeEvent
 	public static void onServerTick(ServerTickEvent.Post e) {
 		CollectiveEvents.onServerTick(e.getServer());
+	}
+
+	@SubscribeEvent(priority = EventPriority.HIGHEST)
+	public static void onMobSpawnerSpecialSpawn(FinalizeSpawnEvent e) {
+		if (!e.getSpawnType().equals(MobSpawnType.SPAWNER)) {
+			return;
+		}
+
+		e.getEntity().addTag(CollectiveReference.MOD_ID + ".fromspawner");
 	}
 
 	@SubscribeEvent
