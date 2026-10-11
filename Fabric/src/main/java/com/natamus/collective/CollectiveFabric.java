@@ -4,7 +4,9 @@ import com.natamus.collective.check.RegisterMod;
 import com.natamus.collective.cmds.CommandCollective;
 import com.natamus.collective.config.GenerateJSONFiles;
 import com.natamus.collective.events.CollectiveEvents;
+import com.natamus.collective.fabric.callbacks.CollectiveEntityEvents;
 import com.natamus.collective.fabric.callbacks.CollectivePlayerEvents;
+import com.natamus.collective.fabric.data.GlobalFabricObjects;
 import com.natamus.collective.fabric.networking.FabricNetworkHandler;
 import com.natamus.collective.implementations.networking.NetworkSetup;
 import com.natamus.collective.implementations.networking.data.Side;
@@ -45,6 +47,10 @@ public class CollectiveFabric implements ModInitializer {
 			CollectiveEvents.onServerTick(minecraftServer);
 		});
 		
+		CollectiveEntityEvents.PRE_ENTITY_JOIN_WORLD.register((level, entity) -> {
+			return CollectiveEvents.onEntityJoinLevel(level, entity);
+		});
+
 		ServerEntityEvents.ENTITY_LOAD.register((entity, serverLevel) -> {
 			CollectiveEvents.onEntityJoinLevel(serverLevel, entity);
 		});
@@ -63,6 +69,6 @@ public class CollectiveFabric implements ModInitializer {
 	}
 
 	private static void setGlobalConstants() {
-
+		GlobalFabricObjects.collectiveInitialized = true;
 	}
 }

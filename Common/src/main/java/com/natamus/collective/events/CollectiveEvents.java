@@ -9,6 +9,7 @@ import com.natamus.collective.functions.BlockPosFunctions;
 import com.natamus.collective.functions.EntityFunctions;
 import com.natamus.collective.functions.SpawnEntityFunctions;
 import com.natamus.collective.objects.SAMObject;
+import com.natamus.collective.services.Services;
 import com.natamus.collective.util.CollectiveReference;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.TickTask;
@@ -195,6 +196,10 @@ public class CollectiveEvents {
 			}
 			else {
 				entity.remove(RemovalReason.DISCARDED);
+
+				if (to instanceof LivingEntity livingTo) {
+					Services.EVENTTRIGGER.triggerLivingConversionEvent((LivingEntity)entity, livingTo);
+				}
 			}
 
 			to.addTag(CollectiveReference.MOD_ID + ".checked");
