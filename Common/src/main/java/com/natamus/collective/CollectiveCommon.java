@@ -1,5 +1,6 @@
 package com.natamus.collective;
 
+import com.natamus.collective.check.RegisterMod;
 import com.natamus.collective.config.CollectiveConfigHandler;
 import com.natamus.collective.config.LoadJSONFiles;
 import com.natamus.collective.data.Constants;
@@ -13,6 +14,7 @@ public class CollectiveCommon {
 		Constants.LOG.info("Loading Collective version " + CollectiveReference.VERSION + ".");
 
 		CollectiveConfigHandler.initConfig();
+		RegisterMod.onCollectiveConfigLoaded();
 		GlobalVariables.generateHashMaps();
 		LoadJSONFiles.startListening();
 

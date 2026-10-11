@@ -2,13 +2,20 @@ package com.natamus.collective.forge.services;
 
 import com.natamus.collective.services.helpers.EventTriggerHelper;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.portal.PortalShape;
+import net.minecraftforge.event.ForgeEventFactory;
 import net.minecraftforge.event.level.BlockEvent;
 
 public class ForgeEventTriggerHelper implements EventTriggerHelper {
 	@Override
 	public void triggerNetherPortalSpawnEvent(Level level, BlockPos portalPos, PortalShape size) {
 		BlockEvent.PortalSpawnEvent.BUS.post(new BlockEvent.PortalSpawnEvent(level, portalPos, level.getBlockState(portalPos), size));
+	}
+
+	@Override
+	public void triggerLivingConversionEvent(LivingEntity entity, LivingEntity outcome) {
+		ForgeEventFactory.onLivingConvert(entity, outcome);
 	}
 }
