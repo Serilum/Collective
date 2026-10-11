@@ -90,10 +90,11 @@ public class PlayerMixin {
 		return itemStack2;
 	}
 
-	@ModifyVariable(method = "attack(Lnet/minecraft/world/entity/Entity;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/ItemStack;hurtEnemy(Lnet/minecraft/world/entity/LivingEntity;Lnet/minecraft/world/entity/player/Player;)V"))
-	public ItemStack Player_attack(ItemStack k, Entity entity) {
+	@Inject(method = "attack(Lnet/minecraft/world/entity/Entity;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/ItemStack;hurtEnemy(Lnet/minecraft/world/entity/LivingEntity;Lnet/minecraft/world/entity/player/Player;)V"))
+	public void Player_attack(Entity entity, CallbackInfo ci) {
+		Player player = (Player) (Object) this;
+		ItemStack k = player.getMainHandItem();
 		if ((k.getMaxDamage() - k.getDamageValue()) < 3) {
-			Player player = (Player) (Object) this;
 			ItemStack copy = k.copy();
 			TaskFunctions.enqueueTask(player.getCommandSenderWorld(), () -> {
 				if (k.isEmpty()) {
@@ -101,6 +102,5 @@ public class PlayerMixin {
 				}
 			}, 0);
 		}
-		return k;
 	}
 }

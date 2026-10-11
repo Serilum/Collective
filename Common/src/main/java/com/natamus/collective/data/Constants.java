@@ -19,10 +19,19 @@ public class Constants {
 
 	public static final List<EquipmentSlot> equipmentSlots = Arrays.asList(EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET, EquipmentSlot.OFFHAND);
 
-	public static final ItemStack normalPickaxeStack = new ItemStack(Items.NETHERITE_PICKAXE);
-	public static final ItemStack silkPickaxeStack = new ItemStack(Items.NETHERITE_PICKAXE);
+	public static ItemStack normalPickaxeStack = null;
+	public static ItemStack silkPickaxeStack = null;
 
+	private static boolean ranInit = false;
 	public static void initConstantData() {
+		if (ranInit) {
+			return;
+		}
+
+		normalPickaxeStack = new ItemStack(Items.NETHERITE_PICKAXE);
+		silkPickaxeStack = new ItemStack(Items.NETHERITE_PICKAXE);
 		silkPickaxeStack.enchant(Enchantments.SILK_TOUCH, 1);
+
+		ranInit = true;
 	}
 }

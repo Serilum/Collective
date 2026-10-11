@@ -21,6 +21,7 @@ import java.util.List;
 
 public class BlockFunctions {
 	public static List<ItemStack> getBlockDrops(Level level, BlockState blockState, boolean silkTouched) {
+		Constants.initConstantData();
 		return getBlockDrops(level, blockState, silkTouched ? Constants.silkPickaxeStack : Constants.normalPickaxeStack, null, new Vec3(0, 0, 0));
 	}
 	public static List<ItemStack> getBlockDrops(Level level, BlockState blockState, ItemStack itemStack, Player player) {
