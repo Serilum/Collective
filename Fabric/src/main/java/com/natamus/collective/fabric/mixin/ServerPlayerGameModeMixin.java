@@ -23,6 +23,8 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import java.util.Objects;
+
 @Mixin(value = ServerPlayerGameMode.class, priority = 1001)
 public class ServerPlayerGameModeMixin {
 	@Shadow protected ServerLevel level;
@@ -47,6 +49,10 @@ public class ServerPlayerGameModeMixin {
 
 	@Inject(method = "abortDestroyBlock(Lnet/minecraft/core/BlockPos;I)V", at = @At(value = "INVOKE_ASSIGN", target = "Ljava/util/Objects;equals(Ljava/lang/Object;Ljava/lang/Object;)Z", ordinal = 0), cancellable = true)
 	public void ServerPlayerGameMode_silence_block_mismatch(BlockPos blockPos, int sequence, CallbackInfo ci) {
+		if (Objects.equals(this.destroyPos, blockPos)) {
+			return;
+		}
+
 		this.level.destroyBlockProgress(this.player.getId(), this.destroyPos, -1);
 		this.player.connection.send(new ClientboundBlockUpdatePacket(this.destroyPos, this.level.getBlockState(this.destroyPos)));
 		this.level.destroyBlockProgress(this.player.getId(), blockPos, -1);
