@@ -15,7 +15,6 @@ import net.minecraftforge.event.TickEvent.Phase;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.entity.living.MobSpawnEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
-import net.minecraftforge.event.level.BlockEvent;
 import net.minecraftforge.event.level.LevelEvent;
 import net.minecraftforge.event.server.ServerAboutToStartEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
@@ -84,18 +83,6 @@ public class RegisterCollectiveForgeEvents {
 	public void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent e) {
 		if (e.getEntity() instanceof ServerPlayer player) {
 			ServerTranslationPack.onPlayerJoin(player);
-		}
-	}
-
-	@SubscribeEvent
-	public void onBlockBreak(BlockEvent.BreakEvent e) {
-		Level level = WorldFunctions.getWorldIfInstanceOfAndNotRemote(e.getLevel());
-		if (level == null) {
-			return;
-		}
-
-		if (!CollectiveEvents.onBlockBreak(level, e.getPlayer(), e.getPos(), e.getState(), null)) {
-			e.setCanceled(true);
 		}
 	}
 

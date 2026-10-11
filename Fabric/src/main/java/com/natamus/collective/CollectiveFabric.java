@@ -4,7 +4,9 @@ import com.natamus.collective.check.RegisterMod;
 import com.natamus.collective.cmds.CommandCollective;
 import com.natamus.collective.config.GenerateJSONFiles;
 import com.natamus.collective.events.CollectiveEvents;
+import com.natamus.collective.fabric.callbacks.CollectiveEntityEvents;
 import com.natamus.collective.fabric.callbacks.CollectivePlayerEvents;
+import com.natamus.collective.fabric.data.GlobalFabricObjects;
 import com.natamus.collective.fabric.networking.FabricNetworkHandler;
 import com.natamus.collective.implementations.networking.NetworkSetup;
 import com.natamus.collective.implementations.networking.data.Side;
@@ -16,7 +18,6 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerWorldEvents;
-import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -46,6 +47,10 @@ public class CollectiveFabric implements ModInitializer {
 			CollectiveEvents.onServerTick(minecraftServer);
 		});
 		
+		CollectiveEntityEvents.PRE_ENTITY_JOIN_WORLD.register((level, entity) -> {
+			return CollectiveEvents.onEntityJoinLevel(level, entity);
+		});
+
 		ServerEntityEvents.ENTITY_LOAD.register((entity, serverLevel) -> {
 			CollectiveEvents.onEntityJoinLevel(serverLevel, entity);
 		});
@@ -56,10 +61,6 @@ public class CollectiveFabric implements ModInitializer {
 			}
 		});
 
-		PlayerBlockBreakEvents.BEFORE.register((world, player, pos, state, entity) -> {
-			return CollectiveEvents.onBlockBreak(world, player, pos, state, entity);
-		});
-
 		CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
 			CommandCollective.register(dispatcher);
 		});
@@ -68,6 +69,6 @@ public class CollectiveFabric implements ModInitializer {
 	}
 
 	private static void setGlobalConstants() {
-
+		GlobalFabricObjects.collectiveInitialized = true;
 	}
 }
