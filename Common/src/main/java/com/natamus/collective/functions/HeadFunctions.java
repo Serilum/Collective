@@ -157,6 +157,10 @@ public class HeadFunctions {
 
 	public static CompoundTag getSkullOwnerCompoundTag(ServerLevel serverLevel, String playerName) {
 		GameProfile gameProfile = getGameProfileFromPlayerName(serverLevel, playerName);
+		if (gameProfile == null) {
+			return null;
+		}
+
 		PropertyMap propertyMap = gameProfile.getProperties();
 
 		String textures = "";

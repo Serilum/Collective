@@ -230,13 +230,17 @@ public class CollectiveEvents {
 		}
 
 		int[] idIntArray = skullOwner.getIntArray("Id");
-		if (idIntArray[0] != -1) {
+		if (idIntArray.length == 0 || idIntArray[0] != -1) {
 			return true;
 		}
 
 		String headName = itemName.replace("'s Head", "");
 
 		CompoundTag skullOwnerCompoundTag = HeadFunctions.getSkullOwnerCompoundTag((ServerLevel)level, headName);
+		if (skullOwnerCompoundTag == null) {
+			return true;
+		}
+
 		itemStack.addTagElement("SkullOwner", skullOwnerCompoundTag);
 		return false;
 	}
