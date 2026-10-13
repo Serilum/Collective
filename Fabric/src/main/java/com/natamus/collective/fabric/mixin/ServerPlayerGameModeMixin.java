@@ -65,7 +65,7 @@ public class ServerPlayerGameModeMixin {
 		ItemStack itemStack = player.getMainHandItem();
 		if ((itemStack.getMaxDamage() - itemStack.getDamageValue()) < 3) {
 			ItemStack copy = itemStack.copy();
-			TaskFunctions.enqueueTask(player.level(), () -> {
+			TaskFunctions.enqueueCollectiveServerTask(player.level().getServer(), () -> {
 				if (itemStack.isEmpty() && !copy.isEmpty()) {
 					CollectiveItemEvents.ON_ITEM_DESTROYED.invoker().onItemDestroyed(player, copy, InteractionHand.MAIN_HAND);
 				}
