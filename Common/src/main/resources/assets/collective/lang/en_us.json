@@ -452,6 +452,14 @@
   "item.spookyjams.zombies_hunger_jam.desc.1": "It fills you with strength,",
   "item.spookyjams.zombies_hunger_jam.desc.2": "and endless craving.",
 
+  "_comment_modname_stackrefill": "Stack Refill",
+  "collective.stackrefill.message.disabled": "Stack Refill disabled for %s.",
+  "collective.stackrefill.message.enabled": "Stack Refill enabled for %s.",
+  "collective.stackrefill.message.usage.toggle": "/stackrefill toggle - Turns Stack Refill on or off for you.",
+  "collective.stackrefill.message.usage.enable": "/stackrefill enable - Turns Stack Refill on for you.",
+  "collective.stackrefill.message.usage.disable": "/stackrefill disable - Turns Stack Refill off for you.",
+  "collective.stackrefill.message.usage.help": "/stackrefill help - Shows this list.",
+
   "_comment_modname_starterkit": "Starter Kit",
   "collective.starterkit.gui.choose": "Choose %s",
   "collective.starterkit.message.activekitsreloaded": "All active kits have been reloaded.",
