@@ -138,12 +138,19 @@ public class MessageFunctions {
 	}
 
 	private static MutableComponent translatableComponent(Player player, String key, Object... args) {
+		if (player.level().isClientSide()) {
+			return Component.translatable(key, args);
+		}
 		if (player instanceof ServerPlayer serverPlayer && ServerTranslationPack.useTranslatableForMessage(serverPlayer)) {
 			return Component.translatable(key, args);
 		}
 		return Component.literal(TranslationResolver.resolve(key, args));
 	}
 	private static MutableComponent translatableComponent(CommandSourceStack source, String key, Object... args) {
+		Entity sourceEntity = source.getEntity();
+		if (sourceEntity != null && sourceEntity.level().isClientSide()) {
+			return Component.translatable(key, args);
+		}
 		ServerPlayer player = source.getPlayer();
 		if (player != null && ServerTranslationPack.useTranslatableForMessage(player)) {
 			return Component.translatable(key, args);
