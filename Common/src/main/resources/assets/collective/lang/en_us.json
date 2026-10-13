@@ -195,6 +195,13 @@
 
   "_comment_modname_guifollowers": "GUI Followers",
   "collective.guifollowers.key.clearlist": "Clear GUI Follower List",
+  "collective.guifollowers.message.usage": "Use /guifollowers hide while looking at a pet, /guifollowers hide <name> or /guifollowers unhide.",
+  "collective.guifollowers.message.notlookingatfollower": "Look at one of your pets that isn't sitting, or use /guifollowers hide <name>.",
+  "collective.guifollowers.message.hidden": "%s is now hidden from the follower list. It shows again once it sits down.",
+  "collective.guifollowers.message.nofollowernamed": "There is no follower named '%s' in the list.",
+  "collective.guifollowers.message.hiddenbyname": "Hid %s follower(s) named '%s' from the list.",
+  "collective.guifollowers.message.nohiddenfollowers": "There are no hidden followers.",
+  "collective.guifollowers.message.unhidden": "%s hidden follower(s) will show in the list again.",
 
   "_comment_modname_handoveryouritems": "Hand Over Your Items",
   "collective.handoveryouritems.message.given": "You have given %1$s %2$s to %3$s.",
