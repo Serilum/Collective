@@ -2,6 +2,7 @@ package com.natamus.collective.fabric.mixin;
 
 import com.natamus.collective.fabric.callbacks.CollectiveEntityEvents;
 import com.natamus.collective.fabric.callbacks.CollectiveItemEvents;
+import com.natamus.collective.fabric.events.CollectiveFabricEvents;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.EntityTypeTags;
 import net.minecraft.util.Prediction;
@@ -20,6 +21,8 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+
+import java.util.List;
 
 @Mixin(value = LivingEntity.class, priority = 1001)
 public abstract class LivingEntityMixin {
@@ -78,12 +81,20 @@ public abstract class LivingEntityMixin {
 		}
 	}
 	
+	@Inject(method = "dropAllDeathLoot(Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/world/damagesource/DamageSource;)V", at = @At(value = "HEAD"))
+	protected void dropAllDeathLootHead(ServerLevel serverLevel, DamageSource damageSource, CallbackInfo ci) {
+		CollectiveFabricEvents.onLivingEntityStartsDroppingLoot((LivingEntity)(Object)this);
+	}
+
 	@Inject(method = "dropAllDeathLoot(Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/world/damagesource/DamageSource;)V", at = @At(value = "TAIL"))
 	protected void dropAllDeathLoot(ServerLevel serverLevel, DamageSource damageSource, CallbackInfo ci) {
 		LivingEntity livingEntity = (LivingEntity)(Object)this;
 		Level world = livingEntity.level();
-		
+
 		CollectiveEntityEvents.ON_ENTITY_IS_DROPPING_LOOT.invoker().onDroppingLoot(world, livingEntity, damageSource);
+
+		List<ItemEntity> drops = CollectiveFabricEvents.onLivingEntityStopsDroppingLoot(livingEntity);
+		CollectiveEntityEvents.ON_LIVING_ENTITY_DROPS.invoker().onLivingDrops(world, livingEntity, damageSource, drops);
 	}
 
 	@Inject(method = "drop(Lnet/minecraft/world/item/ItemStack;ZLnet/minecraft/util/Prediction;)Lnet/minecraft/world/entity/item/ItemEntity;", at = @At(value = "RETURN"))

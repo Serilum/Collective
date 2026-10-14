@@ -3,6 +3,7 @@ package com.natamus.collective.fabric.mixin;
 import com.natamus.collective.data.BlockEntityData;
 import com.natamus.collective.fabric.callbacks.CollectiveBlockEvents;
 import com.natamus.collective.fabric.callbacks.CollectiveEntityEvents;
+import com.natamus.collective.fabric.events.CollectiveFabricEvents;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
@@ -30,6 +31,13 @@ public class ServerLevelMixin {
 		Level world = entity.level();
 		if (!CollectiveEntityEvents.PRE_ENTITY_JOIN_WORLD.invoker().onPreSpawn(world, entity)) {
 			ci.setReturnValue(false);
+		}
+	}
+
+	@Inject(method = "addEntity(Lnet/minecraft/world/entity/Entity;)Z", at = @At(value = "RETURN"))
+	private void serverLevel_addEntityReturn(Entity entity, CallbackInfoReturnable<Boolean> ci) {
+		if (ci.getReturnValue()) {
+			CollectiveFabricEvents.onEntityAddedToLevel(entity);
 		}
 	}
 

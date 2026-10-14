@@ -5,7 +5,10 @@ import net.fabricmc.fabric.api.event.EventFactory;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LightningBolt;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.level.Level;
+
+import java.util.List;
 
 public final class CollectiveEntityEvents {
 	private CollectiveEntityEvents() { }
@@ -70,6 +73,12 @@ public final class CollectiveEntityEvents {
 		}
 	});
 
+	public static final Event<CollectiveEntityEvents.Living_Entity_Drops> ON_LIVING_ENTITY_DROPS = EventFactory.createArrayBacked(CollectiveEntityEvents.Living_Entity_Drops.class, callbacks -> (world, entity, damageSource, drops) -> {
+		for (CollectiveEntityEvents.Living_Entity_Drops callback : callbacks) {
+			callback.onLivingDrops(world, entity, damageSource, drops);
+		}
+	});
+
 	public static final Event<CollectiveEntityEvents.Entity_Is_Jumping> ON_ENTITY_IS_JUMPING = EventFactory.createArrayBacked(CollectiveEntityEvents.Entity_Is_Jumping.class, callbacks -> (world, entity) -> {
 		for (CollectiveEntityEvents.Entity_Is_Jumping callback : callbacks) {
 			callback.onLivingJump(world, entity);
@@ -129,6 +138,11 @@ public final class CollectiveEntityEvents {
 		 void onDroppingLoot(Level world, Entity entity, DamageSource damageSource);
 	}
 	
+	@FunctionalInterface
+	public interface Living_Entity_Drops {
+		 void onLivingDrops(Level world, Entity entity, DamageSource damageSource, List<ItemEntity> drops);
+	}
+
 	@FunctionalInterface
 	public interface Entity_Is_Jumping {
 		 void onLivingJump(Level world, Entity entity);
