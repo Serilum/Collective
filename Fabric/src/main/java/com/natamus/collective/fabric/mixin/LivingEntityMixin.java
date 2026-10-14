@@ -1,11 +1,13 @@
 package com.natamus.collective.fabric.mixin;
 
 import com.natamus.collective.fabric.callbacks.CollectiveEntityEvents;
+import com.natamus.collective.fabric.events.CollectiveFabricEvents;
 import net.minecraft.tags.EntityTypeTags;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import org.spongepowered.asm.mixin.Mixin;
@@ -15,6 +17,8 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+
+import java.util.List;
 
 @Mixin(value = LivingEntity.class, priority = 1001)
 public abstract class LivingEntityMixin {
@@ -73,12 +77,20 @@ public abstract class LivingEntityMixin {
 		}
 	}
 	
+	@Inject(method = "dropAllDeathLoot(Lnet/minecraft/world/damagesource/DamageSource;)V", at = @At(value = "HEAD"))
+	protected void dropAllDeathLootHead(DamageSource damageSource, CallbackInfo ci) {
+		CollectiveFabricEvents.onLivingEntityStartsDroppingLoot((LivingEntity)(Object)this);
+	}
+
 	@Inject(method = "dropAllDeathLoot(Lnet/minecraft/world/damagesource/DamageSource;)V", at = @At(value = "TAIL"))
 	protected void dropAllDeathLoot(DamageSource damageSource, CallbackInfo ci) {
 		LivingEntity livingEntity = (LivingEntity)(Object)this;
 		Level world = livingEntity.level();
-		
+
 		CollectiveEntityEvents.ON_ENTITY_IS_DROPPING_LOOT.invoker().onDroppingLoot(world, livingEntity, damageSource);
+
+		List<ItemEntity> drops = CollectiveFabricEvents.onLivingEntityStopsDroppingLoot(livingEntity);
+		CollectiveEntityEvents.ON_LIVING_ENTITY_DROPS.invoker().onLivingDrops(world, livingEntity, damageSource, drops);
 	}
 	
 	@Inject(method = "jumpFromGround", at = @At(value = "TAIL"))
