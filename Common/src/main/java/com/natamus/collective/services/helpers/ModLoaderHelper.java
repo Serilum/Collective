@@ -8,4 +8,5 @@ public interface ModLoaderHelper {
 	boolean isClientSide();
 	boolean isJarJard(String modId);
 	boolean isBundleModEnabled(String modId);
+	void registerConfigScreen(String modId);
 }

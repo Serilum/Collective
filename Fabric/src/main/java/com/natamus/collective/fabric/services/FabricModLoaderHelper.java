@@ -41,4 +41,9 @@ public class FabricModLoaderHelper implements ModLoaderHelper {
 	public boolean isBundleModEnabled(String modId) {
 		return FabricBundleConfigCheck.isBundleModEnabled(modId);
 	}
+
+	@Override
+	public void registerConfigScreen(String modId) {
+
+	}
 }

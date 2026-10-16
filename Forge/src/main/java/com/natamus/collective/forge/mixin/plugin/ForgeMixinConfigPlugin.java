@@ -35,11 +35,11 @@ public class ForgeMixinConfigPlugin implements IMixinConfigPlugin {
 
 		String modId = pSpl[2].split("_")[0];
 
-		if (ForgeBundleJarJarCheck.isModJarJard(modId)) {
-			return ForgeBundleConfigCheck.isBundleModEnabled(modId);
+		if (ForgeBundleJarJarCheck.isModJarJard(modId) && !ForgeBundleConfigCheck.isBundleModEnabled(modId)) {
+			return false;
 		}
 
-		return true;
+		return ForgeBundleConfigCheck.isModEnabled(modId);
 	}
 
 	@Override

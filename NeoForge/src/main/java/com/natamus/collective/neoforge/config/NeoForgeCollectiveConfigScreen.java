@@ -10,10 +10,14 @@ import org.jetbrains.annotations.NotNull;
 
 public class NeoForgeCollectiveConfigScreen {
 	public static void registerScreen(ModLoadingContext modLoadingContext) {
+		registerScreen(modLoadingContext, CollectiveReference.MOD_ID);
+	}
+
+	public static void registerScreen(ModLoadingContext modLoadingContext, String modId) {
 		modLoadingContext.registerExtensionPoint(IConfigScreenFactory.class, () -> new IConfigScreenFactory() {
 			@Override
 			public @NotNull Screen createScreen(@NotNull ModContainer modContainer, @NotNull Screen screen) {
-				return DuskConfig.DuskConfigScreen.getScreen(screen, CollectiveReference.MOD_ID);
+				return DuskConfig.DuskConfigScreen.getScreen(screen, modId);
 			}
 		});
 	}

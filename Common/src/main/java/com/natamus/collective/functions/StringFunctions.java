@@ -159,6 +159,10 @@ public class StringFunctions {
 		return sb.toString();
 	}
 
+	public static String splitCamelCase(String text) {
+		return text.replaceAll("(?<=[a-z0-9])(?=[A-Z])|(?<=[A-Z])(?=[A-Z][a-z])", " ");
+	}
+
 	public static String capitalizeEveryWord(String text) {
 		if (text.isEmpty()) {
 			return text;
