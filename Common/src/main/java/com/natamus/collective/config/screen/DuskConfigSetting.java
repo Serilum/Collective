@@ -70,11 +70,14 @@ public class DuskConfigSetting {
 
 	private Component getButtonLabel() {
 		if (entry.hasRegistry()) {
-			int amount = entry.getIdList().size();
-			if (amount == 0) {
+			List<String> idList = entry.getIdList();
+			if (idList.isEmpty()) {
 				return Component.translatable("gui.none").withStyle(ChatFormatting.GRAY);
 			}
-			return DuskConfigRegistryIds.getAmountLabel(entry.registry, amount);
+			if (entry.single) {
+				return Component.literal(DuskConfigRegistryIds.getName(entry.registry, idList.get(0)));
+			}
+			return DuskConfigRegistryIds.getAmountLabel(entry.registry, idList.size());
 		}
 
 		if (entry.hasOptions()) {

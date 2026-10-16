@@ -97,8 +97,8 @@ public class DuskConfigEditScreen extends DuskConfigBaseScreen {
 		Button guiScaleButton = this.addRenderableWidget(new DuskConfigButton(this.width - 43, 28, 30, 20, getGuiScaleLabel(), button -> cycleGuiScale(false), button -> cycleGuiScale(true)));
 		guiScaleButton.setTooltip(Tooltip.create(Component.translatable("options.generic_value", Component.translatable("options.guiScale"), getGuiScaleLabel())));
 
-		Component supportLabel = Component.literal("❤ ").withStyle(ChatFormatting.RED).append(Component.translatable("collective.collective.gui.support").withStyle(ChatFormatting.WHITE));
-		this.addRenderableWidget(new DuskConfigButton(10, 28, 80, 20, supportLabel, ConfirmLinkScreen.confirmLink("https://link.serilum.com/support-me", this, true)));
+		Component patreonLabel = Component.literal("❤ ").withStyle(ChatFormatting.RED).append(Component.literal("Patreon").withStyle(ChatFormatting.WHITE));
+		this.addRenderableWidget(new DuskConfigButton(10, 28, this.font.width(patreonLabel) + 12, 20, patreonLabel, ConfirmLinkScreen.confirmLink("https://link.serilum.com/patreon", this, true)));
 
 		double scroll = 0;
 		if (list != null) {
