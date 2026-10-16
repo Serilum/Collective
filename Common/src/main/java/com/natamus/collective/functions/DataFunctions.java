@@ -33,8 +33,14 @@ public class DataFunctions {
 	public static Path getModDirectoryPath() {
 		return Path.of(getModDirectory());
 	}
-	public static String getConfigDirectory() {
+	public static String getGameConfigDirectory() {
 		return getGameDirectory() + File.separator + "config";
+	}
+	public static Path getGameConfigDirectoryPath() {
+		return Path.of(getGameConfigDirectory());
+	}
+	public static String getConfigDirectory() {
+		return getGameConfigDirectory() + File.separator + ConfigFunctions.serilumConfigFolderName;
 	}
 	public static Path getConfigDirectoryPath() {
 		return Path.of(getConfigDirectory());

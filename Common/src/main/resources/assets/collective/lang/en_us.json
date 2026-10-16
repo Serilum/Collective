@@ -149,7 +149,7 @@
   "collective.configurableextramobdrops.message.unablefindentitynamedrop": "Unable to find an entity with the name '%s' in the drop hashmap.",
 
   "_comment_modname_configurablemobpotioneffects": "Configurable Mob Potion Effects",
-  "collective.configurablemobpotioneffects.message.reloadsconfigfiles": "Reloads the config files located in ./config/configurablemobpotioneffects/",
+  "collective.configurablemobpotioneffects.message.reloadsconfigfiles": "Reloads the config files located in ./config/serilum/configurablemobpotioneffects/",
   "collective.configurablemobpotioneffects.message.somethingwentwrong": "Something went wrong while reloading the config file.",
   "collective.configurablemobpotioneffects.message.successfullyloadedmob": "Successfully loaded the mob potion effect config files.",
   "collective.configurablemobpotioneffects.message.usage": "Usage:",
