@@ -154,6 +154,14 @@ public class CommandCollectiveConfig {
 			return 0;
 		}
 
+		if (entry.single) {
+			if (newId.contains("*")) {
+				MessageFunctions.sendTranslatableMessage(source, "collective.collective.message.configinvalid", ChatFormatting.RED, newId);
+				return 0;
+			}
+			idList.clear();
+		}
+
 		idList.add(newId);
 		entry.setIdList(idList);
 

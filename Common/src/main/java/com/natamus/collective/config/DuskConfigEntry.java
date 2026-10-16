@@ -18,6 +18,7 @@ public class DuskConfigEntry {
 	public final List<String> options = new ArrayList<>();
 	public final String registry;
 	public final String filter;
+	public final boolean single;
 	private final String name;
 	private final String displayName;
 	private final Class<?> type;
@@ -42,6 +43,7 @@ public class DuskConfigEntry {
 		this.max = entry.max();
 		this.registry = entry.registry();
 		this.filter = entry.filter();
+		this.single = entry.single();
 		this.rgb = entry.rgb();
 
 		if (type.isEnum()) {
@@ -67,6 +69,7 @@ public class DuskConfigEntry {
 		this.max = Double.MAX_VALUE;
 		this.registry = "";
 		this.filter = "";
+		this.single = false;
 		this.rgb = false;
 	}
 

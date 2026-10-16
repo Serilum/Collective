@@ -11,6 +11,7 @@ import java.nio.charset.MalformedInputException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -19,11 +20,15 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 public class ConfigFunctions {
+	public static final String serilumConfigFolderName = "serilum";
+	private static final String tveConfigFolderName = "TVE";
+
 	public static String getConfigValue(String modid, String key) {
 		return getConfigValues(modid).get(key);
 	}
 
 	public static HashMap<String, String> getConfigValues(String modid) {
+		moveToSerilumConfigDirectory(modid);
 		return getConfigValues(DataFunctions.getConfigDirectoryPath(), modid);
 	}
 
@@ -32,6 +37,8 @@ public class ConfigFunctions {
 	}
 
 	public static List<String> getRawConfigValues(String modid, boolean tve) {
+		moveToSerilumConfigDirectory(modid);
+
 		List<String> values = new ArrayList<>();
 		for (Map.Entry<String, JsonElement> entry : getConfigJson(getConfigDirectoryPath(tve), modid).entrySet()) {
 			if (entry.getKey().equals("//")) {
@@ -55,15 +62,17 @@ public class ConfigFunctions {
 	}
 
 	public static HashMap<String, String> getDictValues(String modid, boolean tve) {
+		moveToSerilumConfigDirectory(modid);
 		return getConfigValues(getConfigDirectoryPath(tve), modid);
 	}
 
 	public static boolean isModEnabled(String modid) {
-		return isModEnabled(DataFunctions.getConfigDirectoryPath(), modid);
+		return isModEnabled(DataFunctions.getGameConfigDirectoryPath(), modid);
 	}
 
-	public static boolean isModEnabled(Path configDirectory, String modid) {
-		JsonObject json = getConfigJson(configDirectory, modid);
+	public static boolean isModEnabled(Path gameConfigDirectory, String modid) {
+		moveToSerilumConfigDirectory(gameConfigDirectory, modid);
+		JsonObject json = getConfigJson(gameConfigDirectory.resolve(serilumConfigFolderName), modid);
 
 		String enableKey = getModEnableKey(json);
 		if (enableKey == null) {
@@ -99,8 +108,18 @@ public class ConfigFunctions {
 		return false;
 	}
 
-	public static HashMap<String, Boolean> getBundleModToggles(Path configDirectory) {
+	public static HashMap<String, Boolean> getBundleModToggles(Path gameConfigDirectory) {
 		HashMap<String, Boolean> toggles = new HashMap<>();
+
+		Path configDirectory = gameConfigDirectory.resolve(serilumConfigFolderName);
+		File[] oldConfigFiles = gameConfigDirectory.toFile().listFiles();
+		if (oldConfigFiles != null) {
+			for (File oldConfigFile : oldConfigFiles) {
+				if (isBundleConfigFile(oldConfigFile.getName())) {
+					moveConfigPath(oldConfigFile.toPath(), configDirectory.resolve(oldConfigFile.getName()));
+				}
+			}
+		}
 
 		File[] configFiles = configDirectory.toFile().listFiles();
 		if (configFiles == null) {
@@ -109,10 +128,7 @@ public class ConfigFunctions {
 
 		for (File configFile : configFiles) {
 			String fileName = configFile.getName();
-			if (!fileName.startsWith("serilum") || !fileName.contains("bundle")) {
-				continue;
-			}
-			if (!fileName.endsWith(".json") && !fileName.endsWith(".json5")) {
+			if (!isBundleConfigFile(fileName)) {
 				continue;
 			}
 			if (fileName.endsWith(".json") && new File(configFile.getPath() + "5").isFile()) {
@@ -202,8 +218,58 @@ public class ConfigFunctions {
 
 	private static Path getConfigDirectoryPath(boolean tve) {
 		if (tve) {
-			return DataFunctions.getConfigDirectoryPath().resolve("TVE");
+			return DataFunctions.getConfigDirectoryPath().resolve(tveConfigFolderName);
 		}
 		return DataFunctions.getConfigDirectoryPath();
+	}
+
+	public static void moveToSerilumConfigDirectory(String modid) {
+		moveToSerilumConfigDirectory(DataFunctions.getGameConfigDirectoryPath(), modid);
+	}
+
+	public static void moveToSerilumConfigDirectory(Path gameConfigDirectory, String modid) {
+		Path serilumConfigDirectory = gameConfigDirectory.resolve(serilumConfigFolderName);
+
+		moveModConfigPaths(gameConfigDirectory, serilumConfigDirectory, modid);
+		moveModConfigPaths(gameConfigDirectory.resolve(tveConfigFolderName), serilumConfigDirectory.resolve(tveConfigFolderName), modid);
+	}
+
+	private static void moveModConfigPaths(Path oldDirectory, Path newDirectory, String modid) {
+		for (String name : List.of(modid + ".json", modid + ".json5", modid + "-common.toml", modid + ".json.unreadable", modid)) {
+			moveConfigPath(oldDirectory.resolve(name), newDirectory.resolve(name));
+		}
+	}
+
+	private static void moveConfigPath(Path oldPath, Path newPath) {
+		if (!Files.exists(oldPath)) {
+			return;
+		}
+
+		try {
+			if (Files.isDirectory(oldPath)) {
+				Files.createDirectories(newPath);
+
+				File[] files = oldPath.toFile().listFiles();
+				if (files != null) {
+					for (File file : files) {
+						moveConfigPath(file.toPath(), newPath.resolve(file.getName()));
+					}
+				}
+
+				Files.delete(oldPath);
+				return;
+			}
+
+			Files.createDirectories(newPath.getParent());
+			Files.move(oldPath, newPath, StandardCopyOption.REPLACE_EXISTING);
+		}
+		catch (IOException ignored) { }
+	}
+
+	private static boolean isBundleConfigFile(String fileName) {
+		if (!fileName.startsWith("serilum") || !fileName.contains("bundle")) {
+			return false;
+		}
+		return fileName.endsWith(".json") || fileName.endsWith(".json5");
 	}
 }
