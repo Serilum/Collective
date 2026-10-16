@@ -7,12 +7,11 @@ import com.natamus.collective.util.CollectiveReference;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
-import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 
 public class CommandCollective {
 	public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
-		dispatcher.register(Commands.literal("collective").requires((commandSourceStack) -> commandSourceStack.isPlayer())
+		dispatcher.register(Commands.literal("collective")
 			.executes((command) -> {
 				return showCommandHelp(command.getSource());
 			})
@@ -21,7 +20,9 @@ public class CommandCollective {
 				return showCommandHelp(command.getSource());
 			}))
 
-			.then(Commands.literal("reset")
+			.then(CommandCollectiveConfig.getCommand())
+
+			.then(Commands.literal("reset").requires((commandSourceStack) -> commandSourceStack.isPlayer())
 			.then(Commands.literal("headcache")
 			.executes((command) -> {
 				CommandSourceStack source = command.getSource();
@@ -41,6 +42,8 @@ public class CommandCollective {
 			MessageFunctions.sendTranslatableMessage(source, "collective.shared.message.adminusage", true, ChatFormatting.GOLD, CollectiveReference.NAME);
 			MessageFunctions.sendMessage(source, " /collective reset headcache", ChatFormatting.DARK_GREEN);
 			MessageFunctions.sendTranslatableMessage(source, "     ", "collective.collective.message.headcachehelp", ChatFormatting.GRAY);
+			MessageFunctions.sendMessage(source, " /collective config <modid>", ChatFormatting.DARK_GREEN);
+			MessageFunctions.sendTranslatableMessage(source, "     ", "collective.collective.message.confighelp", ChatFormatting.GRAY);
 		}
 		return 1;
 	}
