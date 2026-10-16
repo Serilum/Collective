@@ -84,10 +84,10 @@ public class DuskConfigRegistryScreen extends DuskConfigBaseScreen {
 			availableList.setScrollAmount(0);
 		});
 
-		EditBox patternBox = this.addRenderableWidget(new EditBox(this.font, 10, this.height - 54, listWidth - 45, 20, Component.translatable("collective.collective.gui.idpattern")));
+		EditBox patternBox = this.addRenderableWidget(new EditBox(this.font, 10, this.height - 54, listWidth - 65, 20, Component.translatable("collective.collective.gui.idpattern")));
 		patternBox.setMaxLength(Integer.MAX_VALUE);
 		patternBox.setHint(Component.translatable("collective.collective.gui.idpattern").withStyle(ChatFormatting.DARK_GRAY));
-		this.addRenderableWidget(new DuskConfigButton(listWidth - 30, this.height - 54, 40, 20, Component.translatable("collective.collective.gui.add"), button -> {
+		this.addRenderableWidget(new DuskConfigButton(listWidth - 50, this.height - 54, 60, 20, Component.translatable("collective.collective.gui.add"), button -> {
 			addId(patternBox.getValue().strip());
 			patternBox.setValue("");
 		}));
@@ -194,10 +194,19 @@ public class DuskConfigRegistryScreen extends DuskConfigBaseScreen {
 	}
 
 	private void addId(String id) {
-		if (!id.isEmpty() && !isSelected(id)) {
-			selectedIds.add(id);
-			refreshLists();
+		if (id.isEmpty() || isSelected(id)) {
+			return;
 		}
+
+		if (entry.single) {
+			if (id.contains("*")) {
+				return;
+			}
+			selectedIds.clear();
+		}
+
+		selectedIds.add(id);
+		refreshLists();
 	}
 
 	private Component getRemoveLabel(String id) {
