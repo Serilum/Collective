@@ -35,11 +35,11 @@ public class NeoForgeMixinConfigPlugin implements IMixinConfigPlugin {
 
 		String modId = pSpl[2].split("_")[0];
 
-		if (NeoForgeBundleJarJarCheck.isModJarJard(modId)) {
-			return NeoForgeBundleConfigCheck.isBundleModEnabled(modId);
+		if (NeoForgeBundleJarJarCheck.isModJarJard(modId) && !NeoForgeBundleConfigCheck.isBundleModEnabled(modId)) {
+			return false;
 		}
 
-		return true;
+		return NeoForgeBundleConfigCheck.isModEnabled(modId);
 	}
 
 	@Override

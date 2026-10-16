@@ -3,9 +3,11 @@ package com.natamus.collective.neoforge.services;
 
 import com.natamus.collective.neoforge.bundle.NeoForgeBundleConfigCheck;
 import com.natamus.collective.neoforge.bundle.NeoForgeBundleJarJarCheck;
+import com.natamus.collective.neoforge.config.NeoForgeCollectiveConfigScreen;
 import com.natamus.collective.services.helpers.ModLoaderHelper;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.fml.ModList;
+import net.neoforged.fml.ModLoadingContext;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.fml.loading.FMLPaths;
 
@@ -43,5 +45,13 @@ public class NeoForgeModLoaderHelper implements ModLoaderHelper {
 	@Override
 	public boolean isBundleModEnabled(String modId) {
 		return NeoForgeBundleConfigCheck.isBundleModEnabled(modId);
+	}
+
+	@Override
+	public void registerConfigScreen(String modId) {
+		ModLoadingContext modLoadingContext = ModLoadingContext.get();
+		if (modId.equals(modLoadingContext.getActiveNamespace())) {
+			NeoForgeCollectiveConfigScreen.registerScreen(modLoadingContext, modId);
+		}
 	}
 }

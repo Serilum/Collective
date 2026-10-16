@@ -2,9 +2,11 @@ package com.natamus.collective.forge.services;
 
 import com.natamus.collective.forge.bundle.ForgeBundleConfigCheck;
 import com.natamus.collective.forge.bundle.ForgeBundleJarJarCheck;
+import com.natamus.collective.forge.config.ForgeCollectiveConfigScreen;
 import com.natamus.collective.services.helpers.ModLoaderHelper;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.ModList;
+import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.loading.FMLEnvironment;
 import net.minecraftforge.fml.loading.FMLLoader;
 import net.minecraftforge.fml.loading.FMLPaths;
@@ -43,5 +45,13 @@ public class ForgeModLoaderHelper implements ModLoaderHelper {
 	@Override
 	public boolean isBundleModEnabled(String modId) {
 		return ForgeBundleConfigCheck.isBundleModEnabled(modId);
+	}
+
+	@Override
+	public void registerConfigScreen(String modId) {
+		ModLoadingContext modLoadingContext = ModLoadingContext.get();
+		if (modId.equals(modLoadingContext.getActiveNamespace())) {
+			ForgeCollectiveConfigScreen.registerScreen(modLoadingContext, modId);
+		}
 	}
 }
