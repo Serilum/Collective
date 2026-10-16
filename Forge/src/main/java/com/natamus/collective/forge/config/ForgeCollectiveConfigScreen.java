@@ -7,9 +7,13 @@ import net.minecraftforge.fml.ModLoadingContext;
 
 public class ForgeCollectiveConfigScreen {
 	public static void registerScreen(ModLoadingContext modLoadingContext) {
+		registerScreen(modLoadingContext, CollectiveReference.MOD_ID);
+	}
+
+	public static void registerScreen(ModLoadingContext modLoadingContext, String modId) {
 		modLoadingContext.registerExtensionPoint(ConfigScreenHandler.ConfigScreenFactory.class, () -> {
 			return new ConfigScreenHandler.ConfigScreenFactory((mc, screen) -> {
-				return DuskConfig.DuskConfigScreen.getScreen(screen, CollectiveReference.MOD_ID);
+				return DuskConfig.DuskConfigScreen.getScreen(screen, modId);
 			});
 		});
 	}

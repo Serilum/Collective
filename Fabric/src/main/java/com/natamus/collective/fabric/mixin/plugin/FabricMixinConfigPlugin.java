@@ -35,11 +35,11 @@ public class FabricMixinConfigPlugin implements IMixinConfigPlugin {
 
 		String modId = pSpl[2].split("_")[0];
 
-		if (FabricBundleJarJarCheck.isModJarJard(modId)) {
-			return FabricBundleConfigCheck.isBundleModEnabled(modId);
+		if (FabricBundleJarJarCheck.isModJarJard(modId) && !FabricBundleConfigCheck.isBundleModEnabled(modId)) {
+			return false;
 		}
 
-		return true;
+		return FabricBundleConfigCheck.isModEnabled(modId);
 	}
 
 	@Override

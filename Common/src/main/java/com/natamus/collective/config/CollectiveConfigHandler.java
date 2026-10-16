@@ -19,7 +19,8 @@ public class CollectiveConfigHandler extends DuskConfig {
 	@Entry public static boolean pushTranslationResourcePack = false;
 	@Entry public static boolean requireTranslationResourcePack = true;
 	@Entry public static String serverLanguage = "en_us";
-	@Entry public static String itemNameTranslationMode = "auto";
+	@Entry(options = {"auto", "server", "client"}) public static String itemNameTranslationMode = "auto";
+	@Entry(min = 0, max = 10) public static int configScreenGuiScale = 0;
 
 	@Entry public static boolean updateMinecraftWindowTitleInDevMode = false;
 
@@ -54,6 +55,9 @@ public class CollectiveConfigHandler extends DuskConfig {
 		));
 		configMetaData.put("itemNameTranslationMode", Arrays.asList(
 				"How custom item names show for players without Collective when the resource pack is off. 'auto' copies the first player to join and remembers it; 'server' always uses the server language; 'client' uses each player's own language, but those without Collective then see raw keys."
+		));
+		configMetaData.put("configScreenGuiScale", Arrays.asList(
+				"The GUI scale of the config screens of Serilum's mods, also set with the button next to the ? on those screens. 0 uses the game's own GUI scale."
 		));
 
 		configMetaData.put("updateMinecraftWindowTitleInDevMode", Arrays.asList(
