@@ -1,5 +1,6 @@
 package com.natamus.collective.config.screen;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -15,13 +16,15 @@ import java.util.List;
 
 public class DuskConfigIdRow extends ContainerObjectSelectionList.Entry<DuskConfigIdRow> {
 	private final ItemStack icon;
+	private final DuskConfigModIcons modIcon;
 	private final String name;
 	private final String id;
 	private final int colour;
 	private final Button button;
 
-	public DuskConfigIdRow(ItemStack icon, String name, String id, int colour, Component buttonLabel, Button.OnPress onPress) {
+	public DuskConfigIdRow(ItemStack icon, DuskConfigModIcons modIcon, String name, String id, int colour, Component buttonLabel, Button.OnPress onPress) {
 		this.icon = icon;
+		this.modIcon = modIcon;
 		this.name = name;
 		this.id = id;
 		this.colour = colour;
@@ -34,6 +37,11 @@ public class DuskConfigIdRow extends ContainerObjectSelectionList.Entry<DuskConf
 
 		if (!icon.isEmpty()) {
 			guiGraphics.renderItem(icon, x - 2, y + 2);
+		}
+		else if (modIcon != null) {
+			RenderSystem.enableBlend();
+			guiGraphics.blit(modIcon.texture, x - 2, y + 2, 16, 16, 0, 0, modIcon.width, modIcon.height, modIcon.width, modIcon.height);
+			RenderSystem.disableBlend();
 		}
 
 		Font font = Minecraft.getInstance().font;

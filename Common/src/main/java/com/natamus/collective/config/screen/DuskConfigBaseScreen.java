@@ -17,6 +17,7 @@ import org.jetbrains.annotations.NotNull;
 public abstract class DuskConfigBaseScreen extends Screen {
 	private Button cancelButton;
 	private boolean cancelPending = false;
+	private static final int smallestGuiScale = 2;
 
 	protected DuskConfigBaseScreen(Component title) {
 		super(title);
@@ -90,11 +91,11 @@ public abstract class DuskConfigBaseScreen extends Screen {
 		}
 
 		int maxGuiScale = getMaxGuiScale();
-		if (guiScale < 1) {
+		if (guiScale < smallestGuiScale) {
 			guiScale = maxGuiScale;
 		}
 		else if (guiScale > maxGuiScale) {
-			guiScale = 1;
+			guiScale = smallestGuiScale;
 		}
 
 		if (guiScale == getGameGuiScale()) {
@@ -111,7 +112,7 @@ public abstract class DuskConfigBaseScreen extends Screen {
 		if (CollectiveConfigHandler.configScreenGuiScale <= 0) {
 			return Component.translatable("options.guiScale.auto");
 		}
-		return Component.literal(String.valueOf(Math.min(CollectiveConfigHandler.configScreenGuiScale, getMaxGuiScale())));
+		return Component.literal(String.valueOf(getScreenGuiScale()));
 	}
 
 	private void applyGuiScale() {
@@ -123,7 +124,7 @@ public abstract class DuskConfigBaseScreen extends Screen {
 		if (guiScale <= 0) {
 			return getGameGuiScale();
 		}
-		return Math.min(guiScale, getMaxGuiScale());
+		return Math.max(smallestGuiScale, Math.min(guiScale, getMaxGuiScale()));
 	}
 
 	private int getGameGuiScale() {

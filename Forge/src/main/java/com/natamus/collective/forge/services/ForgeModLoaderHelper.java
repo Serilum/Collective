@@ -5,11 +5,18 @@ import com.natamus.collective.forge.bundle.ForgeBundleJarJarCheck;
 import com.natamus.collective.forge.config.ForgeCollectiveConfigScreen;
 import com.natamus.collective.services.helpers.ModLoaderHelper;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.fml.ModContainer;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.loading.FMLEnvironment;
 import net.minecraftforge.fml.loading.FMLLoader;
 import net.minecraftforge.fml.loading.FMLPaths;
+import net.minecraftforge.forgespi.language.IModFileInfo;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Optional;
 
 public class ForgeModLoaderHelper implements ModLoaderHelper {
 	@Override
@@ -25,6 +32,34 @@ public class ForgeModLoaderHelper implements ModLoaderHelper {
 	@Override
 	public boolean isModLoaded(String modId) {
 		return ModList.get().isLoaded(modId);
+	}
+
+	@Override
+	public String getModName(String modId) {
+		Optional<? extends ModContainer> modContainer = ModList.get().getModContainerById(modId);
+		if (modContainer.isEmpty()) {
+			return modId;
+		}
+		return modContainer.get().getModInfo().getDisplayName();
+	}
+
+	@Override
+	public byte[] getModIcon(String modId) {
+		IModFileInfo modFileInfo = ModList.get().getModFileById(modId);
+		if (modFileInfo == null) {
+			return null;
+		}
+
+		Path iconPath = modFileInfo.getFile().findResource("icon.png");
+		if (!Files.isRegularFile(iconPath)) {
+			return null;
+		}
+
+		try {
+			return Files.readAllBytes(iconPath);
+		}
+		catch (IOException ignored) { }
+		return null;
 	}
 
 	@Override
