@@ -8,12 +8,10 @@ import com.google.gson.stream.JsonWriter;
 import com.natamus.collective.data.Constants;
 import com.natamus.collective.functions.ColourFunctions;
 import com.natamus.collective.functions.ConfigFunctions;
-import com.natamus.collective.functions.NumberFunctions;
+import com.natamus.collective.functions.DataFunctions;
 
 import java.io.IOException;
 import java.io.StringWriter;
-import java.math.BigDecimal;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
@@ -22,12 +20,16 @@ public class DuskConfigFile {
 	private static final Gson gson = new GsonBuilder().disableHtmlEscaping().create();
 
 	public static void load(DuskConfigMod configMod) {
+		if (configMod.isListOnly) {
+			configMod.enableEntry.setValue(!DuskConfigModToggles.isDisabledInList(DataFunctions.getGameConfigDirectoryPath(), configMod.modid));
+			return;
+		}
 		if (configMod.isDisabled) {
 			loadEnableValue(configMod);
 			return;
 		}
 
-		boolean rewrite = importOldConfigFiles(configMod);
+		boolean rewrite = DuskConfigMigration.importOldConfigFiles(configMod);
 
 		if (!Files.exists(configMod.path)) {
 			resetValues(configMod);
@@ -54,6 +56,10 @@ public class DuskConfigFile {
 			Constants.LOG.warn("[" + configMod.name + "] Unable to read " + configMod.path.getFileName() + " (" + ex.getMessage() + "). It was kept as " + unreadablePath.getFileName() + " and a default config was written.");
 			write(configMod);
 			return;
+		}
+
+		if (DuskConfigMigration.addMergedOldSettings(configMod, json)) {
+			rewrite = true;
 		}
 
 		int settingCount = json.size();
@@ -92,6 +98,9 @@ public class DuskConfigFile {
 	}
 
 	public static void write(DuskConfigMod configMod) {
+		if (configMod.isListOnly) {
+			return;
+		}
 		if (configMod.isDisabled) {
 			writeValue(configMod, configMod.enableEntry);
 			return;
@@ -118,6 +127,10 @@ public class DuskConfigFile {
 	}
 
 	public static void writeValue(DuskConfigMod configMod, DuskConfigEntry entry) {
+		if (configMod.isListOnly) {
+			return;
+		}
+
 		JsonObject json;
 		try {
 			json = ConfigFunctions.readConfigJson(configMod.path);
@@ -221,60 +234,5 @@ public class DuskConfigFile {
 			entry.setIdList(entry.getIdList());
 		}
 		return true;
-	}
-
-	private static boolean importOldConfigFiles(DuskConfigMod configMod) {
-		boolean imported = false;
-		try {
-			Path json5Path = configMod.path.resolveSibling(configMod.modid + ".json5");
-			if (Files.exists(json5Path)) {
-				Files.move(json5Path, configMod.path, StandardCopyOption.REPLACE_EXISTING);
-				imported = true;
-			}
-
-			Path tomlPath = configMod.path.resolveSibling(configMod.modid + "-common.toml");
-			if (Files.exists(tomlPath)) {
-				convertTomlToJson(tomlPath, configMod.path);
-				imported = true;
-			}
-		}
-		catch (IOException ignored) { }
-
-		return imported;
-	}
-
-	private static void convertTomlToJson(Path tomlPath, Path jsonPath) throws IOException {
-		JsonObject json = new JsonObject();
-
-		for (String line : Files.readString(tomlPath, StandardCharsets.UTF_8).split("\n")) {
-			line = line.trim();
-			if (line.startsWith("[") || line.startsWith("#")) {
-				continue;
-			}
-
-			String[] linespl = line.split(" = ", 2);
-			if (linespl.length != 2) {
-				continue;
-			}
-
-			String key = linespl[0];
-			String rawValue = linespl[1].strip();
-
-			if (rawValue.equals("true") || rawValue.equals("false")) {
-				json.addProperty(key, Boolean.parseBoolean(rawValue));
-			}
-			else if (NumberFunctions.isNumeric(rawValue)) {
-				json.addProperty(key, new BigDecimal(rawValue));
-			}
-			else if (rawValue.length() >= 2 && rawValue.startsWith("\"") && rawValue.endsWith("\"")) {
-				json.addProperty(key, rawValue.substring(1, rawValue.length() - 1).replace("\\\"", "\""));
-			}
-			else {
-				json.addProperty(key, rawValue);
-			}
-		}
-
-		Files.writeString(jsonPath, gson.toJson(json));
-		Files.delete(tomlPath);
 	}
 }

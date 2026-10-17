@@ -3,7 +3,9 @@ package com.natamus.collective.functions;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.natamus.collective.config.DuskConfigMigration;
 import com.natamus.collective.config.DuskConfigMod;
+import com.natamus.collective.config.DuskConfigModToggles;
 
 import java.io.File;
 import java.io.IOException;
@@ -11,7 +13,6 @@ import java.nio.charset.MalformedInputException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -21,14 +22,14 @@ import java.util.regex.Pattern;
 
 public class ConfigFunctions {
 	public static final String serilumConfigFolderName = "serilum";
-	private static final String tveConfigFolderName = "TVE";
+	public static final String tveConfigFolderName = "TVE";
 
 	public static String getConfigValue(String modid, String key) {
 		return getConfigValues(modid).get(key);
 	}
 
 	public static HashMap<String, String> getConfigValues(String modid) {
-		moveToSerilumConfigDirectory(modid);
+		DuskConfigMigration.moveToSerilumConfigDirectory(modid);
 		return getConfigValues(DataFunctions.getConfigDirectoryPath(), modid);
 	}
 
@@ -37,7 +38,7 @@ public class ConfigFunctions {
 	}
 
 	public static List<String> getRawConfigValues(String modid, boolean tve) {
-		moveToSerilumConfigDirectory(modid);
+		DuskConfigMigration.moveToSerilumConfigDirectory(modid);
 
 		List<String> values = new ArrayList<>();
 		for (Map.Entry<String, JsonElement> entry : getConfigJson(getConfigDirectoryPath(tve), modid).entrySet()) {
@@ -62,7 +63,7 @@ public class ConfigFunctions {
 	}
 
 	public static HashMap<String, String> getDictValues(String modid, boolean tve) {
-		moveToSerilumConfigDirectory(modid);
+		DuskConfigMigration.moveToSerilumConfigDirectory(modid);
 		return getConfigValues(getConfigDirectoryPath(tve), modid);
 	}
 
@@ -71,20 +72,29 @@ public class ConfigFunctions {
 	}
 
 	public static boolean isModEnabled(Path gameConfigDirectory, String modid) {
-		moveToSerilumConfigDirectory(gameConfigDirectory, modid);
+		DuskConfigMigration.moveToSerilumConfigDirectory(gameConfigDirectory, modid);
 		JsonObject json = getConfigJson(gameConfigDirectory.resolve(serilumConfigFolderName), modid);
 
+		boolean enabledInModConfig = true;
 		String enableKey = getModEnableKey(json);
-		if (enableKey == null) {
-			return true;
+		if (enableKey != null) {
+			enabledInModConfig = !getValueString(getEntryValue(json.get(enableKey))).equalsIgnoreCase("false");
 		}
 
-		String enableValue = getValueString(getEntryValue(json.get(enableKey)));
-		return !enableValue.equalsIgnoreCase("false");
+		// Both switches are kept equal when changed in-game; a hand edit that leaves them apart turns the mod off in both.
+		boolean enabledInCollectiveList = !DuskConfigModToggles.isDisabledInList(gameConfigDirectory, modid);
+		if (enabledInModConfig != enabledInCollectiveList) {
+			DuskConfigModToggles.disableEverywhere(gameConfigDirectory, modid);
+		}
+		return enabledInModConfig && enabledInCollectiveList;
 	}
 
 	public static String getModEnableKey(String modid) {
-		return getModEnableKey(getConfigJson(DataFunctions.getConfigDirectoryPath(), modid));
+		return getModEnableKey(DataFunctions.getConfigDirectoryPath(), modid);
+	}
+
+	public static String getModEnableKey(Path configDirectory, String modid) {
+		return getModEnableKey(getConfigJson(configDirectory, modid));
 	}
 
 	public static boolean isInIdList(String idList, String id) {
@@ -111,16 +121,9 @@ public class ConfigFunctions {
 	public static HashMap<String, Boolean> getBundleModToggles(Path gameConfigDirectory) {
 		HashMap<String, Boolean> toggles = new HashMap<>();
 
-		Path configDirectory = gameConfigDirectory.resolve(serilumConfigFolderName);
-		File[] oldConfigFiles = gameConfigDirectory.toFile().listFiles();
-		if (oldConfigFiles != null) {
-			for (File oldConfigFile : oldConfigFiles) {
-				if (isBundleConfigFile(oldConfigFile.getName())) {
-					moveConfigPath(oldConfigFile.toPath(), configDirectory.resolve(oldConfigFile.getName()));
-				}
-			}
-		}
+		DuskConfigMigration.moveBundleConfigFiles(gameConfigDirectory);
 
+		Path configDirectory = gameConfigDirectory.resolve(serilumConfigFolderName);
 		File[] configFiles = configDirectory.toFile().listFiles();
 		if (configFiles == null) {
 			return toggles;
@@ -182,7 +185,7 @@ public class ConfigFunctions {
 		return value.toString();
 	}
 
-	private static HashMap<String, String> getConfigValues(Path configDirectory, String modid) {
+	public static HashMap<String, String> getConfigValues(Path configDirectory, String modid) {
 		HashMap<String, String> values = new HashMap<>();
 		for (Map.Entry<String, JsonElement> entry : getConfigJson(configDirectory, modid).entrySet()) {
 			if (entry.getKey().equals("//")) {
@@ -223,50 +226,7 @@ public class ConfigFunctions {
 		return DataFunctions.getConfigDirectoryPath();
 	}
 
-	public static void moveToSerilumConfigDirectory(String modid) {
-		moveToSerilumConfigDirectory(DataFunctions.getGameConfigDirectoryPath(), modid);
-	}
-
-	public static void moveToSerilumConfigDirectory(Path gameConfigDirectory, String modid) {
-		Path serilumConfigDirectory = gameConfigDirectory.resolve(serilumConfigFolderName);
-
-		moveModConfigPaths(gameConfigDirectory, serilumConfigDirectory, modid);
-		moveModConfigPaths(gameConfigDirectory.resolve(tveConfigFolderName), serilumConfigDirectory.resolve(tveConfigFolderName), modid);
-	}
-
-	private static void moveModConfigPaths(Path oldDirectory, Path newDirectory, String modid) {
-		for (String name : List.of(modid + ".json", modid + ".json5", modid + "-common.toml", modid + ".json.unreadable", modid)) {
-			moveConfigPath(oldDirectory.resolve(name), newDirectory.resolve(name));
-		}
-	}
-
-	private static void moveConfigPath(Path oldPath, Path newPath) {
-		if (!Files.exists(oldPath)) {
-			return;
-		}
-
-		try {
-			if (Files.isDirectory(oldPath)) {
-				Files.createDirectories(newPath);
-
-				File[] files = oldPath.toFile().listFiles();
-				if (files != null) {
-					for (File file : files) {
-						moveConfigPath(file.toPath(), newPath.resolve(file.getName()));
-					}
-				}
-
-				Files.delete(oldPath);
-				return;
-			}
-
-			Files.createDirectories(newPath.getParent());
-			Files.move(oldPath, newPath, StandardCopyOption.REPLACE_EXISTING);
-		}
-		catch (IOException ignored) { }
-	}
-
-	private static boolean isBundleConfigFile(String fileName) {
+	public static boolean isBundleConfigFile(String fileName) {
 		if (!fileName.startsWith("serilum") || !fileName.contains("bundle")) {
 			return false;
 		}

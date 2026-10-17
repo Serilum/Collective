@@ -1,7 +1,9 @@
 package com.natamus.collective.config.screen;
 
+import com.natamus.collective.config.DuskConfigModToggles;
 import com.natamus.collective.functions.FilterFunctions;
 import com.natamus.collective.functions.StringFunctions;
+import com.natamus.collective.services.Services;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.core.Holder;
@@ -29,6 +31,9 @@ public class DuskConfigRegistryIds {
 		List<String> ids = new ArrayList<>();
 		if (registryName.equals("dimension")) {
 			addDimensionIds(ids);
+		}
+		else if (registryName.equals(DuskConfigModToggles.modRegistry)) {
+			addModIds(ids);
 		}
 		else {
 			Registry<?> registry = getRegistry(registryName);
@@ -70,7 +75,7 @@ public class DuskConfigRegistryIds {
 	}
 
 	public static ItemStack getIcon(String registryName, String id) {
-		if (!areItemComponentsBound()) {
+		if (registryName.equals(DuskConfigModToggles.modRegistry) || !areItemComponentsBound()) {
 			return ItemStack.EMPTY;
 		}
 
@@ -95,6 +100,10 @@ public class DuskConfigRegistryIds {
 	}
 
 	public static String getName(String registryName, String id) {
+		if (registryName.equals(DuskConfigModToggles.modRegistry)) {
+			return Services.MODLOADER.getModName(id);
+		}
+
 		Identifier identifier = Identifier.tryParse(id);
 		Registry<?> registry = getRegistry(registryName);
 		if (identifier == null || registry == null || !registry.containsKey(identifier)) {
@@ -129,8 +138,13 @@ public class DuskConfigRegistryIds {
 			case "block" -> Component.translatable("collective.collective.gui.blocks");
 			case "entity_type" -> Component.translatable("collective.collective.gui.entities");
 			case "dimension" -> Component.translatable("collective.collective.gui.dimensions");
+			case DuskConfigModToggles.modRegistry -> Component.translatable("collective.collective.gui.mods");
 			default -> Component.translatable("collective.collective.gui.entries");
 		};
+	}
+
+	public static boolean needsWorld(String registryName) {
+		return !registryName.equals(DuskConfigModToggles.modRegistry);
 	}
 
 	public static Component getFilterLabel(String filter) {
@@ -177,6 +191,10 @@ public class DuskConfigRegistryIds {
 			return worldRegistry.get();
 		}
 		return null;
+	}
+
+	private static void addModIds(List<String> ids) {
+		ids.addAll(DuskConfigModToggles.getListableModIds());
 	}
 
 	private static void addDimensionIds(List<String> ids) {
