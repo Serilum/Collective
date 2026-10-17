@@ -12,6 +12,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -20,6 +21,9 @@ import java.util.concurrent.ConcurrentHashMap;
 public class DuskConfigMod {
 	public static final Map<String, DuskConfigMod> configMods = new ConcurrentHashMap<>();
 	public static final String enableKeyPrefix = "Enable ";
+
+	private static volatile Set<String> contentNamespaces = Set.of();
+	private static volatile int contentNamespacesRegistrySize = -1;
 
 	public final String name;
 	public final String modid;
@@ -145,15 +149,23 @@ public class DuskConfigMod {
 	}
 
 	public static boolean hasRegisteredContent(String modid) {
+		int contentRegistrySize = BuiltInRegistries.BLOCK.size() + BuiltInRegistries.ITEM.size() + BuiltInRegistries.ENTITY_TYPE.size() + BuiltInRegistries.SOUND_EVENT.size();
+		if (contentRegistrySize != contentNamespacesRegistrySize) {
+			contentNamespaces = getContentNamespaces();
+			contentNamespacesRegistrySize = contentRegistrySize;
+		}
+		return contentNamespaces.contains(modid);
+	}
+
+	private static Set<String> getContentNamespaces() {
+		Set<String> namespaces = new HashSet<>();
 		List<Set<Identifier>> contentIds = Arrays.asList(BuiltInRegistries.BLOCK.keySet(), BuiltInRegistries.ITEM.keySet(), BuiltInRegistries.ENTITY_TYPE.keySet(), BuiltInRegistries.SOUND_EVENT.keySet());
 		for (Set<Identifier> ids : contentIds) {
 			for (Identifier id : ids) {
-				if (id.getNamespace().equals(modid)) {
-					return true;
-				}
+				namespaces.add(id.getNamespace());
 			}
 		}
-		return false;
+		return namespaces;
 	}
 
 	private static DuskConfigEntry createEnableEntry(String name) {
