@@ -9,6 +9,8 @@ import java.util.List;
 public class CollectiveConfigHandler extends DuskConfig {
 	public static HashMap<String, List<String>> configMetaData = new HashMap<>();
 
+	@Entry(registry = DuskConfigModToggles.modRegistry) public static String disabledSerilumMods = "";
+
 	@Entry public static boolean enableUpdateChecker = true;
 	@Entry public static boolean transferItemsBetweenReplacedEntities = true;
 	@Entry(min = 1, max = 500) public static int loopsAmountUsedToGetAllEntityDrops = 100;
@@ -25,6 +27,9 @@ public class CollectiveConfigHandler extends DuskConfig {
 	@Entry public static boolean updateMinecraftWindowTitleInDevMode = false;
 
 	public static void initConfig() {
+		configMetaData.put("disabledSerilumMods", Arrays.asList(
+				"The Serilum mods that are turned off, picked from the ones installed. A mod's own 'Enable' setting follows this list, and the other way round. Takes effect after a restart."
+		));
 		configMetaData.put("enableUpdateChecker", Arrays.asList(
 				"Whether Collective should show a message in the console if a dependent mod has an update available. Update checks are optional and async."
 		));

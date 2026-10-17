@@ -6,6 +6,7 @@ import com.natamus.collective.config.DuskConfig;
 import com.natamus.collective.config.DuskConfigEntry;
 import com.natamus.collective.config.DuskConfigFile;
 import com.natamus.collective.config.DuskConfigMod;
+import com.natamus.collective.config.DuskConfigModToggles;
 import com.natamus.collective.functions.MessageFunctions;
 import com.natamus.collective.globalcallbacks.ConfigCallback;
 import net.minecraft.ChatFormatting;
@@ -34,6 +35,7 @@ public class CommandCollectiveConfig {
 				return showConfigMods(command.getSource());
 			});
 
+		DuskConfigModToggles.addListOnlyMods();
 		for (String modid : getSortedModIds()) {
 			configCommand.then(getModCommand(DuskConfigMod.configMods.get(modid)));
 		}
@@ -243,6 +245,9 @@ public class CommandCollectiveConfig {
 
 	private static List<String> getRegistryIds(MinecraftServer server, String registryName) {
 		List<String> ids = new ArrayList<>();
+		if (registryName.equals(DuskConfigModToggles.modRegistry)) {
+			return DuskConfigModToggles.getListableModIds();
+		}
 		if (registryName.equals("dimension")) {
 			for (ResourceKey<Level> levelKey : server.levelKeys()) {
 				ids.add(levelKey.identifier().toString());

@@ -5,6 +5,7 @@ import com.natamus.collective.config.DuskConfig;
 import com.natamus.collective.config.DuskConfigEntry;
 import com.natamus.collective.config.DuskConfigFile;
 import com.natamus.collective.config.DuskConfigMod;
+import com.natamus.collective.config.DuskConfigModToggles;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
@@ -56,11 +57,11 @@ public class DuskConfigEditScreen extends DuskConfigBaseScreen {
 	}
 
 	public static Screen getScreen(Screen parent, String modid) {
-		DuskConfigMod configMod = DuskConfigMod.configMods.get(modid);
-		if (configMod == null) {
+		if (!DuskConfigModToggles.hasConfigScreen(modid)) {
 			return parent;
 		}
 
+		DuskConfigMod configMod = DuskConfigMod.addListOnlyMod(modid);
 		DuskConfigFile.reload(configMod);
 		return new DuskConfigEditScreen(parent, configMod);
 	}

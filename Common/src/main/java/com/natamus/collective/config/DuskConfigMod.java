@@ -2,6 +2,7 @@ package com.natamus.collective.config;
 
 import com.natamus.collective.functions.ConfigFunctions;
 import com.natamus.collective.functions.DataFunctions;
+import com.natamus.collective.services.Services;
 import com.natamus.collective.util.CollectiveReference;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
@@ -26,12 +27,14 @@ public class DuskConfigMod {
 	public final List<DuskConfigEntry> entries = new ArrayList<>();
 	public final DuskConfigEntry enableEntry;
 	public final boolean isDisabled;
+	public final boolean isListOnly;
 
 	public DuskConfigMod(String name, String modid, Class<?> configClass) {
 		this.name = name;
 		this.modid = modid;
 		this.path = DataFunctions.getConfigDirectoryPath().resolve(modid + ".json");
 		this.isDisabled = false;
+		this.isListOnly = false;
 
 		HashMap<String, List<String>> configMetaData = getConfigMetaData(configClass);
 		for (Field field : configClass.getDeclaredFields()) {
@@ -57,10 +60,35 @@ public class DuskConfigMod {
 		this.modid = modid;
 		this.path = DataFunctions.getConfigDirectoryPath().resolve(modid + ".json");
 		this.isDisabled = true;
+		this.isListOnly = false;
 		this.enableEntry = createEnableEntry(name);
 
 		enableEntry.setValue(false);
 		entries.add(enableEntry);
+	}
+
+	private DuskConfigMod(String name, String modid, boolean enabled) {
+		this.name = name;
+		this.modid = modid;
+		this.path = DataFunctions.getConfigDirectoryPath().resolve(modid + ".json");
+		this.isDisabled = false;
+		this.isListOnly = true;
+		this.enableEntry = createEnableEntry(name);
+
+		enableEntry.setValue(enabled);
+		entries.add(enableEntry);
+	}
+
+	public static DuskConfigMod addListOnlyMod(String modid) {
+		DuskConfigMod configMod = configMods.get(modid);
+		if (configMod != null) {
+			return configMod;
+		}
+
+		boolean enabled = !DuskConfigModToggles.isDisabledInList(DataFunctions.getGameConfigDirectoryPath(), modid);
+		configMod = new DuskConfigMod(Services.MODLOADER.getModName(modid), modid, enabled);
+		configMods.put(modid, configMod);
+		return configMod;
 	}
 
 	public static void addDisabledMod(String modid) {
@@ -83,10 +111,10 @@ public class DuskConfigMod {
 	}
 
 	public List<DuskConfigEntry> getActiveEntries() {
-		if (enableEntry == null || isDisabled) {
+		if (enableEntry == null || isDisabled || isListOnly) {
 			return entries;
 		}
-		if (!hasRegisteredContent()) {
+		if (!hasRegisteredContent(modid)) {
 			return entries;
 		}
 
@@ -95,11 +123,15 @@ public class DuskConfigMod {
 		return activeEntries;
 	}
 
-	private boolean canBeDisabled() {
+	public static boolean isAlwaysEnabled(String modid) {
 		if (modid.equals(CollectiveReference.MOD_ID) || modid.equals("hideexperimentalwarning")) {
-			return false;
+			return true;
 		}
-		if (modid.startsWith("serilum") && modid.contains("bundle")) {
+		return modid.startsWith("serilum") && modid.contains("bundle");
+	}
+
+	private boolean canBeDisabled() {
+		if (isAlwaysEnabled(modid)) {
 			return false;
 		}
 
@@ -112,7 +144,7 @@ public class DuskConfigMod {
 		return true;
 	}
 
-	private boolean hasRegisteredContent() {
+	public static boolean hasRegisteredContent(String modid) {
 		List<Set<Identifier>> contentIds = Arrays.asList(BuiltInRegistries.BLOCK.keySet(), BuiltInRegistries.ITEM.keySet(), BuiltInRegistries.ENTITY_TYPE.keySet(), BuiltInRegistries.SOUND_EVENT.keySet());
 		for (Set<Identifier> ids : contentIds) {
 			for (Identifier id : ids) {
@@ -125,7 +157,7 @@ public class DuskConfigMod {
 	}
 
 	private static DuskConfigEntry createEnableEntry(String name) {
-		List<String> description = Arrays.asList("Whether " + name + " is enabled. When disabled, none of its features run and its other settings are hidden. Takes effect after a restart. Do not disable a mod that adds blocks or items to an existing world, they will be removed.");
+		List<String> description = Arrays.asList("Whether " + name + " is enabled. When disabled, none of its features run and its other settings are hidden. Takes effect after a restart.");
 		return new DuskConfigEntry(enableKeyPrefix + name, description, true);
 	}
 

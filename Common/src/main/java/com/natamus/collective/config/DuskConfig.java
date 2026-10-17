@@ -1,7 +1,6 @@
 package com.natamus.collective.config;
 
 import com.natamus.collective.config.screen.DuskConfigEditScreen;
-import com.natamus.collective.functions.ConfigFunctions;
 import com.natamus.collective.globalcallbacks.ConfigCallback;
 import net.minecraft.client.gui.screens.Screen;
 
@@ -25,7 +24,7 @@ public abstract class DuskConfig {
 	}
 
 	public static void init(String name, String modid, Class<?> configClass) {
-		ConfigFunctions.moveToSerilumConfigDirectory(modid);
+		DuskConfigMigration.moveToSerilumConfigDirectory(modid);
 
 		DuskConfigMod configMod = new DuskConfigMod(name, modid, configClass);
 		DuskConfigMod.configMods.put(modid, configMod);
