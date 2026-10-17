@@ -6,11 +6,18 @@ import com.natamus.collective.neoforge.bundle.NeoForgeBundleJarJarCheck;
 import com.natamus.collective.neoforge.config.NeoForgeCollectiveConfigScreen;
 import com.natamus.collective.services.helpers.ModLoaderHelper;
 import net.neoforged.api.distmarker.Dist;
+import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.ModLoadingContext;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.fml.loading.FMLPaths;
+import net.neoforged.neoforgespi.language.IModFileInfo;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Optional;
 
 public class NeoForgeModLoaderHelper implements ModLoaderHelper {
 	@Override
@@ -26,6 +33,34 @@ public class NeoForgeModLoaderHelper implements ModLoaderHelper {
 	@Override
 	public boolean isModLoaded(String modId) {
 		return ModList.get().isLoaded(modId);
+	}
+
+	@Override
+	public String getModName(String modId) {
+		Optional<? extends ModContainer> modContainer = ModList.get().getModContainerById(modId);
+		if (modContainer.isEmpty()) {
+			return modId;
+		}
+		return modContainer.get().getModInfo().getDisplayName();
+	}
+
+	@Override
+	public byte[] getModIcon(String modId) {
+		IModFileInfo modFileInfo = ModList.get().getModFileById(modId);
+		if (modFileInfo == null) {
+			return null;
+		}
+
+		Path iconPath = modFileInfo.getFile().findResource("icon.png");
+		if (!Files.isRegularFile(iconPath)) {
+			return null;
+		}
+
+		try {
+			return Files.readAllBytes(iconPath);
+		}
+		catch (IOException ignored) { }
+		return null;
 	}
 
 	@Override

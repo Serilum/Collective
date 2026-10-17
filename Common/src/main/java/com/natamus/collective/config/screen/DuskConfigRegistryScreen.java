@@ -2,6 +2,7 @@ package com.natamus.collective.config.screen;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import com.natamus.collective.config.DuskConfigEntry;
+import com.natamus.collective.config.DuskConfigModToggles;
 import com.natamus.collective.functions.ConfigFunctions;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
@@ -83,13 +84,9 @@ public class DuskConfigRegistryScreen extends DuskConfigBaseScreen {
 			availableList.setScrollAmount(0);
 		});
 
-		EditBox patternBox = this.addRenderableWidget(new EditBox(this.font, 10, this.height - 54, listWidth - 65, 20, Component.translatable("collective.collective.gui.idpattern")));
-		patternBox.setMaxLength(Integer.MAX_VALUE);
-		patternBox.setHint(Component.translatable("collective.collective.gui.idpattern").withStyle(ChatFormatting.DARK_GRAY));
-		this.addRenderableWidget(new DuskConfigButton(listWidth - 50, this.height - 54, 60, 20, Component.translatable("collective.collective.gui.add"), button -> {
-			addId(patternBox.getValue().strip());
-			patternBox.setValue("");
-		}));
+		if (!entry.registry.equals(DuskConfigModToggles.modRegistry)) {
+			addPatternRow(listWidth);
+		}
 
 		addCancelButton(this.width / 2 - 154, this.height - 28);
 		this.addRenderableWidget(Button.builder(CommonComponents.GUI_DONE, button -> {
@@ -105,6 +102,16 @@ public class DuskConfigRegistryScreen extends DuskConfigBaseScreen {
 	@Override
 	protected boolean hasUnsavedChanges() {
 		return !selectedIds.equals(initialIds);
+	}
+
+	private void addPatternRow(int listWidth) {
+		EditBox patternBox = this.addRenderableWidget(new EditBox(this.font, 10, this.height - 54, listWidth - 65, 20, Component.translatable("collective.collective.gui.idpattern")));
+		patternBox.setMaxLength(Integer.MAX_VALUE);
+		patternBox.setHint(Component.translatable("collective.collective.gui.idpattern").withStyle(ChatFormatting.DARK_GRAY));
+		this.addRenderableWidget(new DuskConfigButton(listWidth - 50, this.height - 54, 60, 20, Component.translatable("collective.collective.gui.add"), button -> {
+			addId(patternBox.getValue().strip());
+			patternBox.setValue("");
+		}));
 	}
 
 	private void addFilterButton(int x) {
@@ -142,7 +149,7 @@ public class DuskConfigRegistryScreen extends DuskConfigBaseScreen {
 			if (isLoaded(id)) {
 				colour = 0xFFFFFFFF;
 			}
-			selectedRows.add(new DuskConfigIdRow(getIcon(id), getName(id), id, colour, getRemoveLabel(id), button -> pressRemove(id)));
+			selectedRows.add(new DuskConfigIdRow(getIcon(id), getModIcon(id), getName(id), id, colour, getRemoveLabel(id), button -> pressRemove(id)));
 		}
 		selectedList.setRows(selectedRows);
 	}
@@ -158,7 +165,7 @@ public class DuskConfigRegistryScreen extends DuskConfigBaseScreen {
 		List<DuskConfigIdRow> availableRows = new ArrayList<>();
 		for (String id : shownIds) {
 			if (!isSelected(id) && (id.contains(search) || getName(id).toLowerCase(Locale.ROOT).contains(search))) {
-				availableRows.add(new DuskConfigIdRow(getIcon(id), getName(id), id, 0xFFFFFFFF, Component.literal("+").withStyle(ChatFormatting.GREEN), button -> addId(id)));
+				availableRows.add(new DuskConfigIdRow(getIcon(id), getModIcon(id), getName(id), id, 0xFFFFFFFF, Component.literal("+").withStyle(ChatFormatting.GREEN), button -> addId(id)));
 			}
 		}
 		availableList.setRows(availableRows);
@@ -186,6 +193,13 @@ public class DuskConfigRegistryScreen extends DuskConfigBaseScreen {
 
 	private ItemStack getIcon(String id) {
 		return icons.computeIfAbsent(id, iconId -> DuskConfigRegistryIds.getIcon(entry.registry, iconId));
+	}
+
+	private DuskConfigModIcons getModIcon(String id) {
+		if (!entry.registry.equals(DuskConfigModToggles.modRegistry)) {
+			return null;
+		}
+		return DuskConfigModIcons.getIcon(id);
 	}
 
 	private String getName(String id) {
@@ -273,7 +287,7 @@ public class DuskConfigRegistryScreen extends DuskConfigBaseScreen {
 
 		guiGraphics.drawCenteredString(this.font, this.title, this.width / 2, 12, 0xFFFFFFFF);
 		guiGraphics.drawString(this.font, Component.translatable("pack.selected.title").append(" (" + selectedIds.size() + ")"), 12, 40, 0xFFA0A0A0);
-		if (registryIds.isEmpty()) {
+		if (registryIds.isEmpty() && DuskConfigRegistryIds.needsWorld(entry.registry)) {
 			guiGraphics.drawString(this.font, Component.translatable("collective.collective.gui.worldneeded"), this.width / 2 + 7, 64, 0xFFA0A0A0);
 		}
 		else if (this.minecraft.level == null && !entry.filter.isEmpty() && suggestedIds.isEmpty()) {
