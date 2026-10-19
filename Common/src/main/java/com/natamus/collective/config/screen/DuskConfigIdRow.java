@@ -6,6 +6,7 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.ContainerObjectSelectionList;
+import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.network.chat.Component;
@@ -21,14 +22,19 @@ public class DuskConfigIdRow extends ContainerObjectSelectionList.Entry<DuskConf
 	private final String id;
 	private final int colour;
 	private final Button button;
+	private final EditBox amountBox;
 
 	public DuskConfigIdRow(ItemStack icon, DuskConfigModIcons modIcon, String name, String id, int colour, Component buttonLabel, Button.OnPress onPress) {
+		this(icon, modIcon, name, id, colour, buttonLabel, onPress, null);
+	}
+	public DuskConfigIdRow(ItemStack icon, DuskConfigModIcons modIcon, String name, String id, int colour, Component buttonLabel, Button.OnPress onPress, EditBox amountBox) {
 		this.icon = icon;
 		this.modIcon = modIcon;
 		this.name = name;
 		this.id = id;
 		this.colour = colour;
 		this.button = Button.builder(buttonLabel, onPress).size(20, 20).build();
+		this.amountBox = amountBox;
 	}
 
 	@Override
@@ -46,6 +52,9 @@ public class DuskConfigIdRow extends ContainerObjectSelectionList.Entry<DuskConf
 
 		Font font = Minecraft.getInstance().font;
 		int labelWidth = right - x - 48;
+		if (amountBox != null) {
+			labelWidth -= amountBox.getWidth() + 4;
+		}
 		if (name.isEmpty()) {
 			guiGraphics.drawString(font, DuskConfigRow.fitLabel(font, id, labelWidth), x + 20, y + 6, colour);
 		}
@@ -62,15 +71,27 @@ public class DuskConfigIdRow extends ContainerObjectSelectionList.Entry<DuskConf
 		button.setX(right - 24);
 		button.setY(y);
 		button.render(guiGraphics, mouseX, mouseY, partialTick);
+
+		if (amountBox != null) {
+			amountBox.setX(right - 28 - amountBox.getWidth());
+			amountBox.setY(y);
+			amountBox.render(guiGraphics, mouseX, mouseY, partialTick);
+		}
 	}
 
 	@Override
 	public @NotNull List<? extends GuiEventListener> children() {
+		if (amountBox != null) {
+			return List.of(amountBox, button);
+		}
 		return List.of(button);
 	}
 
 	@Override
 	public @NotNull List<? extends NarratableEntry> narratables() {
+		if (amountBox != null) {
+			return List.of(amountBox, button);
+		}
 		return List.of(button);
 	}
 }

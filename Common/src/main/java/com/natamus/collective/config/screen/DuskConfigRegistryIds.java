@@ -17,14 +17,18 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.SpawnEggItem;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
 public class DuskConfigRegistryIds {
+	private static final HashMap<EntityType<?>, SpawnEggItem> spawnEggs = new HashMap<>();
+
 	public static List<String> getIds(String registryName) {
 		List<String> ids = new ArrayList<>();
 		if (registryName.equals("dimension")) {
@@ -86,12 +90,23 @@ public class DuskConfigRegistryIds {
 		}
 
 		if (value instanceof EntityType<?> entityType) {
-			SpawnEggItem spawnEgg = SpawnEggItem.byId(entityType);
+			SpawnEggItem spawnEgg = getSpawnEgg(entityType);
 			if (spawnEgg != null) {
 				return new ItemStack(spawnEgg);
 			}
 		}
 		return ItemStack.EMPTY;
+	}
+
+	private static SpawnEggItem getSpawnEgg(EntityType<?> entityType) {
+		if (spawnEggs.isEmpty()) {
+			for (Item item : BuiltInRegistries.ITEM) {
+				if (item instanceof SpawnEggItem spawnEggItem) {
+					spawnEggs.put(spawnEggItem.getType(new ItemStack(spawnEggItem)), spawnEggItem);
+				}
+			}
+		}
+		return spawnEggs.get(entityType);
 	}
 
 	public static String getName(String registryName, String id) {
@@ -115,6 +130,9 @@ public class DuskConfigRegistryIds {
 		if (value instanceof EntityType<?> entityType) {
 			return entityType.getDescription().getString();
 		}
+		if (value instanceof Biome) {
+			return Component.translatable(resourceLocation.toLanguageKey("biome")).getString();
+		}
 		return "";
 	}
 
@@ -133,6 +151,7 @@ public class DuskConfigRegistryIds {
 			case "block" -> Component.translatable("collective.collective.gui.blocks");
 			case "entity_type" -> Component.translatable("collective.collective.gui.entities");
 			case "dimension" -> Component.translatable("collective.collective.gui.dimensions");
+			case "worldgen/biome" -> Component.translatable("collective.collective.gui.biomes");
 			case DuskConfigModToggles.modRegistry -> Component.translatable("collective.collective.gui.mods");
 			default -> Component.translatable("collective.collective.gui.entries");
 		};

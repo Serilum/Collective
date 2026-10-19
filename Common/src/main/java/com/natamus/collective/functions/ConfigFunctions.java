@@ -6,6 +6,7 @@ import com.google.gson.JsonParser;
 import com.natamus.collective.config.DuskConfigMigration;
 import com.natamus.collective.config.DuskConfigMod;
 import com.natamus.collective.config.DuskConfigModToggles;
+import com.natamus.collective.objects.IdAmount;
 
 import java.io.File;
 import java.io.IOException;
@@ -116,6 +117,17 @@ public class ConfigFunctions {
 			}
 		}
 		return false;
+	}
+
+	public static List<IdAmount> getIdAmounts(String idList) {
+		List<IdAmount> idAmounts = new ArrayList<>();
+		for (String rawEntry : idList.split(",")) {
+			IdAmount idAmount = new IdAmount(rawEntry);
+			if (!idAmount.id.isEmpty()) {
+				idAmounts.add(idAmount);
+			}
+		}
+		return idAmounts;
 	}
 
 	public static HashMap<String, Boolean> getBundleModToggles(Path gameConfigDirectory) {

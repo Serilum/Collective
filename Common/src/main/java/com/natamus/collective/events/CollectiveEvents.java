@@ -21,6 +21,9 @@ import net.minecraft.world.entity.Entity.RemovalReason;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.animal.horse.AbstractHorse;
+import net.minecraft.world.entity.monster.Zombie;
+import net.minecraft.world.entity.monster.ZombieVillager;
+import net.minecraft.world.entity.npc.VillagerType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -124,6 +127,7 @@ public class CollectiveEvents {
 		Vec3 eVec = entity.position();
 		boolean ageable = entity instanceof AgeableMob;
 		boolean isOnSurface = BlockPosFunctions.isOnSurface(level, eVec);
+		boolean isBabyZombie = entity instanceof Zombie zombie && zombie.isBaby();
 
 		for (SAMObject sam : possibles) {
 			double num = GlobalVariables.random.nextDouble();
@@ -148,9 +152,20 @@ public class CollectiveEvents {
 				}
 			}
 
+			if (!sam.isInAllowedDimension(level)) {
+				continue;
+			}
+			if (!sam.isInAllowedBiome(level, entity.blockPosition())) {
+				continue;
+			}
+
 			Entity to = sam.toEntityType.create(level);
 			if (to == null) {
 				return true;
+			}
+
+			if (isBabyZombie && !sam.rideNotReplace && !(to instanceof Zombie)) {
+				continue;
 			}
 
 			to.setPos(eVec.x, eVec.y, eVec.z);
@@ -158,6 +173,10 @@ public class CollectiveEvents {
 			if (ageable && to instanceof AgeableMob am) {
 				am.setAge(((AgeableMob)entity).getAge());
 				to = am;
+			}
+
+			if (isBabyZombie && to instanceof Zombie toZombie) {
+				toZombie.setBaby(true);
 			}
 
 			boolean ignoreMainhand = false;
@@ -185,6 +204,10 @@ public class CollectiveEvents {
 
 			if (!(level instanceof ServerLevel serverLevel)) {
 				return true;
+			}
+
+			if (to instanceof ZombieVillager zombieVillager) {
+				zombieVillager.setVillagerData(zombieVillager.getVillagerData().setType(VillagerType.byBiome(serverLevel.getBiome(zombieVillager.blockPosition()))));
 			}
 
 			if (ride) {

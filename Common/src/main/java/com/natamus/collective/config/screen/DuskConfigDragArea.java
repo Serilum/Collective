@@ -22,8 +22,16 @@ public class DuskConfigDragArea extends AbstractWidget {
 	}
 
 	@Override
-	public void onClick(double mouseX, double mouseY) {
+	public boolean mouseClicked(double mouseX, double mouseY, int button) {
+		if (!this.active || !this.visible) {
+			return false;
+		}
+		if (!this.isValidClickButton(button) || !this.clicked(mouseX, mouseY)) {
+			return false;
+		}
+
 		pick(mouseX, mouseY);
+		return true;
 	}
 
 	@Override

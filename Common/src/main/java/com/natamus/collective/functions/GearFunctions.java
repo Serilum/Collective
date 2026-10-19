@@ -97,6 +97,10 @@ public class GearFunctions {
 			}
 
 			EquipmentSlot equipmentSlot = getEquipmentSlotFromSlotString(slotString);
+			if (equipmentSlot == null) {
+				continue;
+			}
+
 			if (equipmentSlot.equals(EquipmentSlot.HEAD)) {
 				inventory.armor.set(3, itemStack);
 			}
