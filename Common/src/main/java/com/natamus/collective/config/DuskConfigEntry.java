@@ -19,6 +19,7 @@ public class DuskConfigEntry {
 	public final String registry;
 	public final String filter;
 	public final boolean single;
+	public final boolean amounts;
 	private final String name;
 	private final String displayName;
 	private final Class<?> type;
@@ -44,6 +45,7 @@ public class DuskConfigEntry {
 		this.registry = entry.registry();
 		this.filter = entry.filter();
 		this.single = entry.single();
+		this.amounts = entry.amounts();
 		this.rgb = entry.rgb();
 
 		if (type.isEnum()) {
@@ -70,6 +72,7 @@ public class DuskConfigEntry {
 		this.registry = "";
 		this.filter = "";
 		this.single = false;
+		this.amounts = false;
 		this.rgb = false;
 	}
 
