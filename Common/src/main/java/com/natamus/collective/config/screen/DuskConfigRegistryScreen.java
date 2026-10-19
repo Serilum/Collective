@@ -4,6 +4,7 @@ import com.mojang.blaze3d.platform.InputConstants;
 import com.natamus.collective.config.DuskConfigEntry;
 import com.natamus.collective.config.DuskConfigModToggles;
 import com.natamus.collective.functions.ConfigFunctions;
+import com.natamus.collective.objects.IdAmount;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
@@ -144,14 +145,51 @@ public class DuskConfigRegistryScreen extends DuskConfigBaseScreen {
 
 	private void refreshSelectedList() {
 		List<DuskConfigIdRow> selectedRows = new ArrayList<>();
-		for (String id : selectedIds) {
+		for (String selectedEntry : selectedIds) {
+			String id = getEntryId(selectedEntry);
 			int colour = 0xFF808080;
 			if (isLoaded(id)) {
 				colour = 0xFFFFFFFF;
 			}
-			selectedRows.add(new DuskConfigIdRow(getIcon(id), getModIcon(id), getName(id), id, colour, getRemoveLabel(id), button -> pressRemove(id)));
+
+			EditBox amountBox = null;
+			if (entry.amounts) {
+				amountBox = createAmountBox(id, new IdAmount(selectedEntry));
+			}
+			selectedRows.add(new DuskConfigIdRow(getIcon(id), getModIcon(id), getName(id), id, colour, getRemoveLabel(id), button -> pressRemove(id), amountBox));
 		}
 		selectedList.setRows(selectedRows);
+	}
+
+	private EditBox createAmountBox(String id, IdAmount idAmount) {
+		EditBox amountBox = new EditBox(this.font, 0, 0, 44, 20, Component.translatable("collective.collective.gui.amount"));
+		amountBox.setValue(idAmount.getAmountText());
+		amountBox.setResponder(text -> {
+			if (!IdAmount.isValidAmountText(text.strip())) {
+				amountBox.setTextColor(0xFFFF0000);
+				return;
+			}
+
+			amountBox.setTextColor(0xFFE0E0E0);
+			setAmount(id, text.strip());
+		});
+		return amountBox;
+	}
+
+	private void setAmount(String id, String amountText) {
+		for (int i = 0; i < selectedIds.size(); i++) {
+			if (getEntryId(selectedIds.get(i)).equalsIgnoreCase(id)) {
+				selectedIds.set(i, new IdAmount(id + "=" + amountText).toEntry());
+				return;
+			}
+		}
+	}
+
+	private String getEntryId(String selectedEntry) {
+		if (!entry.amounts) {
+			return selectedEntry;
+		}
+		return IdAmount.getId(selectedEntry);
 	}
 
 	private void refreshAvailableList() {
@@ -172,8 +210,9 @@ public class DuskConfigRegistryScreen extends DuskConfigBaseScreen {
 	}
 
 	private boolean isSelected(String id) {
-		for (String selectedId : selectedIds) {
-			if (selectedId.equalsIgnoreCase(id)) {
+		String comparedId = getEntryId(id);
+		for (String selectedEntry : selectedIds) {
+			if (getEntryId(selectedEntry).equalsIgnoreCase(comparedId)) {
 				return true;
 			}
 		}
@@ -218,7 +257,12 @@ public class DuskConfigRegistryScreen extends DuskConfigBaseScreen {
 			selectedIds.clear();
 		}
 
-		selectedIds.add(id);
+		if (entry.amounts) {
+			selectedIds.add(new IdAmount(id).toEntry());
+		}
+		else {
+			selectedIds.add(id);
+		}
 		refreshLists();
 	}
 
@@ -241,7 +285,7 @@ public class DuskConfigRegistryScreen extends DuskConfigBaseScreen {
 	}
 
 	private void removeId(String id) {
-		selectedIds.removeIf(selectedId -> selectedId.equalsIgnoreCase(id));
+		selectedIds.removeIf(selectedEntry -> getEntryId(selectedEntry).equalsIgnoreCase(id));
 		refreshLists();
 	}
 

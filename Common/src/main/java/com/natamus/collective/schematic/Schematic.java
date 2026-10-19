@@ -42,6 +42,7 @@ public class Schematic {
 	public Schematic(InputStream inputStream) {
 		new Schematic(inputStream, null);
 	}
+	@SuppressWarnings("deprecation")
 	public Schematic(InputStream inputStream, Level level) {
 		Registry<Block> blockRegistry = BuiltInRegistries.BLOCK;
 		if (level != null) {

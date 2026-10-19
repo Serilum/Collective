@@ -7,7 +7,6 @@ import com.natamus.collective.services.helpers.ModLoaderHelper;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.ModContainer;
 import net.minecraftforge.fml.ModList;
-import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.loading.FMLEnvironment;
 import net.minecraftforge.fml.loading.FMLLoader;
 import net.minecraftforge.fml.loading.FMLPaths;
@@ -84,9 +83,9 @@ public class ForgeModLoaderHelper implements ModLoaderHelper {
 
 	@Override
 	public void registerConfigScreen(String modId) {
-		ModLoadingContext modLoadingContext = ModLoadingContext.get();
-		if (modId.equals(modLoadingContext.getActiveNamespace())) {
-			ForgeCollectiveConfigScreen.registerScreen(modLoadingContext, modId);
+		Optional<? extends ModContainer> modContainer = ModList.get().getModContainerById(modId);
+		if (modContainer.isPresent()) {
+			ForgeCollectiveConfigScreen.registerScreen(modContainer.get(), modId);
 		}
 	}
 }

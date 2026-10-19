@@ -148,6 +148,7 @@ public class DuskConfigMod {
 		return true;
 	}
 
+	@SuppressWarnings("deprecation")
 	public static boolean hasRegisteredContent(String modid) {
 		int contentRegistrySize = BuiltInRegistries.BLOCK.size() + BuiltInRegistries.ITEM.size() + BuiltInRegistries.ENTITY_TYPE.size() + BuiltInRegistries.SOUND_EVENT.size();
 		if (contentRegistrySize != contentNamespacesRegistrySize) {
@@ -157,6 +158,7 @@ public class DuskConfigMod {
 		return contentNamespaces.contains(modid);
 	}
 
+	@SuppressWarnings("deprecation")
 	private static Set<String> getContentNamespaces() {
 		Set<String> namespaces = new HashSet<>();
 		List<Set<ResourceLocation>> contentIds = Arrays.asList(BuiltInRegistries.BLOCK.keySet(), BuiltInRegistries.ITEM.keySet(), BuiltInRegistries.ENTITY_TYPE.keySet(), BuiltInRegistries.SOUND_EVENT.keySet());
