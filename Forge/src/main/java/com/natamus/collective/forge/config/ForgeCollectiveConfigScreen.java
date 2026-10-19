@@ -4,6 +4,7 @@ import com.natamus.collective.config.DuskConfig;
 import com.natamus.collective.config.DuskConfigModToggles;
 import com.natamus.collective.util.CollectiveReference;
 import net.minecraftforge.client.ConfigScreenHandler;
+import net.minecraftforge.fml.ModContainer;
 import net.minecraftforge.fml.ModLoadingContext;
 
 public class ForgeCollectiveConfigScreen {
@@ -12,7 +13,11 @@ public class ForgeCollectiveConfigScreen {
 	}
 
 	public static void registerScreen(ModLoadingContext modLoadingContext, String modId) {
-		modLoadingContext.registerExtensionPoint(ConfigScreenHandler.ConfigScreenFactory.class, () -> {
+		registerScreen(modLoadingContext.getContainer(), modId);
+	}
+
+	public static void registerScreen(ModContainer modContainer, String modId) {
+		modContainer.registerExtensionPoint(ConfigScreenHandler.ConfigScreenFactory.class, () -> {
 			if (!DuskConfigModToggles.hasConfigScreen(modId)) {
 				return null;
 			}

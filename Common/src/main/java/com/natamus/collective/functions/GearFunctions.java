@@ -98,7 +98,12 @@ public class GearFunctions {
 				continue;
 			}
 
-			setEquipmentSlot(inventory, getEquipmentSlotFromSlotString(slotString), itemStack);
+			EquipmentSlot equipmentSlot = getEquipmentSlotFromSlotString(slotString);
+			if (equipmentSlot == null) {
+				continue;
+			}
+
+			setEquipmentSlot(inventory, equipmentSlot, itemStack);
 		}
 	}
 

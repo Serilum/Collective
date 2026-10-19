@@ -21,6 +21,7 @@ public abstract class DuskConfig {
 		String filter() default "";
 		boolean single() default false;
 		boolean rgb() default false;
+		boolean amounts() default false;
 	}
 
 	public static void init(String name, String modid, Class<?> configClass) {

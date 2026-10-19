@@ -9,6 +9,7 @@ import com.natamus.collective.config.DuskConfigMod;
 import com.natamus.collective.config.DuskConfigModToggles;
 import com.natamus.collective.functions.MessageFunctions;
 import com.natamus.collective.globalcallbacks.ConfigCallback;
+import com.natamus.collective.objects.IdAmount;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -150,8 +151,12 @@ public class CommandCollectiveConfig {
 
 	private static int addId(CommandSourceStack source, DuskConfigMod configMod, DuskConfigEntry entry, String id) {
 		String newId = id.strip();
+		if (entry.amounts) {
+			newId = new IdAmount(newId.replaceFirst("\\s+", "=")).toEntry();
+		}
+
 		List<String> idList = entry.getIdList();
-		if (getIdIndex(idList, newId) != -1) {
+		if (getIdIndex(entry, idList, newId) != -1) {
 			MessageFunctions.sendTranslatableMessage(source, "collective.collective.message.configidexists", ChatFormatting.RED, newId);
 			return 0;
 		}
@@ -175,7 +180,7 @@ public class CommandCollectiveConfig {
 	private static int removeId(CommandSourceStack source, DuskConfigMod configMod, DuskConfigEntry entry, String id) {
 		String oldId = id.strip();
 		List<String> idList = entry.getIdList();
-		int index = getIdIndex(idList, oldId);
+		int index = getIdIndex(entry, idList, oldId);
 		if (index == -1) {
 			MessageFunctions.sendTranslatableMessage(source, "collective.collective.message.configidmissing", ChatFormatting.RED, oldId);
 			return 0;
@@ -218,13 +223,21 @@ public class CommandCollectiveConfig {
 		return entry.getName().replace(" ", "");
 	}
 
-	private static int getIdIndex(List<String> idList, String id) {
+	private static int getIdIndex(DuskConfigEntry entry, List<String> idList, String id) {
+		String comparedId = getEntryId(entry, id);
 		for (int i = 0; i < idList.size(); i++) {
-			if (idList.get(i).equalsIgnoreCase(id)) {
+			if (getEntryId(entry, idList.get(i)).equalsIgnoreCase(comparedId)) {
 				return i;
 			}
 		}
 		return -1;
+	}
+
+	private static String getEntryId(DuskConfigEntry entry, String listEntry) {
+		if (!entry.amounts) {
+			return listEntry;
+		}
+		return IdAmount.getId(listEntry.replaceFirst("\\s+", "="));
 	}
 
 	private static List<String> getSortedModIds() {

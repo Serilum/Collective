@@ -19,6 +19,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.SpawnEggItem;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
 
 import java.util.ArrayList;
@@ -120,6 +121,9 @@ public class DuskConfigRegistryIds {
 		if (value instanceof EntityType<?> entityType) {
 			return entityType.getDescription().getString();
 		}
+		if (value instanceof Biome) {
+			return Component.translatable(identifier.toLanguageKey("biome")).getString();
+		}
 		return "";
 	}
 
@@ -138,6 +142,7 @@ public class DuskConfigRegistryIds {
 			case "block" -> Component.translatable("collective.collective.gui.blocks");
 			case "entity_type" -> Component.translatable("collective.collective.gui.entities");
 			case "dimension" -> Component.translatable("collective.collective.gui.dimensions");
+			case "worldgen/biome" -> Component.translatable("collective.collective.gui.biomes");
 			case DuskConfigModToggles.modRegistry -> Component.translatable("collective.collective.gui.mods");
 			default -> Component.translatable("collective.collective.gui.entries");
 		};
