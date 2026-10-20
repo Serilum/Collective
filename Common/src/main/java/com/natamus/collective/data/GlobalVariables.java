@@ -22,7 +22,8 @@ public class GlobalVariables {
 	public static CopyOnWriteArrayList<SAMObject> globalSAMs = new CopyOnWriteArrayList<SAMObject>();
 	
 	// Villager names; 1: guard-villagers, 2-4: farlanders
-	public static List<String> moddedvillagers = new ArrayList<String>(Arrays.asList("Villager", "WanderingTrader", "Guard", "Farlander", "ElderFarlander", "Wanderer", "ThiefWanderingTrader", "PlagueDoctor", "GoblinTrader", "VeinGoblinTrader", "RedMerchant", "WanderingWizard", "WanderingWinemaker", "WanderingBaker", "Bowman", "Crossbowman", "Horseman", "Nomad", "Recruit", "RecruitShieldman", "Gatekeeper", "VillagerEntityMCA", "Priest"));
+	public static List<String> moddedVillagers = new ArrayList<>(Arrays.asList("Villager", "WanderingTrader", "Guard", "Farlander", "ElderFarlander", "Wanderer", "ThiefWanderingTrader", "PlagueDoctor", "GoblinTrader", "VeinGoblinTrader", "RedMerchant", "WanderingWizard", "WanderingWinemaker", "WanderingBaker", "Bowman", "Crossbowman", "Horseman", "Nomad", "Recruit", "RecruitShieldman", "Gatekeeper", "VillagerEntityMCA", "Priest"));
+	public static List<String> moddedVillagerIds = new ArrayList<>(Arrays.asList("workers:animal_farmer", "workers:beekeeper", "workers:builder", "workers:cattle_farmer", "workers:chicken_farmer", "workers:cook", "workers:courier", "workers:farmer", "workers:fisherman", "workers:lumberjack", "workers:merchant", "workers:miner", "workers:rabbit_farmer", "workers:shepherd", "workers:swineherd", "millager:archer", "millager:breacher", "millager:doctor", "millager:lancer", "millager:mauler", "millager:rioter", "millager:scouter", "millager:swordmaster"));
 
 	// Names
 	public static List<String> areaNames = new ArrayList<String>();

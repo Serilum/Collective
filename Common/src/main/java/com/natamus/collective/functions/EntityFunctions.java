@@ -15,11 +15,13 @@ import net.minecraft.world.entity.animal.Pig;
 import net.minecraft.world.entity.animal.Sheep;
 import net.minecraft.world.entity.animal.horse.*;
 import net.minecraft.world.entity.monster.Creeper;
+import net.minecraft.world.entity.npc.AbstractVillager;
 import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.entity.npc.WanderingTrader;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.FishingHook;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.trading.Merchant;
 import net.minecraft.world.item.trading.MerchantOffer;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.SkullBlockEntity;
@@ -32,7 +34,7 @@ public class EntityFunctions {
 
 	public static boolean isModdedVillager(String entitystring) {
 		String type = entitystring.split("\\[")[0];
-		for (String moddedvillager : GlobalVariables.moddedvillagers) {
+		for (String moddedvillager : GlobalVariables.moddedVillagers) {
 			if (type.equalsIgnoreCase(moddedvillager)) {
 				return true;
 			}
@@ -40,6 +42,15 @@ public class EntityFunctions {
 		return false;
 	}
 	public static boolean isModdedVillager(Entity entity) {
+		if (entity instanceof AbstractVillager || entity instanceof Merchant) {
+			return true;
+		}
+
+		ResourceLocation resourceLocation = EntityType.getKey(entity.getType());
+		if (resourceLocation != null && GlobalVariables.moddedVillagerIds.contains(resourceLocation.toString())) {
+			return true;
+		}
+
 		String entitystring = getEntityString(entity);
 		return isModdedVillager(entitystring);
 	}
