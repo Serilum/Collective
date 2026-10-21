@@ -215,12 +215,20 @@ public class Schematic {
 					this.palette = new HashMap<>();
 					for (int i = 0; i < paletteNBTList.size(); i++) {
 						CompoundTag compound = paletteNBTList.getCompound(i).get();
-						String value = compound.getString("Name").get();
 
-						if (compound.contains("Properties")) {
+						String nameKey = "id";
+						String propertiesKey = "properties";
+						if (compound.contains("Name")) {
+							nameKey = "Name";
+							propertiesKey = "Properties";
+						}
+
+						String value = compound.getString(nameKey).get();
+
+						if (compound.contains(propertiesKey)) {
 							StringBuilder metaData = new StringBuilder("[");
 
-							CompoundTag propertyCompound = compound.getCompound("Properties").get();
+							CompoundTag propertyCompound = compound.getCompound(propertiesKey).get();
 							for (String propertyKey : propertyCompound.keySet()) {
 								if (!metaData.toString().equals("[")) {
 									metaData.append(",");
