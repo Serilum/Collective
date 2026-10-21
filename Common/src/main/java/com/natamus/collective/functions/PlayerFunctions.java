@@ -162,7 +162,7 @@ public class PlayerFunctions {
 		if (respawnConfig != null) {
 			BlockPos bedpos = respawnConfig.respawnData().pos();
 			if (bedpos != null) {
-				TeleportTransition optionalbed = ((ServerPlayer) player).findRespawnPositionAndUseSpawnBlock(true, TeleportTransition.DO_NOTHING);
+				TeleportTransition optionalbed = ((ServerPlayer) player).findRespawnPositionAndUseSpawnBlock(false, TeleportTransition.DO_NOTHING);
 
 				Vec3 bedvec = optionalbed.position();
 				BlockPos bp = BlockPos.containing(bedvec);

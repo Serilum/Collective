@@ -3,10 +3,12 @@ package com.natamus.collective.schematic;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.util.ProblemReporter;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.TagValueInput;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,20 +39,25 @@ public class ParsedSchematicObject {
 	}
 
 	public void placeBlockEntitiesInWorld(Level level) {
-		List<CompoundTag> compoundTags = schematic.getBlockEntities();
-
-		int i = 0;
-		for (Pair<BlockPos, BlockEntity> pair : getBlockEntities(level)) {
-			BlockPos pos = pair.getFirst();
-
-			CompoundTag compoundTag = compoundTags.get(i);
-			compoundTag.remove("Pos");
-			compoundTag.putString("id", compoundTag.getStringOr("Id", ""));
-
-			BlockEntity blockEntity = BlockEntity.loadStatic(pos, level.getBlockState(pos), compoundTag, level.registryAccess());
-			level.setBlockEntity(blockEntity);
-			i+=1;
+		for (BlockPos pos : blockEntityPositions) {
+			placeBlockEntityInWorld(level, pos);
 		}
+	}
+
+	public void placeBlockEntityInWorld(Level level, BlockPos pos) {
+		int blockEntityIndex = blockEntityPositions.indexOf(pos);
+		if (blockEntityIndex < 0) {
+			return;
+		}
+
+		BlockEntity blockEntity = level.getBlockEntity(pos);
+		if (blockEntity == null) {
+			return;
+		}
+
+		CompoundTag compoundTag = schematic.getBlockEntities().get(blockEntityIndex);
+		blockEntity.loadWithComponents(TagValueInput.create(ProblemReporter.DISCARDING, level.registryAccess(), compoundTag));
+		blockEntity.setChanged();
 	}
 
 	public List<Pair<BlockPos, BlockEntity>> getBlockEntities(Level level) {
