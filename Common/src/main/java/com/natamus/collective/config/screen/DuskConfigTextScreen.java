@@ -25,7 +25,14 @@ public class DuskConfigTextScreen extends DuskConfigBaseScreen {
 		super(Component.literal(entry.getDisplayName()));
 		this.parent = parent;
 		this.entry = entry;
-		this.text = entry.getText();
+		this.text = getEntryText();
+	}
+
+	private String getEntryText() {
+		if (entry.isList()) {
+			return entry.getListLines();
+		}
+		return entry.getText();
 	}
 
 	@Override
@@ -47,14 +54,19 @@ public class DuskConfigTextScreen extends DuskConfigBaseScreen {
 
 		addCancelButton(this.width / 2 - 154, this.height - 28);
 		this.addRenderableWidget(Button.builder(CommonComponents.GUI_DONE, button -> {
-			entry.setValue(text.replaceAll("\\R", " "));
+			if (entry.isList()) {
+				entry.setListFromLines(text);
+			}
+			else {
+				entry.setValue(text.replaceAll("\\R", " "));
+			}
 			onClose();
 		}).pos(this.width / 2 + 4, this.height - 28).size(150, 20).build());
 	}
 
 	@Override
 	protected boolean hasUnsavedChanges() {
-		return !text.equals(entry.getText());
+		return !text.equals(getEntryText());
 	}
 
 	@Override

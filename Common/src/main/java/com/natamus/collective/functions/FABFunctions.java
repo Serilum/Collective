@@ -29,13 +29,13 @@ public class FABFunctions {
 		int chunkPosX = pos.getX() >> 4;
 		int chunkPosZ = pos.getZ() >> 4;
 
-		for (int x = chunkPosX - chunkradius; x < chunkPosX + chunkradius; x++) {
-			for (int z = chunkPosZ - chunkradius; z < chunkPosZ + chunkradius; z++) {
-				LevelChunk levelChunk = level.getChunk(x, z);
-				if (!level.isLoaded(levelChunk.getPos().getWorldPosition())) {
+		for (int x = chunkPosX - chunkradius; x <= chunkPosX + chunkradius; x++) {
+			for (int z = chunkPosZ - chunkradius; z <= chunkPosZ + chunkradius; z++) {
+				if (!level.hasChunk(x, z)) {
 					continue;
 				}
 
+				LevelChunk levelChunk = level.getChunk(x, z);
 				for (BlockEntity be : levelChunk.getBlockEntities().values()) {
 					if (!blockentities.contains(be)) {
 						blockentities.add(be);
