@@ -37,20 +37,25 @@ public class ParsedSchematicObject {
 	}
 
 	public void placeBlockEntitiesInWorld(Level level) {
-		List<CompoundTag> compoundTags = schematic.getBlockEntities();
-
-		int i = 0;
-		for (Pair<BlockPos, BlockEntity> pair : getBlockEntities(level)) {
-			BlockPos pos = pair.getFirst();
-
-			CompoundTag compoundTag = compoundTags.get(i);
-			compoundTag.remove("Pos");
-			compoundTag.putString("id", compoundTag.getString("Id"));
-
-			BlockEntity blockEntity = BlockEntity.loadStatic(pos, level.getBlockState(pos), compoundTag, level.registryAccess());
-			level.setBlockEntity(blockEntity);
-			i+=1;
+		for (BlockPos pos : blockEntityPositions) {
+			placeBlockEntityInWorld(level, pos);
 		}
+	}
+
+	public void placeBlockEntityInWorld(Level level, BlockPos pos) {
+		int blockEntityIndex = blockEntityPositions.indexOf(pos);
+		if (blockEntityIndex < 0) {
+			return;
+		}
+
+		BlockEntity blockEntity = level.getBlockEntity(pos);
+		if (blockEntity == null) {
+			return;
+		}
+
+		CompoundTag compoundTag = schematic.getBlockEntities().get(blockEntityIndex);
+		blockEntity.loadWithComponents(compoundTag, level.registryAccess());
+		blockEntity.setChanged();
 	}
 
 	public List<Pair<BlockPos, BlockEntity>> getBlockEntities(Level level) {

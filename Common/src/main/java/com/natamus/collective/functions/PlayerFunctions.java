@@ -138,7 +138,7 @@ public class PlayerFunctions {
 
 		BlockPos bedpos = serverplayer.getRespawnPosition();
 		if (bedpos != null) {
-			DimensionTransition optionalbed = ((ServerPlayer) player).findRespawnPositionAndUseSpawnBlock(true, DimensionTransition.DO_NOTHING);
+			DimensionTransition optionalbed = ((ServerPlayer) player).findRespawnPositionAndUseSpawnBlock(false, DimensionTransition.DO_NOTHING);
 
 			Vec3 bedvec = optionalbed.pos();
 			BlockPos bp = BlockPos.containing(bedvec);
