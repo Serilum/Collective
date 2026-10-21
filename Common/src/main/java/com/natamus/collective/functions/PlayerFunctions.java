@@ -136,7 +136,7 @@ public class PlayerFunctions {
 
 		BlockPos bedpos = serverplayer.getRespawnPosition();
 		if (bedpos != null) {
-			Optional<Vec3> optionalbed = Player.findRespawnPositionAndUseSpawnBlock(ServerLevel, bedpos, 1.0f, false, false);
+			Optional<Vec3> optionalbed = Player.findRespawnPositionAndUseSpawnBlock(ServerLevel, bedpos, 1.0f, false, true);
 			if (optionalbed.isPresent()) {
 				Vec3 bedvec = optionalbed.get();
 				BlockPos bp = BlockPos.containing(bedvec);
