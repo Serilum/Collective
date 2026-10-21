@@ -37,7 +37,7 @@ public class DuskConfigSetting {
 			valueWidth -= 25;
 		}
 
-		if (entry.hasRegistry() || entry.isRgb()) {
+		if (entry.hasRegistry() || entry.isRgb() || entry.isList()) {
 			valueWidget = new DuskConfigButton(valueX, 0, valueWidth, 20, getButtonLabel(), button -> openValueScreen());
 		}
 		else if (entry.isBoolean() || entry.hasOptions() || entry.isChatColour()) {
@@ -80,6 +80,13 @@ public class DuskConfigSetting {
 			return DuskConfigRegistryIds.getAmountLabel(entry.registry, idList.size());
 		}
 
+		if (entry.isList()) {
+			if (entry.getText().isEmpty()) {
+				return Component.translatable("gui.none").withStyle(ChatFormatting.GRAY);
+			}
+			return Component.literal(entry.getText());
+		}
+
 		if (entry.hasOptions()) {
 			return Component.literal(entry.getOptionLabel(entry.getOption()));
 		}
@@ -105,6 +112,9 @@ public class DuskConfigSetting {
 	private void openValueScreen() {
 		if (entry.hasRegistry()) {
 			Minecraft.getInstance().setScreenAndShow(new DuskConfigRegistryScreen(screen, entry));
+		}
+		else if (entry.isList()) {
+			Minecraft.getInstance().setScreenAndShow(new DuskConfigTextScreen(screen, entry));
 		}
 		else {
 			Minecraft.getInstance().setScreenAndShow(new DuskConfigColourScreen(screen, entry));

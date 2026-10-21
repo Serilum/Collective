@@ -143,6 +143,10 @@ public class DuskConfigEntry {
 		return type == String.class && !hasOptions() && !hasRegistry() && !isRgb();
 	}
 
+	public boolean isList() {
+		return type == List.class;
+	}
+
 	public boolean isChatColour() {
 		return type == int.class && getName().toLowerCase(Locale.ROOT).contains("colour") && min == 0 && max == 15;
 	}
@@ -234,6 +238,26 @@ public class DuskConfigEntry {
 
 	public String getText() {
 		return getValueText(getValue());
+	}
+
+	public String getListLines() {
+		List<String> lines = new ArrayList<>();
+		if (getValue() instanceof List<?> list) {
+			for (Object line : list) {
+				lines.add(String.valueOf(line));
+			}
+		}
+		return String.join("\n", lines);
+	}
+
+	public void setListFromLines(String text) {
+		List<String> list = new ArrayList<>();
+		for (String line : text.split("\\R")) {
+			if (!line.isBlank()) {
+				list.add(line.strip());
+			}
+		}
+		setValue(list);
 	}
 
 	public String getDefaultText() {
