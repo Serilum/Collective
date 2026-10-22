@@ -7,7 +7,7 @@ import com.mojang.authlib.minecraft.SessionService;
 import com.mojang.authlib.properties.Property;
 import com.mojang.authlib.properties.PropertyMap;
 import com.mojang.authlib.services.ProfileResult;
-import com.natamus.collective.features.PlayerHeadCacheFeature;
+import com.natamus.collective.data.GlobalCaches;
 import net.minecraft.core.UUIDUtil;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
@@ -124,9 +124,9 @@ public class HeadFunctions {
 		UserNameToIdResolver userNameToIdResolver = minecraftServer.services().nameToIdCache();
 
 		UUID headUUID;
-		if (PlayerHeadCacheFeature.cachedPlayerNamesMap.containsKey(playerName.toLowerCase())) {
-			headUUID = PlayerHeadCacheFeature.cachedPlayerNamesMap.get(playerName.toLowerCase());
-			playerName = PlayerHeadCacheFeature.cachedPlayerUUIDsMap.get(headUUID);
+		if (GlobalCaches.cachedPlayerNamesMap.containsKey(playerName.toLowerCase())) {
+			headUUID = GlobalCaches.cachedPlayerNamesMap.get(playerName.toLowerCase());
+			playerName = GlobalCaches.cachedPlayerUUIDsMap.get(headUUID);
 		}
 		else {
 			Optional<NameAndId> optionalNameAndId = userNameToIdResolver.get(playerName);
@@ -146,13 +146,13 @@ public class HeadFunctions {
 
 			GameProfile playerNameGameProfile = optionalGameProfile.get();
 
-			PlayerHeadCacheFeature.cachedPlayerNamesMap.put(playerNameGameProfile.name().toLowerCase(), headUUID);
-			PlayerHeadCacheFeature.cachedPlayerUUIDsMap.put(headUUID, playerNameGameProfile.name());
+			GlobalCaches.cachedPlayerNamesMap.put(playerNameGameProfile.name().toLowerCase(), headUUID);
+			GlobalCaches.cachedPlayerUUIDsMap.put(headUUID, playerNameGameProfile.name());
 		}
 
 		GameProfile gameProfile;
-		if (PlayerHeadCacheFeature.cachedGameProfileMap.containsKey(headUUID)) {
-			gameProfile = PlayerHeadCacheFeature.cachedGameProfileMap.get(headUUID);
+		if (GlobalCaches.cachedGameProfileMap.containsKey(headUUID)) {
+			gameProfile = GlobalCaches.cachedGameProfileMap.get(headUUID);
 		} else {
 			ProfileResult profileResult = minecraftSessionService.fetchProfile(headUUID, false);
 			if (profileResult == null) {
@@ -164,7 +164,7 @@ public class HeadFunctions {
 				return null;
 			}
 
-			PlayerHeadCacheFeature.cachedGameProfileMap.put(headUUID, gameProfile);
+			GlobalCaches.cachedGameProfileMap.put(headUUID, gameProfile);
 		}
 
 		return gameProfile;

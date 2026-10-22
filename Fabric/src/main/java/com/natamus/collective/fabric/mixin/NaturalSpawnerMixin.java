@@ -1,5 +1,6 @@
 package com.natamus.collective.fabric.mixin;
 
+import com.natamus.collective.events.CollectiveSpawnCheckEvents;
 import com.natamus.collective.fabric.callbacks.CollectiveSpawnEvents;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
@@ -23,7 +24,10 @@ public class NaturalSpawnerMixin {
 		if (!CollectiveSpawnEvents.MOB_CHECK_SPAWN.invoker().onMobCheckSpawn(mob, serverLevel, null, EntitySpawnReason.NATURAL)) {
 			mob = null;
 		}
-		
+		else if (!CollectiveSpawnCheckEvents.onMobCheckSpawn(mob, serverLevel, null, EntitySpawnReason.NATURAL)) {
+			mob = null;
+		}
+
 		return mob;
 	}
 }

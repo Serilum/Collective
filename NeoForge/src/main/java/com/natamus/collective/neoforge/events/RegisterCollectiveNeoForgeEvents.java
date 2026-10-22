@@ -3,12 +3,14 @@ package com.natamus.collective.neoforge.events;
 import com.natamus.collective.cmds.CommandCollective;
 import com.natamus.collective.config.GenerateJSONFiles;
 import com.natamus.collective.events.CollectiveEvents;
+import com.natamus.collective.events.CollectiveSpawnCheckEvents;
 import com.natamus.collective.functions.WorldFunctions;
 import com.natamus.collective.translations.ServerTranslationPack;
 import com.natamus.collective.util.CollectiveReference;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EntitySpawnReason;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -16,6 +18,7 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.event.entity.living.FinalizeSpawnEvent;
+import net.neoforged.neoforge.event.entity.living.MobSpawnEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.level.LevelEvent;
 import net.neoforged.neoforge.event.server.ServerAboutToStartEvent;
@@ -62,6 +65,29 @@ public class RegisterCollectiveNeoForgeEvents {
 		}
 
 		e.getEntity().addTag(CollectiveReference.MOD_ID + ".fromspawner");
+	}
+
+	@SubscribeEvent
+	public static void onMobPositionCheck(MobSpawnEvent.PositionCheck e) {
+		Level level = WorldFunctions.getWorldIfInstanceOfAndNotRemote(e.getLevel());
+		if (level == null) {
+			return;
+		}
+
+		EntitySpawnReason spawnReason = e.getSpawnType();
+		boolean isSpawnerSpawn = spawnReason.equals(EntitySpawnReason.SPAWNER);
+		if (!isSpawnerSpawn && !spawnReason.equals(EntitySpawnReason.NATURAL)) {
+			return;
+		}
+
+		Mob mob = e.getEntity();
+		if (isSpawnerSpawn) {
+			mob.addTag(CollectiveReference.MOD_ID + ".fromspawner");
+		}
+
+		if (!CollectiveSpawnCheckEvents.onMobCheckSpawn(mob, (ServerLevel)level, null, spawnReason)) {
+			e.setResult(MobSpawnEvent.PositionCheck.Result.FAIL);
+		}
 	}
 
 	@SubscribeEvent
