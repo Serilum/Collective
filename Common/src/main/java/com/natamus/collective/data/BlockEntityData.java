@@ -6,49 +6,43 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.WeakHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class BlockEntityData {
-	public static List<BlockEntityType<?>> blockEntitiesToCache = new ArrayList<>();
-	public static List<BlockEntityType<?>> serverSideTypes = new ArrayList<>();
-	public static List<BlockEntityType<?>> clientSideTypes = new ArrayList<>();
-	public static HashMap<BlockEntityType<?>, WeakHashMap<Level, CopyOnWriteArrayList<WeakReference<BlockEntity>>>> cachedBlockEntities = new HashMap<>();
-
 	public static void addBlockEntityToCache(BlockEntityType<?> blockEntityType) {
 		addBlockEntityToCache(blockEntityType, true, true);
 	}
 
 	public static void addBlockEntityToCache(BlockEntityType<?> blockEntityType, boolean cacheServerSide, boolean cacheClientSide) {
-		if (!blockEntitiesToCache.contains(blockEntityType)) {
-			blockEntitiesToCache.add(blockEntityType);
+		if (!GlobalCaches.blockEntitiesToCache.contains(blockEntityType)) {
+			GlobalCaches.blockEntitiesToCache.add(blockEntityType);
 		}
 
-		if (cacheServerSide && !serverSideTypes.contains(blockEntityType)) {
-			serverSideTypes.add(blockEntityType);
+		if (cacheServerSide && !GlobalCaches.serverSideBlockEntityTypes.contains(blockEntityType)) {
+			GlobalCaches.serverSideBlockEntityTypes.add(blockEntityType);
 		}
 
-		if (cacheClientSide && !clientSideTypes.contains(blockEntityType)) {
-			clientSideTypes.add(blockEntityType);
+		if (cacheClientSide && !GlobalCaches.clientSideBlockEntityTypes.contains(blockEntityType)) {
+			GlobalCaches.clientSideBlockEntityTypes.add(blockEntityType);
 		}
 
-		if (!cachedBlockEntities.containsKey(blockEntityType)) {
-			cachedBlockEntities.put(blockEntityType, new WeakHashMap<>());
+		if (!GlobalCaches.cachedBlockEntities.containsKey(blockEntityType)) {
+			GlobalCaches.cachedBlockEntities.put(blockEntityType, new WeakHashMap<>());
 		}
 	}
 
 	public static boolean shouldCacheOnSide(BlockEntityType<?> blockEntityType, boolean isClientSide) {
 		if (isClientSide) {
-			return clientSideTypes.contains(blockEntityType);
+			return GlobalCaches.clientSideBlockEntityTypes.contains(blockEntityType);
 		}
 
-		return serverSideTypes.contains(blockEntityType);
+		return GlobalCaches.serverSideBlockEntityTypes.contains(blockEntityType);
 	}
 
 	public static void cacheBlockEntity(BlockEntityType<?> blockEntityType, Level level, BlockEntity blockEntity) {
-		WeakHashMap<Level, CopyOnWriteArrayList<WeakReference<BlockEntity>>> levelCache = cachedBlockEntities.get(blockEntityType);
+		WeakHashMap<Level, CopyOnWriteArrayList<WeakReference<BlockEntity>>> levelCache = GlobalCaches.cachedBlockEntities.get(blockEntityType);
 		if (levelCache == null) {
 			return;
 		}
@@ -61,7 +55,7 @@ public class BlockEntityData {
 	}
 
 	public static void uncacheBlockEntity(BlockEntityType<?> blockEntityType, Level level, BlockEntity blockEntity) {
-		WeakHashMap<Level, CopyOnWriteArrayList<WeakReference<BlockEntity>>> levelCache = cachedBlockEntities.get(blockEntityType);
+		WeakHashMap<Level, CopyOnWriteArrayList<WeakReference<BlockEntity>>> levelCache = GlobalCaches.cachedBlockEntities.get(blockEntityType);
 		if (levelCache == null) {
 			return;
 		}
@@ -82,7 +76,7 @@ public class BlockEntityData {
 	public static List<BlockEntity> getCachedBlockEntities(BlockEntityType<?> blockEntityType, Level level) {
 		List<BlockEntity> blockEntities = new ArrayList<>();
 
-		WeakHashMap<Level, CopyOnWriteArrayList<WeakReference<BlockEntity>>> levelCache = cachedBlockEntities.get(blockEntityType);
+		WeakHashMap<Level, CopyOnWriteArrayList<WeakReference<BlockEntity>>> levelCache = GlobalCaches.cachedBlockEntities.get(blockEntityType);
 		if (levelCache == null) {
 			return blockEntities;
 		}
@@ -110,7 +104,7 @@ public class BlockEntityData {
 			return;
 		}
 
-		for (WeakHashMap<Level, CopyOnWriteArrayList<WeakReference<BlockEntity>>> levelCache : cachedBlockEntities.values()) {
+		for (WeakHashMap<Level, CopyOnWriteArrayList<WeakReference<BlockEntity>>> levelCache : GlobalCaches.cachedBlockEntities.values()) {
 			levelCache.remove(level);
 		}
 	}

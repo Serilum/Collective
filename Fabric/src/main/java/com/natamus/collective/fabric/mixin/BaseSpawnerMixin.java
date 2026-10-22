@@ -1,5 +1,6 @@
 package com.natamus.collective.fabric.mixin;
 
+import com.natamus.collective.events.CollectiveSpawnCheckEvents;
 import com.natamus.collective.fabric.callbacks.CollectiveSpawnEvents;
 import com.natamus.collective.util.CollectiveReference;
 import net.minecraft.core.BlockPos;
@@ -31,6 +32,10 @@ public abstract class BaseSpawnerMixin {
 		mob.addTag(CollectiveReference.MOD_ID + ".fromspawner");
 		
 		if (!CollectiveSpawnEvents.MOB_CHECK_SPAWN.invoker().onMobCheckSpawn(mob, serverLevel, blockPos, MobSpawnType.SPAWNER)) {
+			ci.cancel();
+			delay(serverLevel, blockPos);
+		}
+		else if (!CollectiveSpawnCheckEvents.onMobCheckSpawn(mob, serverLevel, blockPos, MobSpawnType.SPAWNER)) {
 			ci.cancel();
 			delay(serverLevel, blockPos);
 		}

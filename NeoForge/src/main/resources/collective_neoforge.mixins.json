@@ -8,9 +8,12 @@
     "BlockEntityMixin",
     "BoneMealItemMixin",
     "EntityMixin",
+    "NetherPortalBlockMixin",
+    "PatrolSpawnerMixin",
     "PrimaryLevelDataMixin",
     "ServerLevelMixin",
-    "ServerPlayerMixin"
+    "ServerPlayerMixin",
+    "VillageSiegeMixin"
   ],
   "client": [
     "ClientLanguageMixin",

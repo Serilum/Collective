@@ -28,6 +28,8 @@
     "MagmaCubeMixin",
     "MinecraftServerMixin",
     "NaturalSpawnerMixin",
+    "NetherPortalBlockMixin",
+    "PatrolSpawnerMixin",
     "PistonBaseBlockMixin",
     "PlayerListMixin",
     "PlayerMixin",
@@ -37,7 +39,8 @@
     "ServerLevelMixin",
     "ServerPlayerGameModeMixin",
     "ServerPlayerMixin",
-    "TeleportCommandMixin"
+    "TeleportCommandMixin",
+    "VillageSiegeMixin"
   ],
   "client": [
     "ClientLanguageMixin",
