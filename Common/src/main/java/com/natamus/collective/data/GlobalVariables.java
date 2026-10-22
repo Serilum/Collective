@@ -4,6 +4,7 @@ import com.natamus.collective.objects.SAMObject;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -35,6 +36,8 @@ public class GlobalVariables {
 
 	// Mob drops
 	public static HashMap<EntityType<?>, List<Item>> entitydrops = null;
+	public static HashMap<EntityType<?>, List<ItemStack>> entityDropStacks = null;
+	public static HashMap<EntityType<?>, List<ItemStack>> entityPlayerKillDropStacks = null;
 
 	// HashMaps to generate
 	public static Map<Block, BlockEntityType<?>> blocksWithTileEntity = new HashMap<Block, BlockEntityType<?>>();
