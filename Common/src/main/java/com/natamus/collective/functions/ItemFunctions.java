@@ -1,6 +1,5 @@
 package com.natamus.collective.functions;
 
-import com.natamus.collective.config.CollectiveConfigHandler;
 import com.natamus.collective.data.GlobalVariables;
 import com.natamus.collective.fakeplayer.FakePlayer;
 import com.natamus.collective.fakeplayer.FakePlayerFactory;
@@ -33,68 +32,146 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 
 import org.jetbrains.annotations.Nullable;
+import java.lang.ref.WeakReference;
 import java.util.*;
 import java.util.Map.Entry;
 
 public class ItemFunctions {
+	private static WeakReference<MinecraftServer> entityDropsServer = new WeakReference<>(null);
+
 	public static void generateEntityDropsFromLootTable(Level level) {
 		MinecraftServer server = level.getServer();
 		if (server == null) {
 			return;
 		}
-		
+
 		GlobalVariables.entitydrops = new HashMap<>();
-		
-		FakePlayer fakeplayer = FakePlayerFactory.getMinecraft((ServerLevel)level);
-		Vec3 vec = new Vec3(0, 0, 0);
-		
-		ItemStack lootingsword = new ItemStack(Items.DIAMOND_SWORD, 1);
-		lootingsword.enchant(level.registryAccess().lookupOrThrow(Registries.ENCHANTMENT).getOrThrow(Enchantments.LOOTING), 10);
-		fakeplayer.setItemSlot(EquipmentSlot.MAINHAND, lootingsword);
-		
-		Collection<Entry<ResourceKey<EntityType<?>>, EntityType<?>>> entitytypes = level.registryAccess().lookupOrThrow(Registries.ENTITY_TYPE).entrySet();
-		for (Entry<ResourceKey<EntityType<?>>, EntityType<?>> entry : entitytypes) {
-			try {
-				EntityType<?> type = entry.getValue();
-				if (type == null) {
-					continue;
-				}
-				Entity entity = type.create(level, EntitySpawnReason.COMMAND);
-				if (!(entity instanceof LivingEntity le)) {
-					continue;
-				}
+		GlobalVariables.entityDropStacks = new HashMap<>();
+		GlobalVariables.entityPlayerKillDropStacks = new HashMap<>();
 
-				Optional<ResourceKey<LootTable>> optionalLootTableResourceKey = le.getType().getDefaultLootTable();
-				if (optionalLootTableResourceKey.isEmpty()) {
-					continue;
-				}
-
-				ResourceKey<LootTable> lootlocation = optionalLootTableResourceKey.get();
-
-				LootTable loottable = server.reloadableRegistries().getLootTable(lootlocation);
-				LootParams lootParams = new LootParams.Builder((ServerLevel)level)
-						.withLuck(1000000F)
-						.withParameter(LootContextParams.THIS_ENTITY, entity)
-						.withParameter(LootContextParams.ORIGIN, vec)
-						.withParameter(LootContextParams.ATTACKING_ENTITY, fakeplayer)
-						.withParameter(LootContextParams.DAMAGE_SOURCE, level.damageSources().playerAttack(fakeplayer))
-						.create(LootContextParamSets.ENTITY);
-
-				List<Item> alldrops = new ArrayList<>();
-				for (int n = 0; n < CollectiveConfigHandler.loopsAmountUsedToGetAllEntityDrops; n++) {
-					List<ItemStack> newdrops = loottable.getRandomItems(lootParams);
-					for (ItemStack newdrop : newdrops) {
-						Item newitem = newdrop.getItem();
-						if (!alldrops.contains(newitem) && !newitem.equals(Items.AIR)) {
-							alldrops.add(newitem);
-						}
-					}
-				}
-
-				GlobalVariables.entitydrops.put(type, alldrops);
-			}
-			catch (Exception ignored) { }
+		FakePlayer fakeplayer = getLootingFakePlayer((ServerLevel)level);
+		for (EntityType<?> type : getEntityTypes(level)) {
+			generateEntityTypeDrops((ServerLevel)level, fakeplayer, type);
 		}
+	}
+
+	public static void generateEntityDropsFromLootTableOverTime(ServerLevel serverLevel) {
+		MinecraftServer server = serverLevel.getServer();
+		if (server.equals(entityDropsServer.get())) {
+			return;
+		}
+		entityDropsServer = new WeakReference<>(server);
+
+		GlobalVariables.entitydrops = new HashMap<>();
+		GlobalVariables.entityDropStacks = new HashMap<>();
+		GlobalVariables.entityPlayerKillDropStacks = new HashMap<>();
+
+		List<EntityType<?>> entityTypesToScan = getEntityTypes(serverLevel);
+		TaskFunctions.enqueueCollectiveServerTask(server, () -> generateNextEntityTypeDrops(serverLevel, entityTypesToScan), 1);
+	}
+
+	private static void generateNextEntityTypeDrops(ServerLevel serverLevel, List<EntityType<?>> entityTypesToScan) {
+		MinecraftServer server = serverLevel.getServer();
+		if (!server.equals(entityDropsServer.get())) {
+			return;
+		}
+
+		generateEntityTypeDrops(serverLevel, getLootingFakePlayer(serverLevel), entityTypesToScan.remove(0));
+
+		if (!entityTypesToScan.isEmpty()) {
+			TaskFunctions.enqueueCollectiveServerTask(server, () -> generateNextEntityTypeDrops(serverLevel, entityTypesToScan), 1);
+		}
+	}
+
+	private static List<EntityType<?>> getEntityTypes(Level level) {
+		List<EntityType<?>> entityTypes = new ArrayList<>();
+		for (Entry<ResourceKey<EntityType<?>>, EntityType<?>> entry : level.registryAccess().lookupOrThrow(Registries.ENTITY_TYPE).entrySet()) {
+			if (entry.getValue() != null) {
+				entityTypes.add(entry.getValue());
+			}
+		}
+		return entityTypes;
+	}
+
+	private static FakePlayer getLootingFakePlayer(ServerLevel serverLevel) {
+		FakePlayer fakeplayer = FakePlayerFactory.getMinecraft(serverLevel);
+
+		ItemStack lootingsword = new ItemStack(Items.DIAMOND_SWORD, 1);
+		lootingsword.enchant(serverLevel.registryAccess().lookupOrThrow(Registries.ENCHANTMENT).getOrThrow(Enchantments.LOOTING), 10);
+		fakeplayer.setItemSlot(EquipmentSlot.MAINHAND, lootingsword);
+		return fakeplayer;
+	}
+
+	private static void generateEntityTypeDrops(ServerLevel level, FakePlayer fakeplayer, EntityType<?> type) {
+		try {
+			Entity entity = type.create(level, EntitySpawnReason.COMMAND);
+			if (!(entity instanceof LivingEntity le)) {
+				return;
+			}
+
+			Optional<ResourceKey<LootTable>> optionalLootTableResourceKey = le.getType().getDefaultLootTable();
+			if (optionalLootTableResourceKey.isEmpty()) {
+				return;
+			}
+
+			ResourceKey<LootTable> lootlocation = optionalLootTableResourceKey.get();
+			Vec3 vec = new Vec3(0, 0, 0);
+
+			LootTable loottable = level.getServer().reloadableRegistries().getLootTable(lootlocation);
+			LootParams lootParams = new LootParams.Builder(level)
+					.withLuck(1000000F)
+					.withParameter(LootContextParams.THIS_ENTITY, entity)
+					.withParameter(LootContextParams.ORIGIN, vec)
+					.withParameter(LootContextParams.ATTACKING_ENTITY, fakeplayer)
+					.withParameter(LootContextParams.DAMAGE_SOURCE, level.damageSources().playerAttack(fakeplayer))
+					.create(LootContextParamSets.ENTITY);
+
+			LootParams playerKillLootParams = new LootParams.Builder(level)
+					.withLuck(1000000F)
+					.withParameter(LootContextParams.THIS_ENTITY, entity)
+					.withParameter(LootContextParams.ORIGIN, vec)
+					.withParameter(LootContextParams.ATTACKING_ENTITY, fakeplayer)
+					.withParameter(LootContextParams.LAST_DAMAGE_PLAYER, fakeplayer)
+					.withParameter(LootContextParams.DAMAGE_SOURCE, level.damageSources().playerAttack(fakeplayer))
+					.create(LootContextParamSets.ENTITY);
+
+			List<ItemStack> dropStacks = getAllLootTableDropStacks(loottable, lootParams);
+
+			List<Item> alldrops = new ArrayList<>();
+			for (ItemStack dropStack : dropStacks) {
+				alldrops.add(dropStack.getItem());
+			}
+
+			List<ItemStack> playerKillDropStacks = new ArrayList<>();
+			for (ItemStack playerKillDropStack : getAllLootTableDropStacks(loottable, playerKillLootParams)) {
+				if (!alldrops.contains(playerKillDropStack.getItem())) {
+					playerKillDropStacks.add(playerKillDropStack);
+				}
+			}
+
+			GlobalVariables.entitydrops.put(type, alldrops);
+			GlobalVariables.entityDropStacks.put(type, dropStacks);
+			GlobalVariables.entityPlayerKillDropStacks.put(type, playerKillDropStacks);
+		}
+		catch (Exception | LinkageError ignored) { }
+	}
+
+	private static List<ItemStack> getAllLootTableDropStacks(LootTable lootTable, LootParams lootParams) {
+		List<Item> dropItems = new ArrayList<>();
+		List<ItemStack> dropStacks = new ArrayList<>();
+		int rollsWithoutNewDrops = 0;
+		for (int roll = 0; roll < 2000 && rollsWithoutNewDrops < 200; roll++) {
+			rollsWithoutNewDrops += 1;
+			for (ItemStack newdrop : lootTable.getRandomItems(lootParams)) {
+				Item newitem = newdrop.getItem();
+				if (!dropItems.contains(newitem) && !newitem.equals(Items.AIR)) {
+					dropItems.add(newitem);
+					dropStacks.add(newdrop.copyWithCount(1));
+					rollsWithoutNewDrops = 0;
+				}
+			}
+		}
+		return dropStacks;
 	}
 	
 	public static void shrinkGiveOrDropItemStack(Player player, InteractionHand hand, ItemStack used, ItemStack give) {
