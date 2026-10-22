@@ -3,6 +3,7 @@ package com.natamus.collective.forge.events;
 import com.natamus.collective.cmds.CommandCollective;
 import com.natamus.collective.config.GenerateJSONFiles;
 import com.natamus.collective.events.CollectiveEvents;
+import com.natamus.collective.events.CollectiveSpawnCheckEvents;
 import com.natamus.collective.functions.WorldFunctions;
 import com.natamus.collective.translations.ServerTranslationPack;
 import com.natamus.collective.util.CollectiveReference;
@@ -10,6 +11,8 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -21,6 +24,7 @@ import net.minecraftforge.event.entity.living.MobSpawnEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.level.BlockEvent;
 import net.minecraftforge.event.server.ServerAboutToStartEvent;
+import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
@@ -63,6 +67,29 @@ public class RegisterCollectiveForgeEvents {
 			if (e.getSpawner() != null) {
 				e.getEntity().addTag(CollectiveReference.MOD_ID + ".fromspawner");
 			}
+		}
+	}
+
+	@SubscribeEvent
+	public void onMobPositionCheck(MobSpawnEvent.PositionCheck e) {
+		Level level = WorldFunctions.getWorldIfInstanceOfAndNotRemote(e.getLevel());
+		if (level == null) {
+			return;
+		}
+
+		MobSpawnType spawnReason = e.getSpawnType();
+		boolean isSpawnerSpawn = spawnReason.equals(MobSpawnType.SPAWNER);
+		if (!isSpawnerSpawn && !spawnReason.equals(MobSpawnType.NATURAL)) {
+			return;
+		}
+
+		Mob mob = e.getEntity();
+		if (isSpawnerSpawn) {
+			mob.addTag(CollectiveReference.MOD_ID + ".fromspawner");
+		}
+
+		if (!CollectiveSpawnCheckEvents.onMobCheckSpawn(mob, (ServerLevel)level, null, spawnReason)) {
+			e.setResult(Event.Result.DENY);
 		}
 	}
 

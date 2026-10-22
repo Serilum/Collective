@@ -4,6 +4,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
+import com.natamus.collective.events.CollectiveSpawnCheckEvents;
 import com.natamus.collective.fabric.callbacks.CollectiveSpawnEvents;
 
 import net.minecraft.core.BlockPos;
@@ -21,11 +22,14 @@ public class NaturalSpawnerMixin {
 		if (mob != null) {
 			mob.setPos(blockPos.getX(), blockPos.getY(), blockPos.getZ());
 		}
-		
+
 		if (!CollectiveSpawnEvents.MOB_CHECK_SPAWN.invoker().onMobCheckSpawn(mob, serverLevel, null, MobSpawnType.NATURAL)) {
 			mob = null;
 		}
-		
+		else if (!CollectiveSpawnCheckEvents.onMobCheckSpawn(mob, serverLevel, null, MobSpawnType.NATURAL)) {
+			mob = null;
+		}
+
 		return mob;
 	}
 }

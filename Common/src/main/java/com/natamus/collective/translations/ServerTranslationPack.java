@@ -1,6 +1,7 @@
 package com.natamus.collective.translations;
 
 import com.natamus.collective.config.CollectiveConfigHandler;
+import com.natamus.collective.data.GlobalCaches;
 import com.natamus.collective.functions.StringFunctions;
 import com.natamus.collective.functions.WorldFunctions;
 import com.natamus.collective.implementations.networking.api.Dispatcher;
@@ -33,7 +34,6 @@ public class ServerTranslationPack {
 
 	private static boolean itemModeDecided = false;
 	private static boolean itemNamesTranslatable = true;
-	private static String cachedHash = null;
 
 	public static void requireClientTranslations(String modName) {
 		requiringMods.add(modName);
@@ -176,16 +176,16 @@ public class ServerTranslationPack {
 	}
 
 	private static String fetchHash(String version) {
-		if (cachedHash != null) {
-			return cachedHash;
+		if (GlobalCaches.serverTranslationPackHash != null) {
+			return GlobalCaches.serverTranslationPackHash;
 		}
 
 		try {
 			HttpRequest request = HttpRequest.newBuilder().uri(URI.create(BASE + "/pack/" + version + "/pack.sha1")).timeout(Duration.ofSeconds(10)).GET().build();
 			HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 			if (response.statusCode() == 200) {
-				cachedHash = response.body().trim();
-				return cachedHash;
+				GlobalCaches.serverTranslationPackHash = response.body().trim();
+				return GlobalCaches.serverTranslationPackHash;
 			}
 		}
 		catch (Exception ignored) {
