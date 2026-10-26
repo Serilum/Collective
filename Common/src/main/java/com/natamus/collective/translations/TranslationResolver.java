@@ -4,21 +4,16 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.natamus.collective.config.CollectiveConfigHandler;
+import com.natamus.collective.functions.HttpFunctions;
 import net.minecraft.network.chat.Component;
 
 import java.io.InputStream;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
-import java.time.Duration;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class TranslationResolver {
 	private static final String BASE = "https://translations.serilum.com";
-	private static final HttpClient client = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(5)).build();
 	private static final Map<String, String> translations = new ConcurrentHashMap<>();
 
 	private static volatile boolean loaded = false;
@@ -75,10 +70,9 @@ public class TranslationResolver {
 
 	private static void fetchLocale(String locale) {
 		try {
-			HttpRequest request = HttpRequest.newBuilder().uri(URI.create(BASE + "/lang/" + locale + ".json")).timeout(Duration.ofSeconds(10)).GET().build();
-			HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-			if (response.statusCode() == 200) {
-				parseInto(response.body());
+			String json = HttpFunctions.getResponseBody(BASE + "/lang/" + locale + ".json", 10);
+			if (json != null) {
+				parseInto(json);
 			}
 		}
 		catch (Exception ignored) { }
