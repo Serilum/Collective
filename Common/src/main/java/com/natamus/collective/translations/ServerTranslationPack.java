@@ -2,6 +2,7 @@ package com.natamus.collective.translations;
 
 import com.natamus.collective.config.CollectiveConfigHandler;
 import com.natamus.collective.data.GlobalCaches;
+import com.natamus.collective.functions.HttpFunctions;
 import com.natamus.collective.functions.StringFunctions;
 import com.natamus.collective.functions.WorldFunctions;
 import com.natamus.collective.implementations.networking.api.Dispatcher;
@@ -14,13 +15,8 @@ import net.minecraft.server.level.ServerPlayer;
 
 import java.io.File;
 import java.io.PrintWriter;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -32,7 +28,6 @@ import java.util.UUID;
 public class ServerTranslationPack {
 	private static final String BASE = "https://translations.serilum.com";
 	private static final UUID PACK_ID = UUID.nameUUIDFromBytes("serilum-translations".getBytes(StandardCharsets.UTF_8));
-	private static final HttpClient client = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(5)).build();
 	private static final Set<String> requiringMods = new HashSet<>();
 
 	private static boolean itemModeDecided = false;
@@ -183,17 +178,12 @@ public class ServerTranslationPack {
 			return GlobalCaches.serverTranslationPackHash;
 		}
 
-		try {
-			HttpRequest request = HttpRequest.newBuilder().uri(URI.create(BASE + "/pack/" + version + "/pack.sha1")).timeout(Duration.ofSeconds(10)).GET().build();
-			HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-			if (response.statusCode() == 200) {
-				GlobalCaches.serverTranslationPackHash = response.body().trim();
-				return GlobalCaches.serverTranslationPackHash;
-			}
-		}
-		catch (Exception ignored) {
+		String hash = HttpFunctions.getResponseBody(BASE + "/pack/" + version + "/pack.sha1", 10);
+		if (hash == null) {
+			return null;
 		}
 
-		return null;
+		GlobalCaches.serverTranslationPackHash = hash.trim();
+		return GlobalCaches.serverTranslationPackHash;
 	}
 }

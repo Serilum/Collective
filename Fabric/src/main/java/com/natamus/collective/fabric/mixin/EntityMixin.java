@@ -28,7 +28,7 @@ public class EntityMixin implements IEntityDataHolder {
 	@Inject(method = "saveWithoutId(Lnet/minecraft/nbt/CompoundTag;)Lnet/minecraft/nbt/CompoundTag;", at = @At(value = "TAIL"))
 	public void Entity_saveWithoutId(CompoundTag compound, CallbackInfoReturnable<CompoundTag> cir) {
 		if (!collective_stored.isEmpty()) {
-			compound.put(EntityDataHelper.KEY, collective_stored);
+			compound.put(EntityDataHelper.KEY, collective_stored.copy());
 		}
 	}
 
