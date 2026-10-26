@@ -120,7 +120,6 @@ public class ItemFunctions {
 
 			LootTable loottable = level.getServer().getLootData().getLootTable(lootlocation);
 			LootParams lootParams = new LootParams.Builder(level)
-					.withLuck(1000000F)
 					.withParameter(LootContextParams.THIS_ENTITY, entity)
 					.withParameter(LootContextParams.ORIGIN, vec)
 					.withParameter(LootContextParams.KILLER_ENTITY, fakeplayer)
@@ -128,7 +127,6 @@ public class ItemFunctions {
 					.create(LootContextParamSets.ENTITY);
 
 			LootParams playerKillLootParams = new LootParams.Builder(level)
-					.withLuck(1000000F)
 					.withParameter(LootContextParams.THIS_ENTITY, entity)
 					.withParameter(LootContextParams.ORIGIN, vec)
 					.withParameter(LootContextParams.KILLER_ENTITY, fakeplayer)
