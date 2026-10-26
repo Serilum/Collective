@@ -3,21 +3,16 @@ package com.natamus.collective.translations;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.natamus.collective.data.Constants;
+import com.natamus.collective.functions.HttpFunctions;
 import net.minecraft.SharedConstants;
 import net.minecraft.server.packs.PackType;
 
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.time.Duration;
 
 public class TranslationDownloader {
 	private static final String BASE = "https://translations.serilum.com";
-	private static final HttpClient client = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(5)).build();
 
 	public static boolean download(String locale) {
 		try {
@@ -34,7 +29,7 @@ public class TranslationDownloader {
 				return ensurePackMeta(dir);
 			}
 
-			String langText = fetch(BASE + "/lang/" + locale + ".json", 15);
+			String langText = HttpFunctions.getResponseBody(BASE + "/lang/" + locale + ".json", 15);
 			if (langText == null) {
 				return false;
 			}
@@ -52,24 +47,13 @@ public class TranslationDownloader {
 	}
 
 	private static String fetchStamp(String locale) {
-		String body = fetch(BASE + "/manifest.min.json", 10);
+		String body = HttpFunctions.getResponseBody(BASE + "/manifest.min.json", 10);
 		if (body == null) {
 			return null;
 		}
 
 		JsonObject languages = JsonParser.parseString(body).getAsJsonObject().getAsJsonObject("languages");
 		return languages.has(locale) ? languages.get(locale).getAsString() : null;
-	}
-
-	private static String fetch(String url, int timeoutSeconds) {
-		try {
-			HttpRequest request = HttpRequest.newBuilder().uri(URI.create(url)).timeout(Duration.ofSeconds(timeoutSeconds)).GET().build();
-			HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-			return response.statusCode() == 200 ? response.body() : null;
-		}
-		catch (Exception e) {
-			return null;
-		}
 	}
 
 	private static boolean ensurePackMeta(Path dir) throws Exception {
