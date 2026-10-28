@@ -19,51 +19,51 @@ import java.util.EnumSet;
 public class CollectiveBlockEvents {
 	private CollectiveBlockEvents() { }
 	 
-    public static final Event<On_Block_Place> BLOCK_PLACE = EventFactory.createArrayBacked(On_Block_Place.class, callbacks -> (level, blockPos, blockState, livingEntity, itemStack) -> {
-        for (On_Block_Place callback : callbacks) {
-        	if (!callback.onBlockPlace(level, blockPos, blockState, livingEntity, itemStack)) {
-        		return false;
-        	}
-        }
+	public static final Event<On_Block_Place> BLOCK_PLACE = EventFactory.createArrayBacked(On_Block_Place.class, callbacks -> (level, blockPos, blockState, livingEntity, itemStack) -> {
+		for (On_Block_Place callback : callbacks) {
+			if (!callback.onBlockPlace(level, blockPos, blockState, livingEntity, itemStack)) {
+				return false;
+			}
+		}
         
-        return true;
-    });
+		return true;
+	});
     
-    public static final Event<On_Block_Destroy> BLOCK_DESTROY = EventFactory.createArrayBacked(On_Block_Destroy.class, callbacks -> (level, player, blockPos, blockState, blockEntity, itemStack) -> {
-        for (On_Block_Destroy callback : callbacks) {
-        	if (!callback.onBlockDestroy(level, player, blockPos, blockState, blockEntity, itemStack)) {
-        		return false;
-        	}
-        }
+	public static final Event<On_Block_Destroy> BLOCK_DESTROY = EventFactory.createArrayBacked(On_Block_Destroy.class, callbacks -> (level, player, blockPos, blockState, blockEntity, itemStack) -> {
+		for (On_Block_Destroy callback : callbacks) {
+			if (!callback.onBlockDestroy(level, player, blockPos, blockState, blockEntity, itemStack)) {
+				return false;
+			}
+		}
         
-        return true;
-    });
+		return true;
+	});
     
-    public static final Event<On_Neighbour_Notify> NEIGHBOUR_NOTIFY = EventFactory.createArrayBacked(On_Neighbour_Notify.class, callbacks -> (world, pos, state, notifiedSides, forceRedstoneUpdate) -> {
-        for (On_Neighbour_Notify callback : callbacks) {
-        	if (!callback.onNeighbourNotify(world, pos, state, notifiedSides, forceRedstoneUpdate)) {
-        		return false;
-        	}
-        }
+	public static final Event<On_Neighbour_Notify> NEIGHBOUR_NOTIFY = EventFactory.createArrayBacked(On_Neighbour_Notify.class, callbacks -> (world, pos, state, notifiedSides, forceRedstoneUpdate) -> {
+		for (On_Neighbour_Notify callback : callbacks) {
+			if (!callback.onNeighbourNotify(world, pos, state, notifiedSides, forceRedstoneUpdate)) {
+				return false;
+			}
+		}
         
-        return true;
-    });
+		return true;
+	});
 	
-    public static final Event<Possible_Portal_Spawn> ON_NETHER_PORTAL_SPAWN = EventFactory.createArrayBacked(Possible_Portal_Spawn.class, callbacks -> (world, pos, shape) -> {
-        for (Possible_Portal_Spawn callback : callbacks) {
-        	callback.onPossiblePortal(world, pos, shape);
-        }
-    });
+	public static final Event<Possible_Portal_Spawn> ON_NETHER_PORTAL_SPAWN = EventFactory.createArrayBacked(Possible_Portal_Spawn.class, callbacks -> (world, pos, shape) -> {
+		for (Possible_Portal_Spawn callback : callbacks) {
+			callback.onPossiblePortal(world, pos, shape);
+		}
+	});
     
-    public static final Event<Block_Right_Click> BLOCK_RIGHT_CLICK = EventFactory.createArrayBacked(Block_Right_Click.class, callbacks -> (world, player, hand, pos, hitVec) -> {
-        for (Block_Right_Click callback : callbacks) {
-        	if (!callback.onBlockRightClick(world, player, hand, pos, hitVec)) {
-        		return false;
-        	}
-        }
+	public static final Event<Block_Right_Click> BLOCK_RIGHT_CLICK = EventFactory.createArrayBacked(Block_Right_Click.class, callbacks -> (world, player, hand, pos, hitVec) -> {
+		for (Block_Right_Click callback : callbacks) {
+			if (!callback.onBlockRightClick(world, player, hand, pos, hitVec)) {
+				return false;
+			}
+		}
         
-        return true;
-    });
+		return true;
+	});
 
 	public static final Event<Block_Left_Click> BLOCK_LEFT_CLICK = EventFactory.createArrayBacked(Block_Left_Click.class, callbacks -> (world, player, pos, direction) -> {
 		for (Block_Left_Click callback : callbacks) {

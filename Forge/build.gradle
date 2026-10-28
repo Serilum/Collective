@@ -1,7 +1,7 @@
 plugins {
     id 'multiloader-loader'
     id 'net.minecraftforge.accesstransformers' version '5.0.3'
-    id 'net.minecraftforge.gradle' version '[7.0.17,8)'
+    id 'net.minecraftforge.gradle' version '[7.0.29,8.0)'
     id 'net.minecraftforge.jarjar' version '0.2.3'
     // id 'org.spongepowered.mixin' version '0.7-SNAPSHOT'
 }
@@ -46,7 +46,7 @@ minecraft {
 
             systemProperty 'eventbus.api.strictRuntimeChecks', 'true'
 
-            //args "-mixin.config=${mod_id}.mixins.json"
+            args "-mixin.config=${mod_id}_forge.mixins.json"
         }
 
         register('client') {

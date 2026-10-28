@@ -16,10 +16,10 @@ import java.util.function.Function;
 public class FabricRegisterItemHelper implements RegisterItemHelper {
 	private static final HashMap<Identifier, Item> itemMap = new HashMap<>();
 
-    @Override
+	@Override
 	public <T extends Item> void registerItem(Object modEventBusObject, Identifier Identifier, Function<Item.Properties, Item> itemFunction, Item.Properties properties, ResourceKey<CreativeModeTab> creativeModeTabResourceKey, boolean lastItem) {
 		staticRegisterItem(modEventBusObject, Identifier, itemFunction, properties, creativeModeTabResourceKey);
-    }
+	}
 
 	public static <T extends Item> Item staticRegisterItem(Object modEventBusObject, Identifier Identifier, Function<Item.Properties, Item> itemFunction, Item.Properties properties, ResourceKey<CreativeModeTab> creativeModeTabResourceKey) {
 		ResourceKey<Item> resourceKey = ResourceKey.create(Registries.ITEM, Identifier);
@@ -34,7 +34,7 @@ public class FabricRegisterItemHelper implements RegisterItemHelper {
 		itemMap.put(Identifier, item);
 
 		return item;
-    }
+	}
 
 	@Override
 	public Item getRegisteredItem(Identifier Identifier) {

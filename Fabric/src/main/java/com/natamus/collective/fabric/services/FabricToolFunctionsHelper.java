@@ -6,48 +6,48 @@ import net.minecraft.tags.ItemTags;
 import net.minecraft.world.item.*;
 
 public class FabricToolFunctionsHelper implements ToolFunctionsHelper {
-    @Override
-    public boolean isTool(ItemStack itemstack) {
+	@Override
+	public boolean isTool(ItemStack itemstack) {
 		return isPickaxe(itemstack) || isAxe(itemstack) || isShovel(itemstack) || isHoe(itemstack) || isShears(itemstack);
-    }
+	}
 
-    @Override
+	@Override
 	public boolean isSword(ItemStack itemStack) {
-        return itemStack.is(ItemTags.SWORDS);
-    }
+		return itemStack.is(ItemTags.SWORDS);
+	}
 
-    @Override
+	@Override
 	public boolean isShield(ItemStack itemStack) {
 		return itemStack.getItem() instanceof ShieldItem || itemStack.is(ConventionalItemTags.SHIELD_TOOLS);
 	}
 
-    @Override
+	@Override
 	public boolean isPickaxe(ItemStack itemStack) {
-        return itemStack.is(ItemTags.PICKAXES);
-    }
+		return itemStack.is(ItemTags.PICKAXES);
+	}
 
-    @Override
+	@Override
 	public boolean isAxe(ItemStack itemStack) {
-        return itemStack.getItem() instanceof AxeItem || itemStack.is(ItemTags.AXES);
-    }
+		return itemStack.getItem() instanceof AxeItem || itemStack.is(ItemTags.AXES);
+	}
 
-    @Override
+	@Override
 	public boolean isShovel(ItemStack itemStack) {
-        return itemStack.getItem() instanceof ShovelItem || itemStack.is(ItemTags.SHOVELS);
-    }
+		return itemStack.getItem() instanceof ShovelItem || itemStack.is(ItemTags.SHOVELS);
+	}
 
-    @Override
+	@Override
 	public boolean isHoe(ItemStack itemStack) {
-        return itemStack.getItem() instanceof HoeItem || itemStack.is(ItemTags.HOES);
-    }
+		return itemStack.getItem() instanceof HoeItem || itemStack.is(ItemTags.HOES);
+	}
 
-    @Override
+	@Override
 	public boolean isShears(ItemStack itemStack) {
 		return itemStack.getItem() instanceof ShearsItem || itemStack.is(ConventionalItemTags.SHEAR_TOOLS);
 	}
 
-    @Override
-    public boolean isFlintAndSteel(ItemStack itemStack) {
-        return itemStack.getItem() instanceof FlintAndSteelItem;
-    }
+	@Override
+	public boolean isFlintAndSteel(ItemStack itemStack) {
+		return itemStack.getItem() instanceof FlintAndSteelItem;
+	}
 }

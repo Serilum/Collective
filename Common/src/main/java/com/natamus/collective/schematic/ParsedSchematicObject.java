@@ -3,61 +3,68 @@ package com.natamus.collective.schematic;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.util.ProblemReporter;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.TagValueInput;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class ParsedSchematicObject {
-    public Schematic schematic;
-    public List<Pair<BlockPos, BlockState>> blocks;
-    public List<Pair<BlockPos, Entity>> entities;
-    public List<BlockPos> blockEntityPositions;
-    public String parseMessageString;
-    public boolean parsedCorrectly;
+	public Schematic schematic;
+	public List<Pair<BlockPos, BlockState>> blocks;
+	public List<Pair<BlockPos, Entity>> entities;
+	public List<BlockPos> blockEntityPositions;
+	public String parseMessageString;
+	public boolean parsedCorrectly;
 
-    public int offsetX;
-    public int offsetY;
-    public int offsetZ;
+	public int offsetX;
+	public int offsetY;
+	public int offsetZ;
 
-    public ParsedSchematicObject(Schematic _schematic, List<Pair<BlockPos, BlockState>> _blocks, List<Pair<BlockPos, Entity>> _entities, List<BlockPos> _blockEntityPositions, String _parseMessageString, boolean _parsedCorrectly) {
-        schematic = _schematic;
-        blocks = _blocks;
-        entities = _entities;
-        blockEntityPositions = _blockEntityPositions;
-        parseMessageString = _parseMessageString;
-        parsedCorrectly = _parsedCorrectly;
+	public ParsedSchematicObject(Schematic _schematic, List<Pair<BlockPos, BlockState>> _blocks, List<Pair<BlockPos, Entity>> _entities, List<BlockPos> _blockEntityPositions, String _parseMessageString, boolean _parsedCorrectly) {
+		schematic = _schematic;
+		blocks = _blocks;
+		entities = _entities;
+		blockEntityPositions = _blockEntityPositions;
+		parseMessageString = _parseMessageString;
+		parsedCorrectly = _parsedCorrectly;
 
-        offsetX = _schematic.getOffsetX();
-        offsetY = _schematic.getOffsetY();
-        offsetZ = _schematic.getOffsetZ();
-    }
+		offsetX = _schematic.getOffsetX();
+		offsetY = _schematic.getOffsetY();
+		offsetZ = _schematic.getOffsetZ();
+	}
 
-    public void placeBlockEntitiesInWorld(Level level) {
-        List<CompoundTag> compoundTags = schematic.getBlockEntities();
+	public void placeBlockEntitiesInWorld(Level level) {
+		for (BlockPos pos : blockEntityPositions) {
+			placeBlockEntityInWorld(level, pos);
+		}
+	}
 
-        int i = 0;
-        for (Pair<BlockPos, BlockEntity> pair : getBlockEntities(level)) {
-            BlockPos pos = pair.getFirst();
+	public void placeBlockEntityInWorld(Level level, BlockPos pos) {
+		int blockEntityIndex = blockEntityPositions.indexOf(pos);
+		if (blockEntityIndex < 0) {
+			return;
+		}
 
-            CompoundTag compoundTag = compoundTags.get(i);
-            compoundTag.remove("Pos");
-            compoundTag.putString("id", compoundTag.getStringOr("Id", ""));
+		BlockEntity blockEntity = level.getBlockEntity(pos);
+		if (blockEntity == null) {
+			return;
+		}
 
-            BlockEntity blockEntity = BlockEntity.loadStatic(pos, level.getBlockState(pos), compoundTag, level.registryAccess());
-            level.setBlockEntity(blockEntity);
-            i+=1;
-        }
-    }
+		CompoundTag compoundTag = schematic.getBlockEntities().get(blockEntityIndex);
+		blockEntity.loadWithComponents(TagValueInput.create(ProblemReporter.DISCARDING, level.registryAccess(), compoundTag));
+		blockEntity.setChanged();
+	}
 
-    public List<Pair<BlockPos, BlockEntity>> getBlockEntities(Level level) {
-        List<Pair<BlockPos, BlockEntity>> blockEntities = new ArrayList<>();
-        for (BlockPos pos : blockEntityPositions) {
-            blockEntities.add(new Pair<>(pos, level.getBlockEntity(pos)));
-        }
-        return blockEntities;
-    }
+	public List<Pair<BlockPos, BlockEntity>> getBlockEntities(Level level) {
+		List<Pair<BlockPos, BlockEntity>> blockEntities = new ArrayList<>();
+		for (BlockPos pos : blockEntityPositions) {
+			blockEntities.add(new Pair<>(pos, level.getBlockEntity(pos)));
+		}
+		return blockEntities;
+	}
 }

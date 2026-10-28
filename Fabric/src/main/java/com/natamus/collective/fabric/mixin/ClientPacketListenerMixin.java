@@ -12,7 +12,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(value = ClientPacketListener.class, priority = 1001)
 public class ClientPacketListenerMixin {
 	@Inject(method = "lambda$new$0", at = @At(value = "HEAD"), cancellable = true)
-    private static void decoratedHashOpsGenerator(RegistryOps<?> registryOps, TypedDataComponent<?> typedDataComponent, CallbackInfoReturnable<Integer> cir) {
+	private static void decoratedHashOpsGenerator(RegistryOps<?> registryOps, TypedDataComponent<?> typedDataComponent, CallbackInfoReturnable<Integer> cir) {
 		try {
 			HashCode hashCode = (HashCode) typedDataComponent.encodeValue(registryOps).getOrThrow((string) -> {
 				return new IllegalArgumentException();

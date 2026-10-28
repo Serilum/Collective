@@ -3,18 +3,33 @@ package com.natamus.collective.functions;
 import com.mojang.datafixers.util.Pair;
 import com.natamus.collective.data.GlobalVariables;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
+import net.minecraft.core.QuartPos;
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.server.level.ServerChunkCache;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.level.biome.BiomeSource;
+import net.minecraft.world.level.biome.Climate;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.chunk.ChunkGenerator;
+import net.minecraft.world.level.dimension.DimensionType;
+import net.minecraft.world.level.levelgen.Heightmap;
+import net.minecraft.world.level.levelgen.RandomState;
 import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.storage.LevelResource;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 
@@ -22,7 +37,9 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.function.Predicate;
 
 public class BlockPosFunctions {
 	// START: GET functions
@@ -237,58 +254,215 @@ public class BlockPosFunctions {
 		return getNearbyVillage(serverLevel, nearPos, "#minecraft:village");
 	}
 	public static BlockPos getNearbyVillage(ServerLevel serverLevel, BlockPos nearPos, String villageTag) {
-		BlockPos closestvillage = null;
 		if (!serverLevel.getServer().getWorldGenSettings().options().generateStructures()) {
 			return null;
 		}
 
-		String rawOutput = CommandFunctions.getRawCommandOutput(serverLevel, Vec3.atBottomCenterOf(nearPos), "/locate structure " + villageTag);
+		HolderSet<Structure> villageStructures = getStructureHolderSet(serverLevel, villageTag);
+		if (villageStructures == null) {
+			return null;
+		}
 
-		if (rawOutput.contains("[") && rawOutput.contains("]") && rawOutput.contains(", ")) {
-			String[] coords;
-			try {
-				if (rawOutput.contains(":")) {
-					rawOutput = rawOutput.split(":", 2)[1];
-				}
+		return getSurfacePosOfNearestStructure(serverLevel, villageStructures, nearPos);
+	}
 
-				String rawcoords = rawOutput.split("\\[")[1].split("]")[0];
-				coords = rawcoords.split(", ");
-			}
-			catch (IndexOutOfBoundsException ex) {
-				return null;
-			}
+	public static BlockPos getNearbyVillageInSameBiome(ServerLevel serverLevel, BlockPos nearPos) {
+		return getNearbyVillageInSameBiome(serverLevel, nearPos, "#minecraft:village");
+	}
+	public static BlockPos getNearbyVillageInSameBiome(ServerLevel serverLevel, BlockPos nearPos, String villageTag) {
+		if (!serverLevel.getServer().getWorldGenSettings().options().generateStructures()) {
+			return null;
+		}
 
-			if (coords.length == 3) {
-				String sx = coords[0];
-				String sz = coords[2];
-				if (NumberFunctions.isNumeric(sx) && NumberFunctions.isNumeric(sz)) {
-					return getSurfaceBlockPos(serverLevel, Integer.parseInt(sx), Integer.parseInt(sz));
-				}
+		HolderSet<Structure> villageStructures = getStructureHolderSet(serverLevel, villageTag);
+		if (villageStructures == null) {
+			return null;
+		}
+
+		Holder<Biome> biome = serverLevel.getBiome(nearPos);
+		List<Holder<Structure>> villagesInBiome = new ArrayList<>();
+		for (Holder<Structure> village : villageStructures) {
+			if (village.value().biomes().contains(biome)) {
+				villagesInBiome.add(village);
 			}
 		}
 
-		return closestvillage;
+		if (villagesInBiome.isEmpty()) {
+			return null;
+		}
+
+		return getSurfacePosOfNearestStructure(serverLevel, HolderSet.direct(villagesInBiome), nearPos);
+	}
+
+	private static BlockPos getSurfacePosOfNearestStructure(ServerLevel serverLevel, HolderSet<Structure> structures, BlockPos nearPos) {
+		Pair<BlockPos, Holder<Structure>> nearestStructure = serverLevel.getChunkSource().getGenerator().findNearestMapStructure(serverLevel, structures, nearPos, 100, false);
+		if (nearestStructure == null) {
+			return null;
+		}
+
+		BlockPos structurePos = nearestStructure.getFirst();
+		return getSurfaceBlockPos(serverLevel, structurePos.getX(), structurePos.getZ());
+	}
+
+	public static HolderSet<Structure> getStructureHolderSet(ServerLevel serverLevel, String structure) {
+		String strippedStructure = structure.strip();
+		Identifier structureIdentifier = Identifier.tryParse(strippedStructure.replace("#", ""));
+		if (structureIdentifier == null) {
+			return null;
+		}
+
+		Registry<Structure> structureRegistry = serverLevel.registryAccess().lookupOrThrow(Registries.STRUCTURE);
+		if (strippedStructure.startsWith("#")) {
+			Optional<HolderSet.Named<Structure>> optionalStructureTag = structureRegistry.get(TagKey.create(Registries.STRUCTURE, structureIdentifier));
+			if (optionalStructureTag.isPresent()) {
+				return optionalStructureTag.get();
+			}
+			return null;
+		}
+
+		Optional<Holder.Reference<Structure>> optionalStructure = structureRegistry.get(ResourceKey.create(Registries.STRUCTURE, structureIdentifier));
+		if (optionalStructure.isPresent()) {
+			return HolderSet.direct(optionalStructure.get());
+		}
+		return null;
 	}
 
 	public static BlockPos getCenterNearbyBiome(ServerLevel serverLevel, String biome) {
-		return getNearbyBiome(serverLevel, new BlockPos(0, 0, 0), biome);
+		return getCenterNearbyBiome(serverLevel, biome, 6400, 16, false);
+	}
+	public static BlockPos getCenterNearbyBiome(ServerLevel serverLevel, String biome, int searchRadius, int minimumDistanceFromBiomeEdge, boolean preferLand) {
+		return getNearbyBiome(serverLevel, new BlockPos(0, 0, 0), biome, searchRadius, minimumDistanceFromBiomeEdge, preferLand);
 	}
 	public static BlockPos getNearbyBiome(ServerLevel serverLevel, BlockPos nearPos, String biome) {
-		String rawOutput = CommandFunctions.getRawCommandOutput(serverLevel, Vec3.atBottomCenterOf(nearPos), "/locate biome " + biome);
+		return getNearbyBiome(serverLevel, nearPos, biome, 6400, 16, false);
+	}
+	public static BlockPos getNearbyBiome(ServerLevel serverLevel, BlockPos nearPos, String biome, int searchRadius, int minimumDistanceFromBiomeEdge, boolean preferLand) {
+		Predicate<Holder<Biome>> biomePredicate = getBiomePredicate(biome);
+		if (biomePredicate == null) {
+			return null;
+		}
 
-		if (rawOutput.contains("nearest") && rawOutput.contains("[")) {
-			String rawcoords = rawOutput.split("nearest")[1].split("\\[")[1].split("]")[0];
-			String[] coords = rawcoords.split(", ");
-			if (coords.length == 3) {
-				String sx = coords[0];
-				String sz = coords[2];
-				if (NumberFunctions.isNumeric(sx) && NumberFunctions.isNumeric(sz)) {
-					return getSurfaceBlockPos(serverLevel, Integer.parseInt(sx), Integer.parseInt(sz));
+		ServerChunkCache chunkSource = serverLevel.getChunkSource();
+		ChunkGenerator chunkGenerator = chunkSource.getGenerator();
+		BiomeSource biomeSource = chunkGenerator.getBiomeSource();
+		if (!canBiomeSourceGenerate(biomeSource, biomePredicate)) {
+			return null;
+		}
+
+		RandomState randomState = chunkSource.randomState();
+		Climate.Sampler climateSampler = randomState.sampler();
+
+		BlockPos firstColumnWithBiome = null;
+		BlockPos firstLandColumnNearEdge = null;
+		BlockPos firstWaterColumnAwayFromEdge = null;
+		BlockPos firstWaterColumnNearEdge = null;
+		int surfaceChecks = 0;
+
+		for (BlockPos.MutableBlockPos sampleColumn : BlockPos.spiralAround(BlockPos.ZERO, searchRadius / 32, Direction.EAST, Direction.SOUTH)) {
+			int x = nearPos.getX() + sampleColumn.getX() * 32;
+			int z = nearPos.getZ() + sampleColumn.getZ() * 32;
+			if (!isBiomeInColumn(serverLevel, biomeSource, climateSampler, biomePredicate, x, z)) {
+				continue;
+			}
+
+			if (firstColumnWithBiome == null) {
+				firstColumnWithBiome = new BlockPos(x, 0, z);
+			}
+
+			int surfaceY = chunkGenerator.getBaseHeight(x, z, Heightmap.Types.WORLD_SURFACE_WG, serverLevel, randomState);
+			if (isBiomeAt(biomeSource, climateSampler, biomePredicate, x, surfaceY, z)) {
+				boolean isAwayFromEdge = isBiomeAroundOnSurface(biomeSource, climateSampler, biomePredicate, x, surfaceY, z, minimumDistanceFromBiomeEdge);
+				boolean isOnLand = !preferLand || isLandColumn(serverLevel, chunkGenerator, randomState, x, surfaceY, z);
+				if (isAwayFromEdge && isOnLand) {
+					return getSurfaceBlockPos(serverLevel, x, z);
 				}
+
+				BlockPos column = new BlockPos(x, 0, z);
+				if (isOnLand && firstLandColumnNearEdge == null) {
+					firstLandColumnNearEdge = column;
+				}
+				else if (!isOnLand && isAwayFromEdge && firstWaterColumnAwayFromEdge == null) {
+					firstWaterColumnAwayFromEdge = column;
+				}
+				else if (!isOnLand && !isAwayFromEdge && firstWaterColumnNearEdge == null) {
+					firstWaterColumnNearEdge = column;
+				}
+			}
+
+			surfaceChecks += 1;
+			if (surfaceChecks >= 512) {
+				break;
 			}
 		}
 
+		BlockPos bestColumn = getFirstFoundColumn(firstLandColumnNearEdge, firstWaterColumnAwayFromEdge, firstWaterColumnNearEdge, firstColumnWithBiome);
+		if (bestColumn == null) {
+			return null;
+		}
+
+		return getSurfaceBlockPos(serverLevel, bestColumn.getX(), bestColumn.getZ());
+	}
+
+	private static boolean isLandColumn(ServerLevel serverLevel, ChunkGenerator chunkGenerator, RandomState randomState, int x, int surfaceY, int z) {
+		return chunkGenerator.getBaseHeight(x, z, Heightmap.Types.OCEAN_FLOOR_WG, serverLevel, randomState) >= surfaceY;
+	}
+
+	private static BlockPos getFirstFoundColumn(BlockPos... columnsInOrderOfPreference) {
+		for (BlockPos column : columnsInOrderOfPreference) {
+			if (column != null) {
+				return column;
+			}
+		}
 		return null;
+	}
+
+	private static Predicate<Holder<Biome>> getBiomePredicate(String biome) {
+		String strippedBiome = biome.strip();
+		Identifier biomeIdentifier = Identifier.tryParse(strippedBiome.replace("#", ""));
+		if (biomeIdentifier == null) {
+			return null;
+		}
+
+		if (strippedBiome.startsWith("#")) {
+			TagKey<Biome> biomeTag = TagKey.create(Registries.BIOME, biomeIdentifier);
+			return biomeHolder -> biomeHolder.is(biomeTag);
+		}
+
+		ResourceKey<Biome> biomeKey = ResourceKey.create(Registries.BIOME, biomeIdentifier);
+		return biomeHolder -> biomeHolder.is(biomeKey);
+	}
+
+	private static boolean canBiomeSourceGenerate(BiomeSource biomeSource, Predicate<Holder<Biome>> biomePredicate) {
+		for (Holder<Biome> possibleBiome : biomeSource.possibleBiomes()) {
+			if (biomePredicate.test(possibleBiome)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private static boolean isBiomeInColumn(ServerLevel serverLevel, BiomeSource biomeSource, Climate.Sampler climateSampler, Predicate<Holder<Biome>> biomePredicate, int x, int z) {
+		for (int y = serverLevel.getMinY(); y <= serverLevel.getMaxY(); y += 64) {
+			if (isBiomeAt(biomeSource, climateSampler, biomePredicate, x, y, z)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private static boolean isBiomeAroundOnSurface(BiomeSource biomeSource, Climate.Sampler climateSampler, Predicate<Holder<Biome>> biomePredicate, int x, int surfaceY, int z, int distance) {
+		for (Direction direction : Direction.Plane.HORIZONTAL) {
+			int aroundX = x + direction.getStepX() * distance;
+			int aroundZ = z + direction.getStepZ() * distance;
+			if (!isBiomeAt(biomeSource, climateSampler, biomePredicate, aroundX, surfaceY, aroundZ)) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	private static boolean isBiomeAt(BiomeSource biomeSource, Climate.Sampler climateSampler, Predicate<Holder<Biome>> biomePredicate, int x, int y, int z) {
+		return biomePredicate.test(biomeSource.getNoiseBiome(QuartPos.fromBlock(x), QuartPos.fromBlock(y), QuartPos.fromBlock(z), climateSampler));
 	}
 
 	public static BlockPos getCenterNearbyStructure(ServerLevel serverLevel, HolderSet<Structure> structure) {
@@ -323,18 +497,18 @@ public class BlockPosFunctions {
 
 	public static BlockPos getBlockPlayerIsLookingAt(Level level, Player player, boolean stopOnLiquid) {
 		HitResult raytraceresult = RayTraceFunctions.rayTrace(level, player, stopOnLiquid);
-        double posX = raytraceresult.getLocation().x;
-        double posY = Math.floor(raytraceresult.getLocation().y);
-        double posZ = raytraceresult.getLocation().z;
+		double posX = raytraceresult.getLocation().x;
+		double posY = Math.floor(raytraceresult.getLocation().y);
+		double posZ = raytraceresult.getLocation().z;
 
-        return BlockPos.containing(posX, posY, posZ);
+		return BlockPos.containing(posX, posY, posZ);
 	}
 
 	public static BlockPos getRandomCoordinatesInNearestUngeneratedChunk(ServerLevel serverLevel, BlockPos aroundPosition) {
 		List<String> regionList = new ArrayList<>();
 
 		try {
-			File regionFolder = new File(WorldFunctions.getWorldPath(serverLevel) + File.separator + "region");
+			File regionFolder = DimensionType.getStorageFolder(serverLevel.dimension(), serverLevel.getServer().getWorldPath(LevelResource.ROOT)).resolve("region").toFile();
 			File[] listOfRegionFiles = regionFolder.listFiles();
 
 			for (File regionFile : listOfRegionFiles) {

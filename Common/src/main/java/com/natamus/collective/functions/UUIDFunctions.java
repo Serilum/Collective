@@ -32,14 +32,14 @@ public class UUIDFunctions {
 		return sb.toString();
 	}
 	
-    public static List<Integer> getIntegerParts(String string, int partitionSize) {
-        List<Integer> parts = new ArrayList<>();
-        int len = string.length();
-        for (int i=0; i<len; i+=partitionSize) {
-            parts.add(partToDecimalValue(string.substring(i, Math.min(len, i + partitionSize))));
-        }
-        return parts;
-    }
+	public static List<Integer> getIntegerParts(String string, int partitionSize) {
+		List<Integer> parts = new ArrayList<>();
+		int len = string.length();
+		for (int i=0; i<len; i+=partitionSize) {
+			parts.add(partToDecimalValue(string.substring(i, Math.min(len, i + partitionSize))));
+		}
+		return parts;
+	}
     
 	private static int partToDecimalValue(String hex) {
 		return Long.valueOf(hex, 16).intValue();

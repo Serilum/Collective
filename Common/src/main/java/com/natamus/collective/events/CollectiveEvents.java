@@ -9,6 +9,7 @@ import com.natamus.collective.functions.BlockPosFunctions;
 import com.natamus.collective.functions.EntityFunctions;
 import com.natamus.collective.functions.SpawnEntityFunctions;
 import com.natamus.collective.objects.SAMObject;
+import com.natamus.collective.services.Services;
 import com.natamus.collective.util.CollectiveReference;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.TickTask;
@@ -17,6 +18,9 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.Entity.RemovalReason;
 import net.minecraft.world.entity.animal.equine.AbstractHorse;
+import net.minecraft.world.entity.monster.zombie.Zombie;
+import net.minecraft.world.entity.monster.zombie.ZombieVillager;
+import net.minecraft.world.entity.npc.villager.VillagerType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -127,6 +131,7 @@ public class CollectiveEvents {
 		Vec3 eVec = entity.position();
 		boolean ageable = entity instanceof AgeableMob;
 		boolean isOnSurface = BlockPosFunctions.isOnSurface(level, eVec);
+		boolean isBabyZombie = entity instanceof Zombie zombie && zombie.isBaby();
 
 		for (SAMObject sam : possibles) {
 			double num = GlobalVariables.random.nextDouble();
@@ -151,22 +156,37 @@ public class CollectiveEvents {
 				}
 			}
 
+			if (!sam.isInAllowedDimension(level)) {
+				continue;
+			}
+			if (!sam.isInAllowedBiome(level, entity.blockPosition())) {
+				continue;
+			}
+
 			Entity to = sam.toEntityType.create(level, EntitySpawnReason.NATURAL);
 			if (to == null) {
 				return true;
 			}
 
+			if (isBabyZombie && !sam.rideNotReplace && !(to instanceof Zombie)) {
+				continue;
+			}
+
 			to.setPos(eVec.x, eVec.y, eVec.z);
 
 			if (ageable && to instanceof AgeableMob am) {
-                am.setAge(((AgeableMob)entity).getAge());
+				am.setAge(((AgeableMob)entity).getAge());
 				to = am;
+			}
+
+			if (isBabyZombie && to instanceof Zombie toZombie) {
+				toZombie.setBaby(true);
 			}
 
 			boolean ignoreMainhand = false;
 			if (sam.itemToHold != null) {
 				if (to instanceof LivingEntity le) {
-                    if (!le.getMainHandItem().getItem().equals(sam.itemToHold)) {
+					if (!le.getMainHandItem().getItem().equals(sam.itemToHold)) {
 						le.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(sam.itemToHold, 1));
 						ignoreMainhand = true;
 					}
@@ -190,11 +210,19 @@ public class CollectiveEvents {
 				return true;
 			}
 
-            if (ride) {
+			if (to instanceof ZombieVillager zombieVillager) {
+				zombieVillager.setVillagerData(zombieVillager.getVillagerData().withType(serverLevel.registryAccess(), VillagerType.byBiome(serverLevel.getBiome(zombieVillager.blockPosition()))));
+			}
+
+			if (ride) {
 				SpawnEntityFunctions.startRidingEntityOnNextTick(serverLevel, to, entity);
 			}
 			else {
 				entity.remove(RemovalReason.DISCARDED);
+
+				if (to instanceof LivingEntity livingTo) {
+					Services.EVENTTRIGGER.triggerLivingConversionEvent((LivingEntity)entity, livingTo);
+				}
 			}
 
 			to.addTag(CollectiveReference.MOD_ID + ".checked");

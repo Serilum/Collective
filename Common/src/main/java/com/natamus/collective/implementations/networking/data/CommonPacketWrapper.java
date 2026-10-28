@@ -9,12 +9,12 @@ import org.jetbrains.annotations.NotNull;
  *  by MysticDrew */
 
 public record CommonPacketWrapper<T>(PacketContainer<T> container, T packet) implements CustomPacketPayload {
-    public void encode(FriendlyByteBuf buf) {
-        container().encoder().accept(packet(), buf);
-    }
+	public void encode(FriendlyByteBuf buf) {
+		container().encoder().accept(packet(), buf);
+	}
 
-    @Override
-    public @NotNull Type<? extends CustomPacketPayload> type() {
-        return container.type();
-    }
+	@Override
+	public @NotNull Type<? extends CustomPacketPayload> type() {
+		return container.type();
+	}
 }

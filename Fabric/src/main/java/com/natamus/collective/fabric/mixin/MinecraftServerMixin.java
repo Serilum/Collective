@@ -24,7 +24,7 @@ import java.util.Optional;
 @Mixin(value = MinecraftServer.class, priority = 1001)
 public class MinecraftServerMixin {
 	@Inject(method = "<init>", at = @At(value = "TAIL"))
-	public void MinecraftServer_init(Thread thread, LevelStorageSource.LevelStorageAccess levelStorageAccess, PackRepository packRepository, WorldStem worldStem, Optional<?> gameRules, Proxy proxy, DataFixer dataFixer, Services services, LevelLoadListener levelLoadListener, boolean propagatesCrashes, CallbackInfo ci) {
+	public void MinecraftServer_init(Thread serverThread, LevelStorageSource.LevelStorageAccess storageSource, PackRepository packRepository, WorldStem worldStem, Optional<?> gameRules, Proxy proxy, DataFixer fixerUpper, Services services, LevelLoadListener levelLoadListener, boolean propagatesCrashes, CallbackInfo ci) {
 		((MinecraftServer)(Object)this).execute(() -> {
 			CollectiveLifecycleEvents.MINECRAFT_LOADED.invoker().onMinecraftLoad(false);
 		});

@@ -21,20 +21,20 @@ public class FabricRegisterBlockHelper implements RegisterBlockHelper {
 	private static final HashMap<Identifier, Block> registeredBlocksWithoutItem = new HashMap<>();
 	private static final HashMap<Identifier, Pair<Block, Item>> registeredBlockWithItemPairs = new HashMap<>();
 
-    @Override
+	@Override
 	public <T extends Block> void registerBlockWithoutItem(Object modEventBusObject, Identifier Identifier, Function<BlockBehaviour.Properties, Block> blockFunction, BlockBehaviour.Properties properties, boolean lastBlock) {
 		staticRegisterBlock(modEventBusObject, Identifier, blockFunction, properties, null, lastBlock, false);
-    }
+	}
 
 	@Override
 	public Block getRegisteredBlockWithoutItem(Identifier Identifier) {
 		return registeredBlocksWithoutItem.get(Identifier);
 	}
 
-    @Override
+	@Override
 	public <T extends Block> void registerBlockWithItem(Object modEventBusObject, Identifier Identifier, Function<BlockBehaviour.Properties, Block> blockFunction, BlockBehaviour.Properties properties, ResourceKey<CreativeModeTab> creativeModeTabResourceKey, boolean lastBlock) {
 		staticRegisterBlock(modEventBusObject, Identifier, blockFunction, properties, creativeModeTabResourceKey, lastBlock, true);
-    }
+	}
 
 	@Override
 	public Block getRegisteredBlockWithItem(Identifier Identifier) {
@@ -51,17 +51,17 @@ public class FabricRegisterBlockHelper implements RegisterBlockHelper {
 	public void setRegisteredBlockWithItemPair(Identifier Identifier, Class<?> blockClass, String blockFieldName, Class<?> blockItemClass, String blockItemFieldName) {
 		Pair<Block, Item> registeredPair = registeredBlockWithItemPairs.get(Identifier);
 
-        try {
-            Field blockField = blockClass.getDeclaredField(blockFieldName);
-            blockField.setAccessible(true);
-            blockField.set(null, registeredPair.getFirst());
+		try {
+			Field blockField = blockClass.getDeclaredField(blockFieldName);
+			blockField.setAccessible(true);
+			blockField.set(null, registeredPair.getFirst());
 
-            Field blockItemField = blockItemClass.getDeclaredField(blockItemFieldName);
-            blockItemField.setAccessible(true);
-            blockItemField.set(null, registeredPair.getSecond());
-        } catch (NoSuchFieldException | IllegalAccessException e) {
-            e.printStackTrace();
-        }
+			Field blockItemField = blockItemClass.getDeclaredField(blockItemFieldName);
+			blockItemField.setAccessible(true);
+			blockItemField.set(null, registeredPair.getSecond());
+		} catch (NoSuchFieldException | IllegalAccessException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public static <T extends Block> void staticRegisterBlock(Object modEventBusObject, Identifier Identifier, Function<BlockBehaviour.Properties, Block> blockFunction, BlockBehaviour.Properties properties, ResourceKey<CreativeModeTab> creativeModeTabResourceKey, boolean lastBlock, boolean registerAsItem) {

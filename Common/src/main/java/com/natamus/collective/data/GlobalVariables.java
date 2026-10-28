@@ -4,6 +4,7 @@ import com.natamus.collective.objects.SAMObject;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -22,7 +23,8 @@ public class GlobalVariables {
 	public static CopyOnWriteArrayList<SAMObject> globalSAMs = new CopyOnWriteArrayList<>();
 
 	// Villager names; 1: guard-villagers, 2-4: farlanders
-	public static List<String> moddedvillagers = new ArrayList<>(Arrays.asList("Villager", "WanderingTrader", "Guard", "Farlander", "ElderFarlander", "Wanderer", "ThiefWanderingTrader", "PlagueDoctor", "GoblinTrader", "VeinGoblinTrader", "RedMerchant", "WanderingWizard", "WanderingWinemaker", "WanderingBaker", "Bowman", "Crossbowman", "Horseman", "Nomad", "Recruit", "RecruitShieldman", "Gatekeeper", "VillagerEntityMCA", "Priest"));
+	public static List<String> moddedVillagers = new ArrayList<>(Arrays.asList("Villager", "WanderingTrader", "Guard", "Farlander", "ElderFarlander", "Wanderer", "ThiefWanderingTrader", "PlagueDoctor", "GoblinTrader", "VeinGoblinTrader", "RedMerchant", "WanderingWizard", "WanderingWinemaker", "WanderingBaker", "Bowman", "Crossbowman", "Horseman", "Nomad", "Recruit", "RecruitShieldman", "Gatekeeper", "VillagerEntityMCA", "Priest"));
+	public static List<String> moddedVillagerIds = new ArrayList<>(Arrays.asList("workers:animal_farmer", "workers:beekeeper", "workers:builder", "workers:cattle_farmer", "workers:chicken_farmer", "workers:cook", "workers:courier", "workers:farmer", "workers:fisherman", "workers:lumberjack", "workers:merchant", "workers:miner", "workers:rabbit_farmer", "workers:shepherd", "workers:swineherd", "millager:archer", "millager:breacher", "millager:doctor", "millager:lancer", "millager:mauler", "millager:rioter", "millager:scouter", "millager:swordmaster"));
 
 	// Names
 	public static List<String> areaNames = new ArrayList<>();
@@ -34,6 +36,8 @@ public class GlobalVariables {
 
 	// Mob drops
 	public static HashMap<EntityType<?>, List<Item>> entitydrops = null;
+	public static HashMap<EntityType<?>, List<ItemStack>> entityDropStacks = null;
+	public static HashMap<EntityType<?>, List<ItemStack>> entityPlayerKillDropStacks = null;
 
 	// HashMaps to generate
 	public static Map<Block, BlockEntityType<?>> blocksWithTileEntity = new HashMap<>();

@@ -34,12 +34,12 @@ import net.minecraft.world.phys.Vec3;
 import java.util.*;
 
 public class PlayerFunctions {
-	public static boolean respawnPlayer(Level world, Player player) {
+	public static boolean respawnPlayer(Level level, Player player) {
 		if (!(player instanceof ServerPlayer serverplayer)) {
 			return false;
 		}
 
-		MinecraftServer server = world.getServer();
+		MinecraftServer server = level.getServer();
 
 		if (serverplayer.wonGame) {
 			serverplayer.wonGame = false;
@@ -59,8 +59,8 @@ public class PlayerFunctions {
 	public static Player matchPlayer(Player player, String other) {
 		return matchPlayer(player.level(), other);
 	}
-	public static Player matchPlayer(Level world, String other) {
-		List<? extends Player> players = world.players();
+	public static Player matchPlayer(Level level, String other) {
+		List<? extends Player> players = level.players();
 
 		for (Player onlineplayer : players) {
 			if (onlineplayer.getName().getString().toLowerCase().equals(other)) {
@@ -102,7 +102,7 @@ public class PlayerFunctions {
 			}
 
 			if (!isempty) {
-                Constants.LOG.debug("[{}] Inventory of {} is not empty, first join is false.", modid, playerName);
+				Constants.LOG.debug("[{}] Inventory of {} is not empty, first join is false.", modid, playerName);
 				return false;
 			}
 		}
@@ -126,7 +126,7 @@ public class PlayerFunctions {
 				spawnPos = respawnConfigRespawnData.pos();
 			}
 
-            Constants.LOG.debug("[{}] Checking for first join of {} with spawn position: {}", modid, playerName, spawnPos.toShortString());
+			Constants.LOG.debug("[{}] Checking for first join of {} with spawn position: {}", modid, playerName, spawnPos.toShortString());
 
 			if (!spawnDimension.equals(player.level().dimension())) {
 				return false;
@@ -136,7 +136,7 @@ public class PlayerFunctions {
 			BlockPos checkPos = new BlockPos(playerPos.getX(), spawnPos.getY(), playerPos.getZ());
 
 			int spawnRadius = serverLevel.getGameRules().get(GameRules.RESPAWN_RADIUS);
-            Constants.LOG.debug("[{}] Checking for first join of {} with spawn radius: {}", modid, playerName, spawnRadius);
+			Constants.LOG.debug("[{}] Checking for first join of {} with spawn radius: {}", modid, playerName, spawnRadius);
 
 			return checkPos.closerThan(spawnPos, spawnRadius * 2);
 		}
@@ -162,7 +162,7 @@ public class PlayerFunctions {
 		if (respawnConfig != null) {
 			BlockPos bedpos = respawnConfig.respawnData().pos();
 			if (bedpos != null) {
-				TeleportTransition optionalbed = ((ServerPlayer) player).findRespawnPositionAndUseSpawnBlock(true, TeleportTransition.DO_NOTHING);
+				TeleportTransition optionalbed = ((ServerPlayer) player).findRespawnPositionAndUseSpawnBlock(false, TeleportTransition.DO_NOTHING);
 
 				Vec3 bedvec = optionalbed.position();
 				BlockPos bp = BlockPos.containing(bedvec);
@@ -303,7 +303,7 @@ public class PlayerFunctions {
 
 			String[] lspl = line.split(" : ");
 			if (lspl.length != 2) {
-                Constants.LOG.info("[Error] (Collective) setPlayerGearFromString: The line {} is invalid.", line);
+				Constants.LOG.info("[Error] (Collective) setPlayerGearFromString: The line {} is invalid.", line);
 				return;
 			}
 
@@ -340,7 +340,7 @@ public class PlayerFunctions {
 			}
 
 			if (itemStack.isEmpty()) {
-                Constants.LOG.info("[Error] (Collective) setPlayerGearFromString: Unable to get the correct itemstack data from data {}", data);
+				Constants.LOG.info("[Error] (Collective) setPlayerGearFromString: Unable to get the correct itemstack data from data {}", data);
 				return;
 			}
 

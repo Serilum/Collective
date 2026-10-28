@@ -13,38 +13,41 @@ import java.util.function.Function;
  *  by MysticDrew */
 
 public class NetworkSetup {
-    private final PacketRegistrationHandler packetRegistration;
-    private static DelayedPacketRegistrationHandler delayedHandler;
-    public static NetworkSetup INSTANCE;
+	private final PacketRegistrationHandler packetRegistration;
+	private static final DelayedPacketRegistrationHandler delayedHandler = new DelayedPacketRegistrationHandler();
+	public static volatile NetworkSetup INSTANCE;
 
-    public NetworkSetup(PacketRegistrationHandler packetRegistration) {
-        INSTANCE = this;
-        this.packetRegistration = packetRegistration;
-        getDelayedHandler().registerQueuedPackets(packetRegistration);
-    }
+	// Mods are constructed in parallel on (Neo)Forge, so registering and setting up share one lock.
+	public NetworkSetup(PacketRegistrationHandler packetRegistration) {
+		this.packetRegistration = packetRegistration;
 
-    /**
-     * Fabric does not enforce load order, so we may have to delay packet registrations.
-     *
-     * @return the handler;
-     */
-    public static DelayedPacketRegistrationHandler getDelayedHandler() {
-        if (delayedHandler == null) {
-            delayedHandler = new DelayedPacketRegistrationHandler();
-        }
-        return delayedHandler;
-    }
+		synchronized (NetworkSetup.class) {
+			INSTANCE = this;
+			delayedHandler.registerQueuedPackets(packetRegistration);
+		}
+	}
 
-    public static <T> PacketRegistrar registerPacket(Identifier packetIdentifier, Class<T> messageType, BiConsumer<T, FriendlyByteBuf> encoder, Function<FriendlyByteBuf, T> decoder, Consumer<PacketContext<T>> handler) {
-        if (INSTANCE != null) {
-            return INSTANCE.packetRegistration.registerPacket(packetIdentifier, messageType, encoder, decoder, handler);
-        }
-        else {
-            return getDelayedHandler().registerPacket(packetIdentifier, messageType, encoder, decoder, handler);
-        }
-    }
+	/**
+	 * Fabric does not enforce load order, so we may have to delay packet registrations.
+	 *
+	 * @return the handler;
+	 */
+	public static DelayedPacketRegistrationHandler getDelayedHandler() {
+		return delayedHandler;
+	}
 
-    public PacketRegistrationHandler getPacketRegistration() {
-        return packetRegistration;
-    }
+	public static <T> PacketRegistrar registerPacket(Identifier packetIdentifier, Class<T> messageType, BiConsumer<T, FriendlyByteBuf> encoder, Function<FriendlyByteBuf, T> decoder, Consumer<PacketContext<T>> handler) {
+		synchronized (NetworkSetup.class) {
+			if (INSTANCE != null) {
+				return INSTANCE.packetRegistration.registerPacket(packetIdentifier, messageType, encoder, decoder, handler);
+			}
+			else {
+				return delayedHandler.registerPacket(packetIdentifier, messageType, encoder, decoder, handler);
+			}
+		}
+	}
+
+	public PacketRegistrationHandler getPacketRegistration() {
+		return packetRegistration;
+	}
 }

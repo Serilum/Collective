@@ -5,12 +5,12 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.Tags;
 
 public class ForgeBlockTagsHelper implements BlockTagsHelper {
-    @Override
+	@Override
 	public boolean isOre(BlockState blockState) {
 		return isOre(blockState, false);
-    }
+	}
 
-    @Override
+	@Override
 	public boolean isOre(BlockState blockState, boolean fuzzyCheck) {
 		if (fuzzyCheck) {
 			String rawName = blockState.getBlock().getName().toString();
@@ -19,5 +19,5 @@ public class ForgeBlockTagsHelper implements BlockTagsHelper {
 			}
 		}
 		return blockState.is(Tags.Blocks.ORES);
-    }
+	}
 }

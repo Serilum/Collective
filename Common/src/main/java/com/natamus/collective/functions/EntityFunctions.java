@@ -21,6 +21,7 @@ import net.minecraft.world.entity.decoration.painting.Painting;
 import net.minecraft.world.entity.decoration.painting.PaintingVariant;
 import net.minecraft.world.entity.monster.Creeper;
 import net.minecraft.world.entity.monster.Shulker;
+import net.minecraft.world.entity.npc.villager.AbstractVillager;
 import net.minecraft.world.entity.npc.villager.Villager;
 import net.minecraft.world.entity.npc.wanderingtrader.WanderingTrader;
 import net.minecraft.world.entity.player.Player;
@@ -28,6 +29,7 @@ import net.minecraft.world.entity.projectile.FishingHook;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ResolvableProfile;
+import net.minecraft.world.item.trading.Merchant;
 import net.minecraft.world.item.trading.MerchantOffer;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.SkullBlockEntity;
@@ -42,7 +44,7 @@ public class EntityFunctions {
 
 	public static boolean isModdedVillager(String entitystring) {
 		String type = entitystring.split("\\[")[0];
-		for (String moddedvillager : GlobalVariables.moddedvillagers) {
+		for (String moddedvillager : GlobalVariables.moddedVillagers) {
 			if (type.equalsIgnoreCase(moddedvillager)) {
 				return true;
 			}
@@ -50,6 +52,15 @@ public class EntityFunctions {
 		return false;
 	}
 	public static boolean isModdedVillager(Entity entity) {
+		if (entity instanceof AbstractVillager || entity instanceof Merchant) {
+			return true;
+		}
+
+		Identifier identifier = EntityType.getKey(entity.getType());
+		if (identifier != null && GlobalVariables.moddedVillagerIds.contains(identifier.toString())) {
+			return true;
+		}
+
 		String entitystring = getEntityString(entity);
 		return isModdedVillager(entitystring);
 	}
@@ -60,7 +71,7 @@ public class EntityFunctions {
 				return false;
 			}
 
-            return !animal.isBaby();
+			return !animal.isBaby();
 		}
 		return false;
 	}
@@ -174,7 +185,7 @@ public class EntityFunctions {
 			return;
 		}
 
-        for(EquipmentSlot equipmentslottype : EquipmentSlot.values()) {
+		for(EquipmentSlot equipmentslottype : EquipmentSlot.values()) {
 			if (ignoremainhand) {
 				if (equipmentslottype.equals(EquipmentSlot.MAINHAND)) {
 					continue;

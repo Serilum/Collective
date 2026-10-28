@@ -5,10 +5,15 @@
   "plugin": "com.natamus.collective.neoforge.mixin.plugin.NeoForgeMixinConfigPlugin",
   "compatibilityLevel": "JAVA_25",
   "mixins": [
-    "BaseSpawnerMixin",
     "BlockEntityMixin",
     "BoneMealItemMixin",
-    "PrimaryLevelDataMixin"
+    "EntityMixin",
+    "NetherPortalBlockMixin",
+    "PatrolSpawnerMixin",
+    "PrimaryLevelDataMixin",
+    "ServerLevelMixin",
+    "ServerPlayerMixin",
+    "VillageSiegeMixin"
   ],
   "client": [
     "ClientLanguageMixin",

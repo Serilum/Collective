@@ -1,7 +1,9 @@
 package com.natamus.collective.fabric.mixin;
 
+import com.natamus.collective.data.BlockEntityData;
 import com.natamus.collective.fabric.callbacks.CollectiveBlockEvents;
 import com.natamus.collective.fabric.callbacks.CollectiveEntityEvents;
+import com.natamus.collective.fabric.events.CollectiveFabricEvents;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
@@ -19,11 +21,23 @@ import java.util.EnumSet;
 
 @Mixin(value = ServerLevel.class, priority = 1001)
 public class ServerLevelMixin {
+	@Inject(method = "close()V", at = @At(value = "TAIL"))
+	public void serverLevel_close(CallbackInfo ci) {
+		BlockEntityData.removeLevelFromCache((Level)(Object)this);
+	}
+
 	@Inject(method = "addEntity(Lnet/minecraft/world/entity/Entity;)Z", at = @At(value = "HEAD"), cancellable = true)
 	private void serverLevel_addEntity(Entity entity, CallbackInfoReturnable<Boolean> ci) {
 		Level world = entity.level();
 		if (!CollectiveEntityEvents.PRE_ENTITY_JOIN_WORLD.invoker().onPreSpawn(world, entity)) {
 			ci.setReturnValue(false);
+		}
+	}
+
+	@Inject(method = "addEntity(Lnet/minecraft/world/entity/Entity;)Z", at = @At(value = "RETURN"))
+	private void serverLevel_addEntityReturn(Entity entity, CallbackInfoReturnable<Boolean> ci) {
+		if (ci.getReturnValue()) {
+			CollectiveFabricEvents.onEntityAddedToLevel(entity);
 		}
 	}
 

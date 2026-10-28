@@ -31,5 +31,5 @@ public class NeoForgeRegisterKeyMappingHelper implements RegisterKeyMappingHelpe
 		for (KeyMapping keyMapping : keyMappingsToRegister) {
 			e.register(keyMapping);
 		}
-    }
+	}
 }

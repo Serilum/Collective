@@ -1,17 +1,17 @@
 {
   "schemaVersion": 1,
   "id": "collective",
-  "version": "8.32",
+  "version": "8.67",
 
   "name": "Collective",
   "description": "Collective is a shared library with common code for all of Serilum's mods.",
   "authors": [
-    "Rick South"
+    "Serilum"
   ],
   "contact": {
-    "homepage": "https://curseforge.com/minecraft/mc-mods/collective",
+    "homepage": "https://serilum.com/mod/collective",
     "sources": "https://github.com/Serilum/Collective",
-    "issues": "https://github.com/Serilum/.issue-tracker/labels/Library: Collective"
+    "issues": "https://github.com/Serilum/.issue-tracker/labels/Library:%20Collective"
   },
 
   "license": "All Rights Reserved",
@@ -47,14 +47,12 @@
 	  " ",
 	  "Thank you very much to my Membership sponsors for supporting the development of this mod!",
 	  " ",
-	  "If you would like to contribute too, check out https://serilum.com/donate.",
+	  "If you would like to contribute too, check out https://serilum.com/donate",
 	  " ",
 	  "Membership sponsors:",
-	  " Andrean Olgo",
 	  " AnyankaT",
 	  " aternosorg",
 	  " Cherriesaurus",
-	  " Josh",
 	  " Linda Jansen",
 	  " MWS",
 	  " Tyler Behl"

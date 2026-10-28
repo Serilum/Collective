@@ -9,17 +9,17 @@ import org.jetbrains.annotations.Nullable;
 public class JSONCallback {
 	private JSONCallback() { }
 
-    public static final Event<On_Json_File_Available> JSON_FILE_AVAILABLE = EventFactory.createArrayBacked(On_Json_File_Available.class, callbacks -> (folder, fileName, isCreated, jsonElement) -> {
-        for (On_Json_File_Available callback : callbacks) {
-        	callback.onJsonFileAvailable(folder, fileName, isCreated, jsonElement);
-        }
-    });
+	public static final Event<On_Json_File_Available> JSON_FILE_AVAILABLE = EventFactory.createArrayBacked(On_Json_File_Available.class, callbacks -> (folder, fileName, isCreated, jsonElement) -> {
+		for (On_Json_File_Available callback : callbacks) {
+			callback.onJsonFileAvailable(folder, fileName, isCreated, jsonElement);
+		}
+	});
 
-    public static final Event<All_Json_Files_Available> ALL_JSON_FILES_AVAILABLE = EventFactory.createArrayBacked(All_Json_Files_Available.class, callbacks -> (folder) -> {
-        for (All_Json_Files_Available callback : callbacks) {
-        	callback.onAllJsonFilesAvailable(folder);
-        }
-    });
+	public static final Event<All_Json_Files_Available> ALL_JSON_FILES_AVAILABLE = EventFactory.createArrayBacked(All_Json_Files_Available.class, callbacks -> (folder) -> {
+		for (All_Json_Files_Available callback : callbacks) {
+			callback.onAllJsonFilesAvailable(folder);
+		}
+	});
 
 	@FunctionalInterface
 	public interface On_Json_File_Available {

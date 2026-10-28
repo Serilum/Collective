@@ -9,15 +9,15 @@ import net.minecraft.world.entity.animal.Animal;
 public class CollectiveAnimalEvents {
 	private CollectiveAnimalEvents() { }
 	 
-    public static final Event<On_Baby_Spawn> PRE_BABY_SPAWN = EventFactory.createArrayBacked(On_Baby_Spawn.class, callbacks -> (world, parentA, parentB, offspring) -> {
-        for (On_Baby_Spawn callback : callbacks) {
-        	if (!callback.onBabySpawn(world, parentA, parentB, offspring)) {
-        		return false;
-        	}
-        }
+	public static final Event<On_Baby_Spawn> PRE_BABY_SPAWN = EventFactory.createArrayBacked(On_Baby_Spawn.class, callbacks -> (world, parentA, parentB, offspring) -> {
+		for (On_Baby_Spawn callback : callbacks) {
+			if (!callback.onBabySpawn(world, parentA, parentB, offspring)) {
+				return false;
+			}
+		}
         
-        return true;
-    });
+		return true;
+	});
     
 	@FunctionalInterface
 	public interface On_Baby_Spawn {

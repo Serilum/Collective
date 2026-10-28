@@ -71,11 +71,11 @@ public class StringFunctions {
 			}
 
 			if (!url.isEmpty()) {
-                try {
-                    Style clickstyle = message.getStyle().withClickEvent(new ClickEvent.OpenUrl(new URI(url)));
-                    message.withStyle(clickstyle);
-                }
-                catch (URISyntaxException ignored) { }
+				try {
+					Style clickstyle = message.getStyle().withClickEvent(new ClickEvent.OpenUrl(new URI(url)));
+					message.withStyle(clickstyle);
+				}
+				catch (URISyntaxException ignored) { }
 			}
 		}
 		source.sendSuccess(() -> {
@@ -110,11 +110,11 @@ public class StringFunctions {
 			}
 
 			if (!url.isEmpty()) {
-                try {
-                    Style clickstyle = message.getStyle().withClickEvent(new ClickEvent.OpenUrl(new URI(url)));
-                    message.withStyle(clickstyle);
-                }
-                catch (URISyntaxException ignored) { }
+				try {
+					Style clickstyle = message.getStyle().withClickEvent(new ClickEvent.OpenUrl(new URI(url)));
+					message.withStyle(clickstyle);
+				}
+				catch (URISyntaxException ignored) { }
 			}
 		}
 		serverPlayer.sendSystemMessage(message);
@@ -159,6 +159,10 @@ public class StringFunctions {
 		return sb.toString();
 	}
 
+	public static String splitCamelCase(String text) {
+		return text.replaceAll("(?<=[a-z0-9])(?=[A-Z])|(?<=[A-Z])(?=[A-Z][a-z])", " ");
+	}
+
 	public static String capitalizeEveryWord(String text) {
 		if (text.isEmpty()) {
 			return text;
@@ -200,8 +204,8 @@ public class StringFunctions {
 			return "";
 		}
 
-	    String name = allnames.get(GlobalVariables.random.nextInt(allnames.size())).toLowerCase();
-	    return capitalizeEveryWord(name);
+		String name = allnames.get(GlobalVariables.random.nextInt(allnames.size())).toLowerCase();
+		return capitalizeEveryWord(name);
 	}
 
 	public static String getPCLocalTime(boolean twentyfour, boolean showseconds) {
@@ -234,9 +238,9 @@ public class StringFunctions {
 
 		int count = 0;
 		while (matcher.find()) {
-		    count++;
+			count++;
 		}
-	    return count;
+		return count;
 	}
 	
 	public static String joinListWithCommaAnd(List<String> inputlist) {

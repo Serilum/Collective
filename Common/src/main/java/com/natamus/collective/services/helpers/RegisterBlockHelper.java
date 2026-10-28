@@ -11,15 +11,15 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
 import java.util.function.Function;
 
 public interface RegisterBlockHelper {
-    default <T extends Block> void registerBlockWithoutItem(Object modEventBusObject, Identifier Identifier, Function<BlockBehaviour.Properties, Block> blockFunction, BlockBehaviour.Properties properties) {
-        registerBlockWithoutItem(modEventBusObject, Identifier, blockFunction, properties, false);
-    }
+	default <T extends Block> void registerBlockWithoutItem(Object modEventBusObject, Identifier Identifier, Function<BlockBehaviour.Properties, Block> blockFunction, BlockBehaviour.Properties properties) {
+		registerBlockWithoutItem(modEventBusObject, Identifier, blockFunction, properties, false);
+	}
 	<T extends Block> void registerBlockWithoutItem(Object modEventBusObject, Identifier Identifier, Function<BlockBehaviour.Properties, Block> blockFunction, BlockBehaviour.Properties properties, boolean lastBlock);
 	Block getRegisteredBlockWithoutItem(Identifier Identifier);
 
 	default <T extends Block> void registerBlockWithItem(Object modEventBusObject, Identifier Identifier, Function<BlockBehaviour.Properties, Block> blockFunction, BlockBehaviour.Properties properties, ResourceKey<CreativeModeTab> creativeModeTabResourceKey) {
-        registerBlockWithItem(modEventBusObject, Identifier, blockFunction, properties, creativeModeTabResourceKey, false);
-    }
+		registerBlockWithItem(modEventBusObject, Identifier, blockFunction, properties, creativeModeTabResourceKey, false);
+	}
 	<T extends Block> void registerBlockWithItem(Object modEventBusObject, Identifier Identifier, Function<BlockBehaviour.Properties, Block> blockFunction, BlockBehaviour.Properties properties, ResourceKey<CreativeModeTab> creativeModeTabResourceKey, boolean lastBlock);
 	Block getRegisteredBlockWithItem(Identifier Identifier);
 

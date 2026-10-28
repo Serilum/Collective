@@ -5,12 +5,12 @@ import net.fabricmc.fabric.api.tag.convention.v2.ConventionalBlockTags;
 import net.minecraft.world.level.block.state.BlockState;
 
 public class FabricBlockTagsHelper implements BlockTagsHelper {
-    @Override
+	@Override
 	public boolean isOre(BlockState blockState) {
 		return isOre(blockState, false);
-    }
+	}
 
-    @Override
+	@Override
 	public boolean isOre(BlockState blockState, boolean fuzzyCheck) {
 		if (fuzzyCheck) {
 			String rawName = blockState.getBlock().getName().toString();
@@ -19,5 +19,5 @@ public class FabricBlockTagsHelper implements BlockTagsHelper {
 			}
 		}
 		return blockState.is(ConventionalBlockTags.ORES);
-    }
+	}
 }

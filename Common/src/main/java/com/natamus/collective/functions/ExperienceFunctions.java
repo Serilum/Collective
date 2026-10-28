@@ -28,15 +28,44 @@ public class ExperienceFunctions {
 	}
 
 	public static int getPlayerXP(final Player player) {
-		return (int) (getExperienceForLevel(player.experienceLevel) + player.experienceProgress * player.getXpNeededForNextLevel());
+		return (int) (getExperienceForLevel(player, player.experienceLevel) + player.experienceProgress * player.getXpNeededForNextLevel());
 	}
 
 	public static void addPlayerXP(final Player player, final int amount) {
 		final int experience = getPlayerXP(player) + amount;
 		player.totalExperience = experience;
-		player.experienceLevel = getLevelForExperience(experience);
-		final int expForLevel = getExperienceForLevel(player.experienceLevel);
+		player.experienceLevel = getLevelForExperience(player, experience);
+		final int expForLevel = getExperienceForLevel(player, player.experienceLevel);
 		player.experienceProgress = (float) (experience - expForLevel) / (float) player.getXpNeededForNextLevel();
+	}
+
+	public static int getLevelForExperience(Player player, int targetXp) {
+		int level = 0;
+		while (true) {
+			int xpToNextLevel = xpBarCap(player, level);
+			if (xpToNextLevel <= 0 || targetXp < xpToNextLevel) {
+				return level;
+			}
+			level++;
+			targetXp -= xpToNextLevel;
+		}
+	}
+
+	public static int getExperienceForLevel(Player player, int level) {
+		int experience = 0;
+		for (int i = 0; i < level; i++) {
+			experience += xpBarCap(player, i);
+		}
+		return experience;
+	}
+
+	// Asks the player itself, so mods that change the level curve through getXpNeededForNextLevel are respected.
+	public static int xpBarCap(Player player, int level) {
+		int currentLevel = player.experienceLevel;
+		player.experienceLevel = level;
+		int xpNeeded = player.getXpNeededForNextLevel();
+		player.experienceLevel = currentLevel;
+		return xpNeeded;
 	}
 
 	private static int sum(final int n, final int a0, final int d) {

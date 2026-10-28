@@ -27,7 +27,7 @@ public class GenerateJSONFiles {
 			requestedJsonFiles.add(fileName);
 		}
 
-        Constants.LOG.info("[" + CollectiveReference.NAME + "] JSON file '{}' generation requested by mod '{}'.", fileName, modid);
+		Constants.LOG.info("[" + CollectiveReference.NAME + "] JSON file '{}' generation requested by mod '{}'.", fileName, modid);
 	}
 
 	public static void initGeneration(ServerLevel serverLevel) {
@@ -59,7 +59,7 @@ public class GenerateJSONFiles {
 						writer = new PrintWriter(dirpath + File.separator + fileName, StandardCharsets.UTF_8);
 						writer.print(Constants.GSON.toJson(jsonElement));
 					} catch (IOException ex) {
-                        Constants.LOG.warn("[" + CollectiveReference.NAME + "] Unable to write the JSON file: {}", fileName);
+						Constants.LOG.warn("[" + CollectiveReference.NAME + "] Unable to write the JSON file: {}", fileName);
 					}
 
 					if (writer != null) {
@@ -67,7 +67,7 @@ public class GenerateJSONFiles {
 					}
 				}
 				else {
-                    Constants.LOG.warn("[" + CollectiveReference.NAME + "] Unable to get Input Stream for: {}", fileName);
+					Constants.LOG.warn("[" + CollectiveReference.NAME + "] Unable to get Input Stream for: {}", fileName);
 				}
 			}
 

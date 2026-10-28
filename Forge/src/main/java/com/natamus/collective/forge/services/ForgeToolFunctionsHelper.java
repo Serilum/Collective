@@ -9,50 +9,50 @@ import net.minecraftforge.common.ToolActions;
 import java.util.Set;
 
 public class ForgeToolFunctionsHelper implements ToolFunctionsHelper {
-    @Override
+	@Override
 	public boolean isTool(ItemStack itemstack) {
 		return isPickaxe(itemstack) || isAxe(itemstack) || isShovel(itemstack) || isHoe(itemstack) || isShears(itemstack);
-    }
+	}
 
-    @Override
+	@Override
 	public boolean isSword(ItemStack itemStack) {
-        return itemStack.is(ItemTags.SWORDS) || itemStack.canPerformAction(ToolActions.SWORD_SWEEP);
-    }
+		return itemStack.is(ItemTags.SWORDS) || itemStack.canPerformAction(ToolActions.SWORD_SWEEP);
+	}
 
-    @Override
+	@Override
 	public boolean isShield(ItemStack itemStack) {
 		return itemStack.getItem() instanceof ShieldItem;
 	}
 
-    @Override
+	@Override
 	public boolean isPickaxe(ItemStack itemStack) {
-        return itemStack.is(ItemTags.PICKAXES) || itemStack.canPerformAction(ToolActions.PICKAXE_DIG);
-    }
+		return itemStack.is(ItemTags.PICKAXES) || itemStack.canPerformAction(ToolActions.PICKAXE_DIG);
+	}
 
-    @Override
+	@Override
 	public boolean isAxe(ItemStack itemStack) {
-        return itemStack.getItem() instanceof AxeItem || itemStack.is(ItemTags.AXES) || canPerformOneOfActions(itemStack, ToolActions.DEFAULT_AXE_ACTIONS);
-    }
+		return itemStack.getItem() instanceof AxeItem || itemStack.is(ItemTags.AXES) || canPerformOneOfActions(itemStack, ToolActions.DEFAULT_AXE_ACTIONS);
+	}
 
-    @Override
+	@Override
 	public boolean isShovel(ItemStack itemStack) {
-        return itemStack.getItem() instanceof ShovelItem || itemStack.is(ItemTags.SHOVELS) || canPerformOneOfActions(itemStack, ToolActions.DEFAULT_SHOVEL_ACTIONS);
-    }
+		return itemStack.getItem() instanceof ShovelItem || itemStack.is(ItemTags.SHOVELS) || canPerformOneOfActions(itemStack, ToolActions.DEFAULT_SHOVEL_ACTIONS);
+	}
 
-    @Override
+	@Override
 	public boolean isHoe(ItemStack itemStack) {
-        return itemStack.getItem() instanceof HoeItem || itemStack.is(ItemTags.HOES) || canPerformOneOfActions(itemStack, ToolActions.DEFAULT_HOE_ACTIONS);
-    }
+		return itemStack.getItem() instanceof HoeItem || itemStack.is(ItemTags.HOES) || canPerformOneOfActions(itemStack, ToolActions.DEFAULT_HOE_ACTIONS);
+	}
 
-    @Override
+	@Override
 	public boolean isShears(ItemStack itemStack) {
 		return itemStack.getItem() instanceof ShearsItem || canPerformOneOfActions(itemStack, ToolActions.DEFAULT_SHEARS_ACTIONS);
 	}
 
-    public static final ToolAction LIGHT_CAMPFIRE = ToolAction.get("light_campfire");
-    @Override public boolean isFlintAndSteel(ItemStack itemStack) {
-        return itemStack.getItem() instanceof FlintAndSteelItem || itemStack.canPerformAction(LIGHT_CAMPFIRE);
-    }
+	public static final ToolAction LIGHT_CAMPFIRE = ToolAction.get("light_campfire");
+	@Override public boolean isFlintAndSteel(ItemStack itemStack) {
+		return itemStack.getItem() instanceof FlintAndSteelItem || itemStack.canPerformAction(LIGHT_CAMPFIRE);
+	}
 
 	private static boolean canPerformOneOfActions(ItemStack itemStack, Set<ToolAction> toolActions) {
 		for (ToolAction toolAction : toolActions) {

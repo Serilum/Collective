@@ -24,7 +24,7 @@ public class NeoForgeRegisterBlockHelper implements RegisterBlockHelper {
 	private static final HashMap<Identifier, DeferredBlock<Block>> registeredBlocksWithoutItem = new HashMap<>();
 	private static final HashMap<Identifier, Pair<DeferredBlock<Block>, DeferredItem<Item>>> registeredBlockWithItemPairs = new HashMap<>();
 
-    @Override
+	@Override
 	public <T extends Block> void registerBlockWithoutItem(Object modEventBusObject, Identifier Identifier, Function<BlockBehaviour.Properties, Block> blockFunction, BlockBehaviour.Properties properties, boolean lastBlock) {
 		staticRegisterBlock(modEventBusObject, Identifier, blockFunction, properties, null, lastBlock, false);
 	}
@@ -34,7 +34,7 @@ public class NeoForgeRegisterBlockHelper implements RegisterBlockHelper {
 		return registeredBlocksWithoutItem.get(Identifier).get();
 	}
 
-    @Override
+	@Override
 	public <T extends Block> void registerBlockWithItem(Object modEventBusObject, Identifier Identifier, Function<BlockBehaviour.Properties, Block> blockFunction, BlockBehaviour.Properties properties, ResourceKey<CreativeModeTab> creativeModeTabResourceKey, boolean lastBlock) {
 		staticRegisterBlock(modEventBusObject, Identifier, blockFunction, properties, creativeModeTabResourceKey, lastBlock, true);
 	}
@@ -54,17 +54,17 @@ public class NeoForgeRegisterBlockHelper implements RegisterBlockHelper {
 	public void setRegisteredBlockWithItemPair(Identifier Identifier, Class<?> blockClass, String blockFieldName, Class<?> blockItemClass, String blockItemFieldName) {
 		Pair<DeferredBlock<Block>, DeferredItem<Item>> deferredPair = registeredBlockWithItemPairs.get(Identifier);
 
-        try {
-            Field blockField = blockClass.getDeclaredField(blockFieldName);
-            blockField.setAccessible(true);
-            blockField.set(null, deferredPair.getFirst().get());
+		try {
+			Field blockField = blockClass.getDeclaredField(blockFieldName);
+			blockField.setAccessible(true);
+			blockField.set(null, deferredPair.getFirst().get());
 
-            Field blockItemField = blockItemClass.getDeclaredField(blockItemFieldName);
-            blockItemField.setAccessible(true);
-            blockItemField.set(null, deferredPair.getSecond().get());
-        } catch (NoSuchFieldException | IllegalAccessException e) {
-            e.printStackTrace();
-        }
+			Field blockItemField = blockItemClass.getDeclaredField(blockItemFieldName);
+			blockItemField.setAccessible(true);
+			blockItemField.set(null, deferredPair.getSecond().get());
+		} catch (NoSuchFieldException | IllegalAccessException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public static <T extends Block> void staticRegisterBlock(Object modEventBusObject, Identifier Identifier, Function<BlockBehaviour.Properties, Block> blockFunction, BlockBehaviour.Properties properties, ResourceKey<CreativeModeTab> creativeModeTabResourceKey, boolean lastBlock, boolean registerAsItem) {

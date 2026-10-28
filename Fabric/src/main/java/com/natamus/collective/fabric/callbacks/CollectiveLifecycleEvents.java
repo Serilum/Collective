@@ -6,11 +6,11 @@ import net.fabricmc.fabric.api.event.EventFactory;
 public class CollectiveLifecycleEvents {
 	private CollectiveLifecycleEvents() { }
 	 
-    public static final Event<Minecraft_Loaded> MINECRAFT_LOADED = EventFactory.createArrayBacked(Minecraft_Loaded.class, callbacks -> (isclient) -> {
-        for (Minecraft_Loaded callback : callbacks) {
-        	callback.onMinecraftLoad(isclient);
-        }
-    });
+	public static final Event<Minecraft_Loaded> MINECRAFT_LOADED = EventFactory.createArrayBacked(Minecraft_Loaded.class, callbacks -> (isclient) -> {
+		for (Minecraft_Loaded callback : callbacks) {
+			callback.onMinecraftLoad(isclient);
+		}
+	});
 
 	public static final Event<Default_Language_Loaded> DEFAULT_LANGUAGE_LOADED = EventFactory.createArrayBacked(Default_Language_Loaded.class, callbacks -> () -> {
 		for (Default_Language_Loaded callback : callbacks) {

@@ -17,10 +17,10 @@ import java.util.stream.IntStream;
 
 public class FeatureFunctions {
 	public static boolean placeBonusChest(Level level, BlockPos blockposIn) {
-        ChunkPos chunkPos = new ChunkPos(blockposIn.getX(), blockposIn.getZ());
-        IntArrayList list0 = Util.toShuffledList(IntStream.rangeClosed(chunkPos.getMinBlockX(), chunkPos.getMaxBlockX()), GlobalVariables.randomSource);
-        IntArrayList list1 = Util.toShuffledList(IntStream.rangeClosed(chunkPos.getMinBlockZ(), chunkPos.getMaxBlockZ()), GlobalVariables.randomSource);
-        BlockPos.MutableBlockPos mutableBlockPos = new BlockPos.MutableBlockPos();
+		ChunkPos chunkPos = new ChunkPos(blockposIn.getX(), blockposIn.getZ());
+		IntArrayList list0 = Util.toShuffledList(IntStream.rangeClosed(chunkPos.getMinBlockX(), chunkPos.getMaxBlockX()), GlobalVariables.randomSource);
+		IntArrayList list1 = Util.toShuffledList(IntStream.rangeClosed(chunkPos.getMinBlockZ(), chunkPos.getMaxBlockZ()), GlobalVariables.randomSource);
+		BlockPos.MutableBlockPos mutableBlockPos = new BlockPos.MutableBlockPos();
 
 		for (Integer i : list0) {
 
@@ -44,6 +44,6 @@ public class FeatureFunctions {
 			}
 		}
 
-        return false;
+		return false;
 	}
 }

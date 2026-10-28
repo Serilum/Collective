@@ -27,38 +27,38 @@ public class CollectiveNeoForge {
 
 	private final PacketRegistrationHandler handler;
 
-    public CollectiveNeoForge(IEventBus modEventBus) {
-        instance = this;
+	public CollectiveNeoForge(IEventBus modEventBus) {
+		instance = this;
 
-        setGlobalConstants();
-        CollectiveCommon.init();
-        NeoForgeCollectiveConfigScreen.registerScreen(ModLoadingContext.get());
+		setGlobalConstants();
+		CollectiveCommon.init();
+		NeoForgeCollectiveConfigScreen.registerScreen(ModLoadingContext.get());
 
 		modEventBus.addListener(this::commonSetupEvent);
 		modEventBus.addListener(this::loadComplete);
 		modEventBus.addListener(NeoForgeRegisterItemHelper::addItemsToCreativeInventory);
-        modEventBus.addListener(NeoForgeRegisterKeyMappingHelper::registerKeyMappings);
-        modEventBus.addListener(NeoForgePackFinders::registerTranslationPack);
+		modEventBus.addListener(NeoForgeRegisterKeyMappingHelper::registerKeyMappings);
+		modEventBus.addListener(NeoForgePackFinders::registerTranslationPack);
 
 		handler = new NeoForgeNetworkHandler(FMLEnvironment.getDist().isClient() ? Side.CLIENT : Side.SERVER);
-        modEventBus.register(handler);
+		modEventBus.register(handler);
 
-        RegisterMod.register(CollectiveReference.NAME, CollectiveReference.MOD_ID, CollectiveReference.VERSION, CollectiveReference.ACCEPTED_VERSIONS);
-    }
-
-    public void commonSetupEvent(FMLCommonSetupEvent event) {
-        new NetworkSetup(handler);
-    }
-
-    private void loadComplete(final FMLLoadCompleteEvent event) {
-    	NeoForge.EVENT_BUS.register(RegisterCollectiveNeoForgeEvents.class);
-
-        if (FMLEnvironment.getDist().equals(Dist.CLIENT)) {
-            NeoForge.EVENT_BUS.register(RegisterCollectiveNeoForgeClientEvents.class);
-        }
+		RegisterMod.register(CollectiveReference.NAME, CollectiveReference.MOD_ID, CollectiveReference.VERSION, CollectiveReference.ACCEPTED_VERSIONS);
 	}
 
-    private static void setGlobalConstants() {
+	public void commonSetupEvent(FMLCommonSetupEvent event) {
+		new NetworkSetup(handler);
+	}
 
-    }
+	private void loadComplete(final FMLLoadCompleteEvent event) {
+		NeoForge.EVENT_BUS.register(RegisterCollectiveNeoForgeEvents.class);
+
+		if (FMLEnvironment.getDist().equals(Dist.CLIENT)) {
+			NeoForge.EVENT_BUS.register(RegisterCollectiveNeoForgeClientEvents.class);
+		}
+	}
+
+	private static void setGlobalConstants() {
+
+	}
 }
