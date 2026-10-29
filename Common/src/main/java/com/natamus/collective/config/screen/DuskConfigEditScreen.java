@@ -16,6 +16,7 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
+import net.minecraft.util.Util;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
@@ -100,6 +101,12 @@ public class DuskConfigEditScreen extends DuskConfigBaseScreen {
 		Button guiScaleButton = this.addRenderableWidget(new DuskConfigButton(this.width - 43, 28, 30, 20, getGuiScaleLabel(), button -> cycleGuiScale(false), button -> cycleGuiScale(true)));
 		guiScaleButton.setTooltip(Tooltip.create(Component.translatable("options.generic_value", Component.translatable("options.guiScale"), getGuiScaleLabel())));
 
+		Component folderLabel = Component.translatable("collective.collective.gui.folder");
+		int folderRight = tooltipButton.getX() - 4;
+		int folderWidth = getFolderButtonWidth(folderLabel, folderRight);
+		Button folderButton = this.addRenderableWidget(new DuskConfigButton(folderRight - folderWidth, 28, folderWidth, 20, folderLabel, button -> Util.getPlatform().openPath(configMod.path.getParent())));
+		folderButton.setTooltip(Tooltip.create(Component.translatable("collective.collective.gui.foldertooltip")));
+
 		Component patreonLabel = Component.literal("❤ ").withStyle(ChatFormatting.RED).append(Component.literal("Patreon").withStyle(ChatFormatting.WHITE));
 		this.addRenderableWidget(new DuskConfigButton(10, 28, this.font.width(patreonLabel) + 12, 20, patreonLabel, ConfirmLinkScreen.confirmLink(this, URI.create("https://link.serilum.com/patreon"), true)));
 
@@ -117,6 +124,11 @@ public class DuskConfigEditScreen extends DuskConfigBaseScreen {
 		doneButton = this.addRenderableWidget(Button.builder(CommonComponents.GUI_DONE, button -> saveAndClose()).pos(this.width / 2 + 4, this.height - 28).size(150, 20).build());
 
 		onSettingChanged();
+	}
+
+	private int getFolderButtonWidth(Component label, int rightEdge) {
+		int spaceAfterSearchBox = rightEdge - (searchBox.getX() + searchBox.getWidth() + 4);
+		return Math.min(this.font.width(label) + 12, Math.max(20, spaceAfterSearchBox));
 	}
 
 	private void refreshRows() {

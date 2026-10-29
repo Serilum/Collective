@@ -21,6 +21,7 @@
     "GuiMixin",
     "LanguageManagerMixin",
     "MinecraftMixin",
+    "ModListScreenMixin",
     "TitleScreenMixin",
     "WorldOpenFlowsMixin"
   ],
