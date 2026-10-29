@@ -7,6 +7,7 @@ import com.natamus.collective.config.DuskConfigFile;
 import com.natamus.collective.config.DuskConfigMod;
 import com.natamus.collective.config.DuskConfigModToggles;
 import net.minecraft.ChatFormatting;
+import net.minecraft.Util;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
@@ -98,6 +99,12 @@ public class DuskConfigEditScreen extends DuskConfigBaseScreen {
 		Button guiScaleButton = this.addRenderableWidget(new DuskConfigButton(this.width - 43, 28, 30, 20, getGuiScaleLabel(), button -> cycleGuiScale(false), button -> cycleGuiScale(true)));
 		guiScaleButton.setTooltip(Tooltip.create(Component.translatable("options.generic_value", Component.translatable("options.guiScale"), getGuiScaleLabel())));
 
+		Component folderLabel = Component.translatable("collective.collective.gui.folder");
+		int folderRight = tooltipButton.getX() - 4;
+		int folderWidth = getFolderButtonWidth(folderLabel, folderRight);
+		Button folderButton = this.addRenderableWidget(new DuskConfigButton(folderRight - folderWidth, 28, folderWidth, 20, folderLabel, button -> Util.getPlatform().openPath(configMod.path.getParent())));
+		folderButton.setTooltip(Tooltip.create(Component.translatable("collective.collective.gui.foldertooltip")));
+
 		Component patreonLabel = Component.literal("❤ ").withStyle(ChatFormatting.RED).append(Component.literal("Patreon").withStyle(ChatFormatting.WHITE));
 		this.addRenderableWidget(new DuskConfigButton(10, 28, this.font.width(patreonLabel) + 12, 20, patreonLabel, ConfirmLinkScreen.confirmLink(this, "https://link.serilum.com/patreon", true)));
 
@@ -115,6 +122,11 @@ public class DuskConfigEditScreen extends DuskConfigBaseScreen {
 		doneButton = this.addRenderableWidget(Button.builder(CommonComponents.GUI_DONE, button -> saveAndClose()).pos(this.width / 2 + 4, this.height - 28).size(150, 20).build());
 
 		onSettingChanged();
+	}
+
+	private int getFolderButtonWidth(Component label, int rightEdge) {
+		int spaceAfterSearchBox = rightEdge - (searchBox.getX() + searchBox.getWidth() + 4);
+		return Math.min(this.font.width(label) + 12, Math.max(20, spaceAfterSearchBox));
 	}
 
 	private void refreshRows() {
