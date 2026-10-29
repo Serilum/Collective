@@ -47,6 +47,7 @@
     "ClientLanguageMixin",
     "ClientLevelMixin",
     "ClientPacketListenerMixin",
+    "ConditionalItemModelPropertiesMixin",
     "CreateWorldScreenMixin",
     "GuiMixin",
     "ItemInHandRendererMixin",
