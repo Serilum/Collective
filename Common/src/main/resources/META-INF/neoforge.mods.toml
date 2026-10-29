@@ -6,7 +6,7 @@ iconFile="icon.png"
 
 [[mods]]
 modId="collective"
-version="8.68"
+version="8.69"
 displayName="Collective"
 displayURL="https://serilum.com/mod/collective"
 authors="Serilum"

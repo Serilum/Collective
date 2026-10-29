@@ -12,6 +12,7 @@ public class Services {
 	public static final ModLoaderHelper MODLOADER = load(ModLoaderHelper.class);
 	public static final RegisterBlockHelper REGISTERBLOCK = load(RegisterBlockHelper.class);
 	public static final RegisterItemHelper REGISTERITEM = load(RegisterItemHelper.class);
+	public static final RegisterItemModelPropertyHelper REGISTERITEMMODELPROPERTY = load(RegisterItemModelPropertyHelper.class);
 	public static final RegisterKeyMappingHelper REGISTERKEYMAPPING = load(RegisterKeyMappingHelper.class);
 	public static final TeleportHelper TELEPORT = load(TeleportHelper.class);
 	public static final ToolFunctionsHelper TOOLFUNCTIONS = load(ToolFunctionsHelper.class);
