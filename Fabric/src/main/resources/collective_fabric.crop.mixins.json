@@ -5,7 +5,7 @@
   "plugin": "com.natamus.collective.fabric.mixin.plugin.FabricMixinConfigPlugin",
   "compatibilityLevel": "JAVA_25",
   "mixins": [
-    "BambooBlockMixin",
+    "BambooStalkBlockMixin",
     "CactusBlockMixin",
     "ChorusFlowerBlockMixin",
     "CocoaBlockMixin",
