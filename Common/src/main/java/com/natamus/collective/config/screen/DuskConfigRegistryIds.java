@@ -174,7 +174,7 @@ public class DuskConfigRegistryIds {
 			case "logs" -> Component.translatable("collective.collective.gui.filterlogs");
 			case "leaves" -> Component.translatable("collective.collective.gui.filterleaves");
 			case "ores" -> Component.translatable("collective.collective.gui.filterores");
-			case "mobs" -> Component.translatable("gamerule.category.mobs");
+			case "mobs" -> Component.translatable("collective.collective.gui.filtermobs");
 			case "monsters" -> Component.translatable("collective.collective.gui.filtermonsters");
 			case "animals" -> Component.translatable("collective.collective.gui.filteranimals");
 			default -> Component.literal(StringFunctions.capitalizeFirst(filter));
