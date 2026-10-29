@@ -376,6 +376,11 @@
   "collective.playertrackingcompass.message.compasspointing": "The compass is pointing at %s.",
   "collective.playertrackingcompass.message.unableredirectcompass": "Unable to redirect the compass. There are no players around or they're too close.",
   "item.playertrackingcompass.tracking_compass": "Tracking Compass",
+  "collective.playertrackingcompass.message.compasspointingnearestplayer": "The compass is pointing at the nearest player.",
+  "collective.playertrackingcompass.message.compassboundtoyou": "The compass is now bound to you. Whoever uses it will be pointed at you.",
+  "collective.playertrackingcompass.message.compassunbound": "The compass is no longer bound to a player, and tracks the nearest player again.",
+  "collective.playertrackingcompass.message.unabletrackboundplayer": "Unable to redirect the compass. %s can't be tracked right now.",
+  "collective.playertrackingcompass.gui.tracks": "Tracks %s",
 
   "_comment_modname_pumpkillagersquest": "Pumpkillager's Quest",
   "collective.pumpkillagersquest.gui.ghostknight": "The Ghost Knight",
