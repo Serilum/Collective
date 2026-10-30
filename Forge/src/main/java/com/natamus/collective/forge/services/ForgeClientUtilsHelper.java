@@ -6,7 +6,7 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.world.level.block.Block;
 
 public class ForgeClientUtilsHelper implements ClientUtilsHelper {
-	@SuppressWarnings("removal")
+	@SuppressWarnings("deprecation")
 	@Override
 	public void blockSetRenderType(Block block, RenderType renderType) {
 		ItemBlockRenderTypes.setRenderLayer(block, renderType);
