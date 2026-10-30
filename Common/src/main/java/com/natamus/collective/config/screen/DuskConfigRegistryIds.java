@@ -12,11 +12,13 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.SpawnEggItem;
+import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
@@ -124,6 +126,12 @@ public class DuskConfigRegistryIds {
 		if (value instanceof Biome) {
 			return Component.translatable(identifier.toLanguageKey("biome")).getString();
 		}
+		if (value instanceof MobEffect mobEffect) {
+			return mobEffect.getDisplayName().getString();
+		}
+		if (value instanceof Enchantment enchantment) {
+			return enchantment.description().getString();
+		}
 		return "";
 	}
 
@@ -143,6 +151,8 @@ public class DuskConfigRegistryIds {
 			case "entity_type" -> Component.translatable("collective.collective.gui.entities");
 			case "dimension" -> Component.translatable("collective.collective.gui.dimensions");
 			case "worldgen/biome" -> Component.translatable("collective.collective.gui.biomes");
+			case "mob_effect" -> Component.translatable("collective.collective.gui.effects");
+			case "enchantment" -> Component.translatable("collective.collective.gui.enchantments");
 			case DuskConfigModToggles.modRegistry -> Component.translatable("collective.collective.gui.mods");
 			default -> Component.translatable("collective.collective.gui.entries");
 		};
