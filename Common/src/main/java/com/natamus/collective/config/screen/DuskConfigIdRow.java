@@ -10,6 +10,7 @@ import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
@@ -18,18 +19,20 @@ import java.util.List;
 public class DuskConfigIdRow extends ContainerObjectSelectionList.Entry<DuskConfigIdRow> {
 	private final ItemStack icon;
 	private final DuskConfigModIcons modIcon;
+	private final Identifier effectSprite;
 	private final String name;
 	private final String id;
 	private final int colour;
 	private final Button button;
 	private final EditBox amountBox;
 
-	public DuskConfigIdRow(ItemStack icon, DuskConfigModIcons modIcon, String name, String id, int colour, Component buttonLabel, Button.OnPress onPress) {
-		this(icon, modIcon, name, id, colour, buttonLabel, onPress, null);
+	public DuskConfigIdRow(ItemStack icon, DuskConfigModIcons modIcon, Identifier effectSprite, String name, String id, int colour, Component buttonLabel, Button.OnPress onPress) {
+		this(icon, modIcon, effectSprite, name, id, colour, buttonLabel, onPress, null);
 	}
-	public DuskConfigIdRow(ItemStack icon, DuskConfigModIcons modIcon, String name, String id, int colour, Component buttonLabel, Button.OnPress onPress, EditBox amountBox) {
+	public DuskConfigIdRow(ItemStack icon, DuskConfigModIcons modIcon, Identifier effectSprite, String name, String id, int colour, Component buttonLabel, Button.OnPress onPress, EditBox amountBox) {
 		this.icon = icon;
 		this.modIcon = modIcon;
+		this.effectSprite = effectSprite;
 		this.name = name;
 		this.id = id;
 		this.colour = colour;
@@ -48,6 +51,9 @@ public class DuskConfigIdRow extends ContainerObjectSelectionList.Entry<DuskConf
 		}
 		else if (modIcon != null) {
 			guiGraphics.blit(RenderPipelines.GUI_TEXTURED, modIcon.texture, x - 2, y + 2, 0, 0, 16, 16, modIcon.width, modIcon.height, modIcon.width, modIcon.height);
+		}
+		else if (effectSprite != null) {
+			guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, effectSprite, x - 2, y + 2, 16, 16);
 		}
 
 		Font font = Minecraft.getInstance().font;

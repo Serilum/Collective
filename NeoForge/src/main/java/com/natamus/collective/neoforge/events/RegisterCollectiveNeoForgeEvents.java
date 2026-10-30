@@ -2,6 +2,7 @@ package com.natamus.collective.neoforge.events;
 
 import com.natamus.collective.cmds.CommandCollective;
 import com.natamus.collective.config.GenerateJSONFiles;
+import com.natamus.collective.data.BlockEntityData;
 import com.natamus.collective.events.CollectiveEvents;
 import com.natamus.collective.events.CollectiveSpawnCheckEvents;
 import com.natamus.collective.functions.WorldFunctions;
@@ -31,6 +32,7 @@ public class RegisterCollectiveNeoForgeEvents {
 	public static void onServerStarted(ServerAboutToStartEvent e) {
 		GenerateJSONFiles.initGeneration(e.getServer());
 		ServerTranslationPack.onServerStarting(e.getServer());
+		BlockEntityData.addModdedCampfiresToCache(e.getServer());
 	}
 
 	@SubscribeEvent

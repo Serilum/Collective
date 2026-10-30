@@ -83,6 +83,10 @@ public class DuskConfigRegistryIds {
 		}
 
 		Identifier identifier = Identifier.tryParse(id);
+		if (identifier != null && registryName.equals("dimension")) {
+			return getDimensionIcon(identifier.toString());
+		}
+
 		Registry<?> registry = getRegistry(registryName);
 		if (identifier == null || registry == null || !registry.containsKey(identifier)) {
 			return ItemStack.EMPTY;
@@ -99,7 +103,33 @@ public class DuskConfigRegistryIds {
 				return new ItemStack(spawnEgg.get());
 			}
 		}
+
+		if (value instanceof Enchantment) {
+			return new ItemStack(Items.ENCHANTED_BOOK);
+		}
 		return ItemStack.EMPTY;
+	}
+
+	private static ItemStack getDimensionIcon(String dimensionId) {
+		return switch (dimensionId) {
+			case "minecraft:overworld" -> new ItemStack(Items.GRASS_BLOCK);
+			case "minecraft:the_nether" -> new ItemStack(Items.NETHERRACK);
+			case "minecraft:the_end" -> new ItemStack(Items.END_STONE);
+			default -> ItemStack.EMPTY;
+		};
+	}
+
+	public static Identifier getEffectSprite(String registryName, String id) {
+		Identifier identifier = Identifier.tryParse(id);
+		Registry<?> registry = getRegistry(registryName);
+		if (identifier == null || registry == null || !registry.containsKey(identifier)) {
+			return null;
+		}
+
+		if (registry.getValue(identifier) instanceof MobEffect) {
+			return identifier.withPrefix("mob_effect/");
+		}
+		return null;
 	}
 
 	public static String getName(String registryName, String id) {
