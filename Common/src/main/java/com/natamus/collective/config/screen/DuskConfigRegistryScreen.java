@@ -11,6 +11,7 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
@@ -156,7 +157,7 @@ public class DuskConfigRegistryScreen extends DuskConfigBaseScreen {
 			if (entry.amounts) {
 				amountBox = createAmountBox(id, new IdAmount(selectedEntry));
 			}
-			selectedRows.add(new DuskConfigIdRow(getIcon(id), getModIcon(id), getName(id), id, colour, getRemoveLabel(id), button -> pressRemove(id), amountBox));
+			selectedRows.add(new DuskConfigIdRow(getIcon(id), getModIcon(id), getEffectSprite(id), getName(id), id, colour, getRemoveLabel(id), button -> pressRemove(id), amountBox));
 		}
 		selectedList.setRows(selectedRows);
 	}
@@ -203,7 +204,7 @@ public class DuskConfigRegistryScreen extends DuskConfigBaseScreen {
 		List<DuskConfigIdRow> availableRows = new ArrayList<>();
 		for (String id : shownIds) {
 			if (!isSelected(id) && (id.contains(search) || getName(id).toLowerCase(Locale.ROOT).contains(search))) {
-				availableRows.add(new DuskConfigIdRow(getIcon(id), getModIcon(id), getName(id), id, 0xFFFFFFFF, Component.literal("+").withStyle(ChatFormatting.GREEN), button -> addId(id)));
+				availableRows.add(new DuskConfigIdRow(getIcon(id), getModIcon(id), getEffectSprite(id), getName(id), id, 0xFFFFFFFF, Component.literal("+").withStyle(ChatFormatting.GREEN), button -> addId(id)));
 			}
 		}
 		availableList.setRows(availableRows);
@@ -239,6 +240,10 @@ public class DuskConfigRegistryScreen extends DuskConfigBaseScreen {
 			return null;
 		}
 		return DuskConfigModIcons.getIcon(id);
+	}
+
+	private TextureAtlasSprite getEffectSprite(String id) {
+		return DuskConfigRegistryIds.getEffectSprite(entry.registry, id);
 	}
 
 	private String getName(String id) {

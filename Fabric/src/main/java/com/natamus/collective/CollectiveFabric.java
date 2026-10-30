@@ -3,6 +3,7 @@ package com.natamus.collective;
 import com.natamus.collective.check.RegisterMod;
 import com.natamus.collective.cmds.CommandCollective;
 import com.natamus.collective.config.GenerateJSONFiles;
+import com.natamus.collective.data.BlockEntityData;
 import com.natamus.collective.events.CollectiveEvents;
 import com.natamus.collective.fabric.callbacks.CollectiveEntityEvents;
 import com.natamus.collective.fabric.callbacks.CollectivePlayerEvents;
@@ -33,6 +34,7 @@ public class CollectiveFabric implements ModInitializer {
 		ServerLifecycleEvents.SERVER_STARTING.register((minecraftServer) -> {
 			GenerateJSONFiles.initGeneration(minecraftServer);
 			ServerTranslationPack.onServerStarting(minecraftServer);
+			BlockEntityData.addModdedCampfiresToCache(minecraftServer);
 		});
 
 		ServerWorldEvents.LOAD.register((MinecraftServer server, ServerLevel level) -> {

@@ -6,6 +6,7 @@ import com.natamus.collective.functions.StringFunctions;
 import com.natamus.collective.services.Services;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientPacketListener;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
@@ -15,6 +16,7 @@ import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.SpawnEggItem;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.level.ItemLike;
@@ -81,6 +83,10 @@ public class DuskConfigRegistryIds {
 		}
 
 		ResourceLocation resourceLocation = ResourceLocation.tryParse(id);
+		if (resourceLocation != null && registryName.equals("dimension")) {
+			return getDimensionIcon(resourceLocation.toString());
+		}
+
 		Registry<?> registry = getRegistry(registryName);
 		if (resourceLocation == null || registry == null || !registry.containsKey(resourceLocation)) {
 			return ItemStack.EMPTY;
@@ -97,7 +103,33 @@ public class DuskConfigRegistryIds {
 				return new ItemStack(spawnEgg);
 			}
 		}
+
+		if (value instanceof Enchantment) {
+			return new ItemStack(Items.ENCHANTED_BOOK);
+		}
 		return ItemStack.EMPTY;
+	}
+
+	private static ItemStack getDimensionIcon(String dimensionId) {
+		return switch (dimensionId) {
+			case "minecraft:overworld" -> new ItemStack(Items.GRASS_BLOCK);
+			case "minecraft:the_nether" -> new ItemStack(Items.NETHERRACK);
+			case "minecraft:the_end" -> new ItemStack(Items.END_STONE);
+			default -> ItemStack.EMPTY;
+		};
+	}
+
+	public static TextureAtlasSprite getEffectSprite(String registryName, String id) {
+		ResourceLocation resourceLocation = ResourceLocation.tryParse(id);
+		Registry<?> registry = getRegistry(registryName);
+		if (resourceLocation == null || registry == null || !registry.containsKey(resourceLocation)) {
+			return null;
+		}
+
+		if (registry.get(resourceLocation) instanceof MobEffect mobEffect) {
+			return Minecraft.getInstance().getMobEffectTextures().get(BuiltInRegistries.MOB_EFFECT.wrapAsHolder(mobEffect));
+		}
+		return null;
 	}
 
 	private static SpawnEggItem getSpawnEgg(EntityType<?> entityType) {

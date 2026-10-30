@@ -12,10 +12,13 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class GlobalCaches {
+	public static boolean cacheCampfires = false;
+
 	public static List<BlockEntityType<?>> blockEntitiesToCache = new ArrayList<>();
 	public static List<BlockEntityType<?>> serverSideBlockEntityTypes = new ArrayList<>();
 	public static List<BlockEntityType<?>> clientSideBlockEntityTypes = new ArrayList<>();
 	public static HashMap<BlockEntityType<?>, WeakHashMap<Level, CopyOnWriteArrayList<WeakReference<BlockEntity>>>> cachedBlockEntities = new HashMap<>();
+	public static List<BlockEntityType<?>> campfireBlockEntityTypes = new ArrayList<>();
 
 	public static HashMap<String, ItemStack> cachedPlayerHeadsMap = new HashMap<>();
 	public static HashMap<String, UUID> cachedPlayerNamesMap = new HashMap<>();

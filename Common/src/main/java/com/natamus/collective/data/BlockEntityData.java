@@ -1,8 +1,14 @@
 package com.natamus.collective.data;
 
+import com.natamus.collective.functions.CampfireFunctions;
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -31,6 +37,53 @@ public class BlockEntityData {
 		if (!GlobalCaches.cachedBlockEntities.containsKey(blockEntityType)) {
 			GlobalCaches.cachedBlockEntities.put(blockEntityType, new WeakHashMap<>());
 		}
+	}
+
+	public static void addCampfiresToCache() {
+		GlobalCaches.cacheCampfires = true;
+		addCampfireBlockEntityTypeToCache(BlockEntityType.CAMPFIRE);
+	}
+
+	public static void addModdedCampfiresToCache(MinecraftServer server) {
+		if (!GlobalCaches.cacheCampfires) {
+			return;
+		}
+
+		Registry<Block> blockRegistry = server.registryAccess().registryOrThrow(Registries.BLOCK);
+		Registry<BlockEntityType<?>> blockEntityTypeRegistry = server.registryAccess().registryOrThrow(Registries.BLOCK_ENTITY_TYPE);
+
+		List<BlockState> campfireStates = new ArrayList<>();
+		for (Block block : blockRegistry) {
+			BlockState defaultState = block.defaultBlockState();
+			if (CampfireFunctions.isCampfire(defaultState)) {
+				campfireStates.add(defaultState);
+			}
+		}
+
+		for (BlockEntityType<?> blockEntityType : blockEntityTypeRegistry) {
+			for (BlockState campfireState : campfireStates) {
+				if (blockEntityType.isValid(campfireState)) {
+					addCampfireBlockEntityTypeToCache(blockEntityType);
+					break;
+				}
+			}
+		}
+	}
+
+	private static void addCampfireBlockEntityTypeToCache(BlockEntityType<?> blockEntityType) {
+		addBlockEntityToCache(blockEntityType, true, false);
+		if (!GlobalCaches.campfireBlockEntityTypes.contains(blockEntityType)) {
+			GlobalCaches.campfireBlockEntityTypes.add(blockEntityType);
+		}
+	}
+
+	public static List<BlockEntity> getCachedCampfires(Level level) {
+		List<BlockEntity> campfires = new ArrayList<>();
+		for (BlockEntityType<?> blockEntityType : GlobalCaches.campfireBlockEntityTypes) {
+			campfires.addAll(getCachedBlockEntities(blockEntityType, level));
+		}
+
+		return campfires;
 	}
 
 	public static boolean shouldCacheOnSide(BlockEntityType<?> blockEntityType, boolean isClientSide) {
