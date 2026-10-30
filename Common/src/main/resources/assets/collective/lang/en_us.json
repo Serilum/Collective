@@ -19,6 +19,8 @@
   "collective.collective.gui.configtitle": "%s Config",
   "collective.collective.gui.dimensions": "Dimensions",
   "collective.collective.gui.discardchanges": "Discard changes?",
+  "collective.collective.gui.effects": "Effects",
+  "collective.collective.gui.enchantments": "Enchantments",
   "collective.collective.gui.entities": "Entities",
   "collective.collective.gui.mods": "Mods",
   "collective.collective.gui.entries": "Entries",

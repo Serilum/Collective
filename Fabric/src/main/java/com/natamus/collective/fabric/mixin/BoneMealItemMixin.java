@@ -1,6 +1,5 @@
 package com.natamus.collective.fabric.mixin;
 
-import com.natamus.collective.fabric.callbacks.CollectiveCropEvents;
 import com.natamus.collective.globalcallbacks.GlobalCropCallback;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.InteractionResult;
