@@ -39,16 +39,18 @@ public class PlayerFunctions {
 		if (serverplayer.wonGame) {
 			serverplayer.wonGame = false;
 			serverplayer = server.getPlayerList().respawn(serverplayer, true, Entity.RemovalReason.CHANGED_DIMENSION);
+			attachRespawnedPlayerToConnection(serverplayer);
 			CriteriaTriggers.CHANGED_DIMENSION.trigger(serverplayer, Level.END, Level.OVERWORLD);
 		}
-		else if (serverplayer.getHealth() <= 0.0F) {
-			server.getPlayerList().respawn(serverplayer, false, Entity.RemovalReason.KILLED);
-		}
-		else if (serverplayer.isSpectator()) {
-			server.getPlayerList().respawn(serverplayer, false, Entity.RemovalReason.KILLED);
+		else if (serverplayer.getHealth() <= 0.0F || serverplayer.isSpectator()) {
+			attachRespawnedPlayerToConnection(server.getPlayerList().respawn(serverplayer, false, Entity.RemovalReason.KILLED));
 		}
 
 		return true;
+	}
+
+	private static void attachRespawnedPlayerToConnection(ServerPlayer respawnedPlayer) {
+		respawnedPlayer.connection.player = respawnedPlayer;
 	}
 
 	public static Player matchPlayer(Player player, String other) {
