@@ -37,16 +37,18 @@ public class PlayerFunctions {
 		if (serverplayer.wonGame) {
 			serverplayer.wonGame = false;
 			serverplayer = server.getPlayerList().respawn(serverplayer, true);
+			attachRespawnedPlayerToConnection(serverplayer);
 			CriteriaTriggers.CHANGED_DIMENSION.trigger(serverplayer, Level.END, Level.OVERWORLD);
 		}
-		else if (serverplayer.getHealth() <= 0.0F) {
-			server.getPlayerList().respawn(serverplayer, false);
-		}
-		else if (serverplayer.isSpectator()) {
-			server.getPlayerList().respawn(serverplayer, false);
+		else if (serverplayer.getHealth() <= 0.0F || serverplayer.isSpectator()) {
+			attachRespawnedPlayerToConnection(server.getPlayerList().respawn(serverplayer, false));
 		}
 
 		return true;
+	}
+
+	private static void attachRespawnedPlayerToConnection(ServerPlayer respawnedPlayer) {
+		respawnedPlayer.connection.player = respawnedPlayer;
 	}
 
 	public static Player matchPlayer(Player player, String other) {
