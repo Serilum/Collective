@@ -8,6 +8,7 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.QuartPos;
 import net.minecraft.core.Registry;
+import net.minecraft.core.SectionPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -17,16 +18,25 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.StructureManager;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.biome.BiomeSource;
 import net.minecraft.world.level.biome.Climate;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.chunk.ChunkGenerator;
+import net.minecraft.world.level.chunk.ChunkGeneratorStructureState;
+import net.minecraft.world.level.chunk.status.ChunkStatus;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.levelgen.RandomState;
 import net.minecraft.world.level.levelgen.structure.Structure;
+import net.minecraft.world.level.levelgen.structure.StructureCheckResult;
+import net.minecraft.world.level.levelgen.structure.StructureStart;
+import net.minecraft.world.level.levelgen.structure.placement.ConcentricRingsStructurePlacement;
+import net.minecraft.world.level.levelgen.structure.placement.RandomSpreadStructurePlacement;
+import net.minecraft.world.level.levelgen.structure.placement.StructurePlacement;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
@@ -34,8 +44,11 @@ import net.minecraft.world.phys.Vec3;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Predicate;
 
@@ -261,7 +274,7 @@ public class BlockPosFunctions {
 			return null;
 		}
 
-		return getSurfacePosOfNearestStructure(serverLevel, villageStructures, nearPos);
+		return getSurfacePosOfNearestStructure(serverLevel, villageStructures, nearPos, Long.MAX_VALUE);
 	}
 
 	public static BlockPos getNearbyVillageInSameBiome(ServerLevel serverLevel, BlockPos nearPos) {
@@ -289,17 +302,155 @@ public class BlockPosFunctions {
 			return null;
 		}
 
-		return getSurfacePosOfNearestStructure(serverLevel, HolderSet.direct(villagesInBiome), nearPos);
+		return getSurfacePosOfNearestStructure(serverLevel, HolderSet.direct(villagesInBiome), nearPos, Long.MAX_VALUE);
 	}
 
-	private static BlockPos getSurfacePosOfNearestStructure(ServerLevel serverLevel, HolderSet<Structure> structures, BlockPos nearPos) {
-		Pair<BlockPos, Holder<Structure>> nearestStructure = serverLevel.getChunkSource().getGenerator().findNearestMapStructure(serverLevel, structures, nearPos, 100, false);
-		if (nearestStructure == null) {
+	private static BlockPos getSurfacePosOfNearestStructure(ServerLevel serverLevel, HolderSet<Structure> structures, BlockPos nearPos, long searchDeadline) {
+		StructureStart nearestStructureStart = getNearestStructureStart(serverLevel, structures, nearPos, 100, searchDeadline);
+		if (nearestStructureStart == null) {
 			return null;
 		}
 
-		BlockPos structurePos = nearestStructure.getFirst();
-		return getSurfaceBlockPos(serverLevel, structurePos.getX(), structurePos.getZ());
+		BlockPos structureCenter = getStructureStartCenter(nearestStructureStart);
+		return getSurfaceBlockPos(serverLevel, structureCenter.getX(), structureCenter.getZ());
+	}
+
+	public static StructureStart getNearestStructureStart(ServerLevel serverLevel, HolderSet<Structure> structures, BlockPos nearPos, int maxSearchRadius, long searchDeadline) {
+		ChunkGeneratorStructureState generatorState = serverLevel.getChunkSource().getGeneratorState();
+		Map<StructurePlacement, Set<Holder<Structure>>> structuresPerPlacement = new HashMap<>();
+		for (Holder<Structure> structure : structures) {
+			for (StructurePlacement placement : generatorState.getPlacementsForStructure(structure)) {
+				structuresPerPlacement.computeIfAbsent(placement, ignored -> new HashSet<>()).add(structure);
+			}
+		}
+
+		StructureStart nearestStructureStart = null;
+		for (Map.Entry<StructurePlacement, Set<Holder<Structure>>> entry : structuresPerPlacement.entrySet()) {
+			if (entry.getKey() instanceof ConcentricRingsStructurePlacement concentricPlacement) {
+				StructureStart concentricStructureStart = getNearestConcentricStructureStart(serverLevel, entry.getValue(), concentricPlacement, nearPos, searchDeadline);
+				nearestStructureStart = getCloserStructureStart(nearPos, nearestStructureStart, concentricStructureStart);
+			}
+		}
+
+		int chunkOriginX = SectionPos.blockToSectionCoord(nearPos.getX());
+		int chunkOriginZ = SectionPos.blockToSectionCoord(nearPos.getZ());
+		long levelSeed = generatorState.getLevelSeed();
+
+		for (int radius = 0; radius <= maxSearchRadius; radius++) {
+			if (System.currentTimeMillis() > searchDeadline) {
+				break;
+			}
+
+			boolean foundInRing = false;
+			for (Map.Entry<StructurePlacement, Set<Holder<Structure>>> entry : structuresPerPlacement.entrySet()) {
+				if (!(entry.getKey() instanceof RandomSpreadStructurePlacement randomSpreadPlacement)) {
+					continue;
+				}
+
+				StructureStart ringStructureStart = getStructureStartInRing(serverLevel, entry.getValue(), randomSpreadPlacement, chunkOriginX, chunkOriginZ, radius, levelSeed);
+				if (ringStructureStart != null) {
+					foundInRing = true;
+					nearestStructureStart = getCloserStructureStart(nearPos, nearestStructureStart, ringStructureStart);
+				}
+			}
+
+			if (foundInRing) {
+				break;
+			}
+		}
+
+		return nearestStructureStart;
+	}
+
+	private static StructureStart getNearestConcentricStructureStart(ServerLevel serverLevel, Set<Holder<Structure>> structures, ConcentricRingsStructurePlacement placement, BlockPos nearPos, long searchDeadline) {
+		List<ChunkPos> ringPositions = serverLevel.getChunkSource().getGeneratorState().getRingPositionsFor(placement);
+		if (ringPositions == null) {
+			return null;
+		}
+
+		StructureStart nearestStructureStart = null;
+		long nearestDistanceSqr = Long.MAX_VALUE;
+
+		for (ChunkPos ringPosition : ringPositions) {
+			if (System.currentTimeMillis() > searchDeadline) {
+				break;
+			}
+
+			long distanceSqr = getHorizontalDistanceSqr(nearPos, placement.getLocatePos(ringPosition));
+			if (distanceSqr >= nearestDistanceSqr) {
+				continue;
+			}
+
+			StructureStart structureStart = getStructureStartAt(serverLevel, structures, placement, ringPosition);
+			if (structureStart != null) {
+				nearestStructureStart = structureStart;
+				nearestDistanceSqr = distanceSqr;
+			}
+		}
+
+		return nearestStructureStart;
+	}
+
+	private static StructureStart getStructureStartInRing(ServerLevel serverLevel, Set<Holder<Structure>> structures, RandomSpreadStructurePlacement placement, int chunkOriginX, int chunkOriginZ, int radius, long levelSeed) {
+		int spacing = placement.spacing();
+		for (int x = -radius; x <= radius; x++) {
+			boolean onRingEdgeX = x == -radius || x == radius;
+			for (int z = -radius; z <= radius; z++) {
+				boolean onRingEdgeZ = z == -radius || z == radius;
+				if (!onRingEdgeX && !onRingEdgeZ) {
+					continue;
+				}
+
+				ChunkPos potentialChunk = placement.getPotentialStructureChunk(levelSeed, chunkOriginX + spacing * x, chunkOriginZ + spacing * z);
+				StructureStart structureStart = getStructureStartAt(serverLevel, structures, placement, potentialChunk);
+				if (structureStart != null) {
+					return structureStart;
+				}
+			}
+		}
+
+		return null;
+	}
+
+	private static StructureStart getStructureStartAt(ServerLevel serverLevel, Set<Holder<Structure>> structures, StructurePlacement placement, ChunkPos chunkPos) {
+		StructureManager structureManager = serverLevel.structureManager();
+		for (Holder<Structure> structure : structures) {
+			if (structureManager.checkStructurePresence(chunkPos, structure.value(), placement, false) == StructureCheckResult.START_NOT_PRESENT) {
+				continue;
+			}
+
+			ChunkAccess chunk = serverLevel.getChunk(chunkPos.x, chunkPos.z, ChunkStatus.STRUCTURE_STARTS);
+			StructureStart structureStart = structureManager.getStartForStructure(SectionPos.bottomOf(chunk), structure.value(), chunk);
+			if (structureStart != null && structureStart.isValid()) {
+				return structureStart;
+			}
+		}
+
+		return null;
+	}
+
+	private static StructureStart getCloserStructureStart(BlockPos nearPos, StructureStart currentStructureStart, StructureStart otherStructureStart) {
+		if (otherStructureStart == null) {
+			return currentStructureStart;
+		}
+		if (currentStructureStart == null) {
+			return otherStructureStart;
+		}
+
+		if (getHorizontalDistanceSqr(nearPos, getStructureStartCenter(otherStructureStart)) < getHorizontalDistanceSqr(nearPos, getStructureStartCenter(currentStructureStart))) {
+			return otherStructureStart;
+		}
+		return currentStructureStart;
+	}
+
+	private static long getHorizontalDistanceSqr(BlockPos firstPos, BlockPos secondPos) {
+		long distanceX = firstPos.getX() - secondPos.getX();
+		long distanceZ = firstPos.getZ() - secondPos.getZ();
+		return distanceX * distanceX + distanceZ * distanceZ;
+	}
+
+	public static BlockPos getStructureStartCenter(StructureStart structureStart) {
+		return structureStart.getPieces().get(0).getBoundingBox().getCenter();
 	}
 
 	public static HolderSet<Structure> getStructureHolderSet(ServerLevel serverLevel, String structure) {
