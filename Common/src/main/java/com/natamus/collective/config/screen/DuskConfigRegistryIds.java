@@ -6,6 +6,7 @@ import com.natamus.collective.functions.StringFunctions;
 import com.natamus.collective.services.Services;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientPacketListener;
+import net.minecraft.client.server.IntegratedServer;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -31,6 +32,16 @@ import java.util.Optional;
 
 public class DuskConfigRegistryIds {
 	public static List<String> getIds(String registryName) {
+		List<String> ids = getLiveIds(registryName);
+		if (ids.isEmpty() && needsWorld(registryName)) {
+			ids = DuskConfigRegistryCache.loadIds(registryName);
+		}
+
+		Collections.sort(ids);
+		return ids;
+	}
+
+	public static List<String> getLiveIds(String registryName) {
 		List<String> ids = new ArrayList<>();
 		if (registryName.equals("dimension")) {
 			addDimensionIds(ids);
@@ -46,9 +57,15 @@ public class DuskConfigRegistryIds {
 				}
 			}
 		}
-
-		Collections.sort(ids);
 		return ids;
+	}
+
+	public static boolean isBuiltInRegistry(String registryName) {
+		Identifier registryId = Identifier.tryParse(registryName);
+		if (registryId == null) {
+			return false;
+		}
+		return BuiltInRegistries.REGISTRY.containsKey(registryId);
 	}
 
 	public static List<String> getSuggestedIds(String registryName, String filter) {
@@ -231,9 +248,23 @@ public class DuskConfigRegistryIds {
 			return null;
 		}
 
-		Optional<Registry<Object>> worldRegistry = connection.registryAccess().lookup(ResourceKey.createRegistryKey(registryId));
+		ResourceKey<Registry<Object>> registryKey = ResourceKey.createRegistryKey(registryId);
+		Optional<Registry<Object>> worldRegistry = connection.registryAccess().lookup(registryKey);
 		if (worldRegistry.isPresent()) {
 			return worldRegistry.get();
+		}
+		return getSingleplayerServerRegistry(registryKey);
+	}
+
+	private static Registry<?> getSingleplayerServerRegistry(ResourceKey<Registry<Object>> registryKey) {
+		IntegratedServer singleplayerServer = Minecraft.getInstance().getSingleplayerServer();
+		if (singleplayerServer == null) {
+			return null;
+		}
+
+		Optional<Registry<Object>> serverRegistry = singleplayerServer.registryAccess().lookup(registryKey);
+		if (serverRegistry.isPresent()) {
+			return serverRegistry.get();
 		}
 		return null;
 	}

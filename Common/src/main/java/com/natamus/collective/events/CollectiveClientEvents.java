@@ -1,7 +1,9 @@
 package com.natamus.collective.events;
 
 import com.mojang.datafixers.util.Pair;
+import com.natamus.collective.config.screen.DuskConfigRegistryCache;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.gui.screens.DeathScreen;
 import net.minecraft.server.TickTask;
 
@@ -11,8 +13,12 @@ public class CollectiveClientEvents {
 	private static final Minecraft mc = Minecraft.getInstance();
 	public static CopyOnWriteArrayList<Pair<Integer, Runnable>> scheduledClientRunnables = new CopyOnWriteArrayList<>();
 
+	private static ClientLevel lastPickerCacheLevel = null;
+
 	public static int clientTickCount = 0;
 	public static void onClientTick() {
+		cachePickerIdsOnWorldJoin();
+
 		if (mc.isPaused()) {
 			if (!(mc.gui.screen() instanceof DeathScreen)) {
 				return;
@@ -27,5 +33,16 @@ public class CollectiveClientEvents {
 		}
 
 		clientTickCount++;
+	}
+
+	private static void cachePickerIdsOnWorldJoin() {
+		if (mc.level == lastPickerCacheLevel) {
+			return;
+		}
+
+		lastPickerCacheLevel = mc.level;
+		if (mc.level != null) {
+			DuskConfigRegistryCache.saveWorldRegistryIds();
+		}
 	}
 }

@@ -15,6 +15,7 @@ import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
+import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
@@ -333,14 +334,31 @@ public class DuskConfigRegistryScreen extends DuskConfigBaseScreen {
 			return;
 		}
 		if (registryIds.isEmpty()) {
-			guiGraphics.text(this.font, Component.translatable("collective.collective.gui.worldneeded"), this.width / 2 + 7, 64, 0xFFA0A0A0);
+			extractWorldNeededNotice(guiGraphics);
 		}
 		else if (this.minecraft.level == null) {
 			guiGraphics.pose().pushMatrix();
 			guiGraphics.pose().translate(this.width / 2F, 23);
 			guiGraphics.pose().scale(0.75F, 0.75F);
-			guiGraphics.centeredText(this.font, Component.translatable("collective.collective.gui.worldneeded"), 0, 0, 0xFFFFAA00);
+			guiGraphics.centeredText(this.font, getOutOfWorldNotice(), 0, 0, 0xFFFFAA00);
 			guiGraphics.pose().popMatrix();
+		}
+	}
+
+	private Component getOutOfWorldNotice() {
+		if (DuskConfigRegistryIds.isBuiltInRegistry(entry.registry)) {
+			return Component.translatable("collective.collective.gui.worldneeded");
+		}
+		return Component.translatable("collective.collective.gui.cachedlist");
+	}
+
+	private void extractWorldNeededNotice(GuiGraphicsExtractor guiGraphics) {
+		int noticeX = this.width / 2 + 15;
+		int noticeY = 70;
+		int noticeWidth = this.width / 2 - 35;
+		for (FormattedCharSequence noticeLine : this.font.split(Component.translatable("collective.collective.gui.worldneeded"), noticeWidth)) {
+			guiGraphics.text(this.font, noticeLine, noticeX, noticeY, 0xFFA0A0A0);
+			noticeY += this.font.lineHeight + 2;
 		}
 	}
 }
