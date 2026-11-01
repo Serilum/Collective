@@ -14,6 +14,7 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
+import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
@@ -331,14 +332,35 @@ public class DuskConfigRegistryScreen extends DuskConfigBaseScreen {
 		guiGraphics.drawCenteredString(this.font, this.title, this.width / 2, 12, 0xFFFFFFFF);
 		guiGraphics.drawString(this.font, Component.translatable("pack.selected.title").append(" (" + selectedIds.size() + ")"), 12, 40, 0xFFA0A0A0);
 		if (registryIds.isEmpty() && DuskConfigRegistryIds.needsWorld(entry.registry)) {
-			guiGraphics.drawString(this.font, Component.translatable("collective.collective.gui.worldneeded"), this.width / 2 + 7, 64, 0xFFA0A0A0);
+			renderWorldNeededNotice(guiGraphics);
+		}
+		else if (this.minecraft.level == null && isShowingCachedList()) {
+			renderTopNotice(guiGraphics, Component.translatable("collective.collective.gui.cachedlist"));
 		}
 		else if (this.minecraft.level == null && !entry.filter.isEmpty() && suggestedIds.isEmpty()) {
-			guiGraphics.pose().pushPose();
-			guiGraphics.pose().translate(this.width / 2F, 23, 0);
-			guiGraphics.pose().scale(0.75F, 0.75F, 1F);
-			guiGraphics.drawCenteredString(this.font, Component.translatable("collective.collective.gui.worldneeded"), 0, 0, 0xFFFFAA00);
-			guiGraphics.pose().popPose();
+			renderTopNotice(guiGraphics, Component.translatable("collective.collective.gui.worldneeded"));
+		}
+	}
+
+	private boolean isShowingCachedList() {
+		return DuskConfigRegistryIds.needsWorld(entry.registry) && !DuskConfigRegistryIds.isBuiltInRegistry(entry.registry);
+	}
+
+	private void renderTopNotice(GuiGraphics guiGraphics, Component notice) {
+		guiGraphics.pose().pushPose();
+		guiGraphics.pose().translate(this.width / 2F, 23, 0);
+		guiGraphics.pose().scale(0.75F, 0.75F, 1F);
+		guiGraphics.drawCenteredString(this.font, notice, 0, 0, 0xFFFFAA00);
+		guiGraphics.pose().popPose();
+	}
+
+	private void renderWorldNeededNotice(GuiGraphics guiGraphics) {
+		int noticeX = this.width / 2 + 15;
+		int noticeY = 70;
+		int noticeWidth = this.width / 2 - 35;
+		for (FormattedCharSequence noticeLine : this.font.split(Component.translatable("collective.collective.gui.worldneeded"), noticeWidth)) {
+			guiGraphics.drawString(this.font, noticeLine, noticeX, noticeY, 0xFFA0A0A0);
+			noticeY += this.font.lineHeight + 2;
 		}
 	}
 }

@@ -1,6 +1,7 @@
 package com.natamus.collective.config.screen;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -9,11 +10,14 @@ import net.minecraft.client.gui.components.ContainerObjectSelectionList;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarratableEntry;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.network.chat.Component;
+import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class DuskConfigIdRow extends ContainerObjectSelectionList.Entry<DuskConfigIdRow> {
@@ -74,6 +78,12 @@ public class DuskConfigIdRow extends ContainerObjectSelectionList.Entry<DuskConf
 			guiGraphics.pose().popPose();
 		}
 
+		boolean isMouseOverLabel = hovered && mouseX >= x + 20 && mouseX < x + 20 + labelWidth;
+		Screen screen = Minecraft.getInstance().screen;
+		if (isMouseOverLabel && screen != null && isLabelShortened(font, labelWidth)) {
+			screen.setTooltipForNextRenderPass(getFullLabelLines());
+		}
+
 		button.setX(right - 24);
 		button.setY(y);
 		button.render(guiGraphics, mouseX, mouseY, partialTick);
@@ -83,6 +93,22 @@ public class DuskConfigIdRow extends ContainerObjectSelectionList.Entry<DuskConf
 			amountBox.setY(y);
 			amountBox.render(guiGraphics, mouseX, mouseY, partialTick);
 		}
+	}
+
+	private boolean isLabelShortened(Font font, int labelWidth) {
+		if (name.isEmpty()) {
+			return font.width(id) > labelWidth;
+		}
+		return font.width(name) > labelWidth || font.width(id) * 0.75F > labelWidth;
+	}
+
+	private List<FormattedCharSequence> getFullLabelLines() {
+		List<FormattedCharSequence> fullLabelLines = new ArrayList<>();
+		if (!name.isEmpty()) {
+			fullLabelLines.add(Component.literal(name).getVisualOrderText());
+		}
+		fullLabelLines.add(Component.literal(id).withStyle(ChatFormatting.GRAY).getVisualOrderText());
+		return fullLabelLines;
 	}
 
 	@Override
