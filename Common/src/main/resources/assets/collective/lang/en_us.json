@@ -47,6 +47,8 @@
   "collective.collective.gui.old": "Old",
   "collective.collective.gui.support": "Support me",
   "collective.collective.gui.tooltips": "Tooltips: %s",
+  "collective.collective.gui.weight": "Weight",
+  "collective.collective.gui.weightshare": "%s%% of the picks",
   "collective.collective.gui.worldneeded": "Join an in-game world to see the full picker list.",
   "collective.collective.message.configdefault": "Default: %s",
   "collective.collective.message.confighelp": "Shows and changes a mod's settings.",

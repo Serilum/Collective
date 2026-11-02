@@ -33,6 +33,7 @@ public class DuskConfigRegistryScreen extends DuskConfigBaseScreen {
 	private final HashMap<String, ItemStack> icons = new HashMap<>();
 	private final HashMap<String, String> names = new HashMap<>();
 	private final HashMap<String, Boolean> loadedIds = new HashMap<>();
+	private final HashMap<String, EditBox> weightBoxes = new HashMap<>();
 	private DuskConfigIdList selectedList;
 	private DuskConfigIdList availableList;
 	private EditBox searchBox;
@@ -146,6 +147,8 @@ public class DuskConfigRegistryScreen extends DuskConfigBaseScreen {
 	}
 
 	private void refreshSelectedList() {
+		weightBoxes.clear();
+
 		List<DuskConfigIdRow> selectedRows = new ArrayList<>();
 		for (String selectedEntry : selectedIds) {
 			String id = getEntryId(selectedEntry);
@@ -155,27 +158,73 @@ public class DuskConfigRegistryScreen extends DuskConfigBaseScreen {
 			}
 
 			EditBox amountBox = null;
-			if (entry.amounts) {
+			if (entry.hasIdNumbers()) {
 				amountBox = createAmountBox(id, new IdAmount(selectedEntry));
 			}
 			selectedRows.add(new DuskConfigIdRow(getIcon(id), getModIcon(id), getEffectSprite(id), getName(id), id, colour, getRemoveLabel(id), button -> pressRemove(id), amountBox));
 		}
 		selectedList.setRows(selectedRows);
+
+		refreshWeightTooltips();
 	}
 
 	private EditBox createAmountBox(String id, IdAmount idAmount) {
-		EditBox amountBox = new EditBox(this.font, 0, 0, 44, 20, Component.translatable("collective.collective.gui.amount"));
+		EditBox amountBox = new EditBox(this.font, 0, 0, 44, 20, getAmountBoxLabel());
 		amountBox.setValue(idAmount.getAmountText());
+		if (entry.weights) {
+			amountBox.setHint(getAmountBoxLabel());
+			weightBoxes.put(id, amountBox);
+		}
+
 		amountBox.setResponder(text -> {
-			if (!IdAmount.isValidAmountText(text.strip())) {
+			if (!isValidAmountBoxText(text.strip())) {
 				amountBox.setTextColor(0xFFFF0000);
 				return;
 			}
 
 			amountBox.setTextColor(0xFFE0E0E0);
 			setAmount(id, text.strip());
+			refreshWeightTooltips();
 		});
 		return amountBox;
+	}
+
+	private Component getAmountBoxLabel() {
+		if (entry.weights) {
+			return Component.translatable("collective.collective.gui.weight");
+		}
+		return Component.translatable("collective.collective.gui.amount");
+	}
+
+	private boolean isValidAmountBoxText(String text) {
+		if (entry.weights) {
+			return IdAmount.isValidWeightText(text);
+		}
+		return IdAmount.isValidAmountText(text);
+	}
+
+	private void refreshWeightTooltips() {
+		if (weightBoxes.isEmpty()) {
+			return;
+		}
+
+		int totalWeight = 0;
+		for (String selectedEntry : selectedIds) {
+			totalWeight += new IdAmount(selectedEntry).maximum;
+		}
+
+		for (String selectedEntry : selectedIds) {
+			EditBox weightBox = weightBoxes.get(getEntryId(selectedEntry));
+			if (weightBox == null) {
+				continue;
+			}
+
+			double share = 0;
+			if (totalWeight > 0) {
+				share = new IdAmount(selectedEntry).maximum * 100.0 / totalWeight;
+			}
+			weightBox.setTooltip(Tooltip.create(Component.translatable("collective.collective.gui.weightshare", String.format(Locale.ROOT, "%.1f", share))));
+		}
 	}
 
 	private void setAmount(String id, String amountText) {
@@ -188,7 +237,7 @@ public class DuskConfigRegistryScreen extends DuskConfigBaseScreen {
 	}
 
 	private String getEntryId(String selectedEntry) {
-		if (!entry.amounts) {
+		if (!entry.hasIdNumbers()) {
 			return selectedEntry;
 		}
 		return IdAmount.getId(selectedEntry);
@@ -263,7 +312,7 @@ public class DuskConfigRegistryScreen extends DuskConfigBaseScreen {
 			selectedIds.clear();
 		}
 
-		if (entry.amounts) {
+		if (entry.hasIdNumbers()) {
 			selectedIds.add(new IdAmount(id).toEntry());
 		}
 		else {
