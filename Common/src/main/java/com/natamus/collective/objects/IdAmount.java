@@ -39,6 +39,10 @@ public class IdAmount {
 		return amountText.matches("\\d{1,9}(-\\d{1,9})?");
 	}
 
+	public static boolean isValidWeightText(String weightText) {
+		return weightText.matches("\\d{1,9}");
+	}
+
 	public String getAmountText() {
 		if (minimum == maximum) {
 			return String.valueOf(minimum);
