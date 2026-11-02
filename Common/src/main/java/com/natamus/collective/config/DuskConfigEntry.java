@@ -20,6 +20,7 @@ public class DuskConfigEntry {
 	public final String filter;
 	public final boolean single;
 	public final boolean amounts;
+	public final boolean weights;
 	private final String name;
 	private final String displayName;
 	private final Class<?> type;
@@ -46,6 +47,7 @@ public class DuskConfigEntry {
 		this.filter = entry.filter();
 		this.single = entry.single();
 		this.amounts = entry.amounts();
+		this.weights = entry.weights();
 		this.rgb = entry.rgb();
 
 		if (type.isEnum()) {
@@ -73,7 +75,12 @@ public class DuskConfigEntry {
 		this.filter = "";
 		this.single = false;
 		this.amounts = false;
+		this.weights = false;
 		this.rgb = false;
+	}
+
+	public boolean hasIdNumbers() {
+		return amounts || weights;
 	}
 
 	public String getName() {
