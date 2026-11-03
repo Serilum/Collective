@@ -20,12 +20,14 @@ public abstract class ServerGamePacketListenerImplMixin {
 
 	@Inject(method = "broadcastChatMessage", at = @At(value = "HEAD"), cancellable = true)
 	public void handleChat(PlayerChatMessage playerChatMessage, CallbackInfo ci) {
-		Component message = Component.literal("<" + this.player.getName().getString() + "> " + playerChatMessage.decoratedContent().getString());
+		Component message = Component.literal("<" + this.player.getName().getString() + "> ").append(playerChatMessage.decoratedContent());
 
 		Pair<Boolean, Component> pair = CollectiveChatEvents.SERVER_CHAT_RECEIVED.invoker().onServerChat(this.player, message, player.getUUID());
 		if (pair != null) {
 			Component newMessage = pair.getSecond();
-			MessageFunctions.broadcastMessage(this.player.level(), (MutableComponent) newMessage);
+			if (newMessage != null) {
+				MessageFunctions.broadcastMessage(this.player.level(), (MutableComponent) newMessage);
+			}
 			ci.cancel();
 		}
 	}
