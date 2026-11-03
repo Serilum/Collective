@@ -15,6 +15,7 @@ public class CollectiveConfigHandler extends DuskConfig {
 	@Entry public static boolean transferItemsBetweenReplacedEntities = true;
 	@Entry(min = 0, max = 3600000) public static int findABlockCheckAroundEntitiesDelayMs = 30000;
 	@Entry public static boolean enablePatronPets = true;
+	@Entry public static boolean commandsAskForConfirmation = true;
 
 	@Entry public static boolean downloadNonEnglishTranslations = true;
 	@Entry public static boolean pushTranslationResourcePack = false;
@@ -40,6 +41,9 @@ public class CollectiveConfigHandler extends DuskConfig {
 		));
 		configMetaData.put("enablePatronPets", Arrays.asList(
 				"Enables pets for Patrons. Will be added in a future release."
+		));
+		configMetaData.put("commandsAskForConfirmation", Arrays.asList(
+				"Whether commands of Serilum's mods that overwrite or change a lot at once first ask you to click [Confirm]."
 		));
 
 		configMetaData.put("downloadNonEnglishTranslations", Arrays.asList(
