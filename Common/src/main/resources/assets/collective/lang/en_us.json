@@ -86,6 +86,12 @@
   "collective.beautifiedchatserver.message.removedplayerfromrank": "Removed player %1$s from rank %2$s",
   "collective.beautifiedchatserver.message.removedrank": "Removed rank %s",
   "collective.beautifiedchatserver.message.unknowncolor": "Unknown color: %s",
+  "collective.beautifiedchatserver.message.createsrank": "Creates a rank with a chat colour, or changes its colour.",
+  "collective.beautifiedchatserver.message.removesrank": "Removes a rank.",
+  "collective.beautifiedchatserver.message.listsranks": "Lists all ranks and their colours.",
+  "collective.beautifiedchatserver.message.addsplayertorank": "Puts a player in a rank.",
+  "collective.beautifiedchatserver.message.removesplayerfromrank": "Takes a player out of a rank.",
+  "collective.beautifiedchatserver.message.listsplayerranks": "Lists all players with a rank.",
 
   "_comment_modname_biomespawnpoint": "Biome Spawn Point",
   "collective.biomespawnpoint.message.reloadsconfigfile": "Reloads the spawn biome config file, which is used when a new world is created.",
