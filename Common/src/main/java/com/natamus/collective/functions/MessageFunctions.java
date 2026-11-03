@@ -120,6 +120,14 @@ public class MessageFunctions {
 		sendMessage(player, withColour(Component.literal(indent).append(translatableComponent(player, key, args)), colour), emptyLine);
 	}
 
+	public static void sendCommandUsageHeader(CommandSourceStack source, String modName) {
+		sendTranslatableMessage(source, "collective.shared.message.usage", true, ChatFormatting.DARK_GREEN, modName);
+	}
+	public static void sendCommandUsageLine(CommandSourceStack source, String command, String descriptionKey, Object... args) {
+		sendMessage(source, " /" + command, ChatFormatting.DARK_GREEN);
+		sendTranslatableMessage(source, "  ", descriptionKey, ChatFormatting.GRAY, args);
+	}
+
 	public static MutableComponent getTranslatableComponent(String key, Object... args) {
 		if (ServerTranslationPack.useTranslatableForNames()) {
 			return Component.translatable(key, args);
