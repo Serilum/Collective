@@ -12,6 +12,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.Vec3;
@@ -156,5 +157,20 @@ public class BlockFunctions {
 	}
 	public static String blockToReadableString(Block block) {
 		return blockToReadableString(block, 1);
+	}
+
+	public static BlockState withSharedPropertiesOf(BlockState state, BlockState source) {
+		BlockState sharedState = state;
+		for (Property<?> property : source.getProperties()) {
+			if (sharedState.hasProperty(property)) {
+				sharedState = withPropertyOf(sharedState, source, property);
+			}
+		}
+
+		return sharedState;
+	}
+
+	public static <T extends Comparable<T>> BlockState withPropertyOf(BlockState state, BlockState source, Property<T> property) {
+		return state.setValue(property, source.getValue(property));
 	}
 }
