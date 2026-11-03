@@ -23,13 +23,14 @@ public abstract class ServerGamePacketListenerImplMixin {
 
 	@Inject(method = "method_45064(Lnet/minecraft/network/chat/PlayerChatMessage;Ljava/util/concurrent/CompletableFuture;Ljava/util/concurrent/CompletableFuture;Ljava/lang/Void;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/network/ServerGamePacketListenerImpl;broadcastChatMessage(Lnet/minecraft/network/chat/PlayerChatMessage;)V"), locals = LocalCapture.CAPTURE_FAILSOFT, cancellable = true)
 	public void handleChat(PlayerChatMessage playerChatMessage, CompletableFuture<?> completableFuture, CompletableFuture<?> completableFuture2, Void arg3, CallbackInfo ci, PlayerChatMessage playerChatMessage2) {
-		Component message = Component.literal("<" + this.player.getName().getString() + "> " + playerChatMessage2.decoratedContent().getString());
+		Component message = Component.literal("<" + this.player.getName().getString() + "> ").append(playerChatMessage2.decoratedContent());
 
 		Pair<Boolean, Component> pair = CollectiveChatEvents.SERVER_CHAT_RECEIVED.invoker().onServerChat(this.player, message, player.getUUID());
 		if (pair != null) {
 			Component newMessage = pair.getSecond();
-
-			MessageFunctions.broadcastMessage(this.player.getCommandSenderWorld(), (MutableComponent) newMessage);
+			if (newMessage != null) {
+				MessageFunctions.broadcastMessage(this.player.getCommandSenderWorld(), (MutableComponent) newMessage);
+			}
 			ci.cancel();
 		}
 	}
