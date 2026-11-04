@@ -3,6 +3,7 @@ package com.natamus.collective.functions;
 import com.natamus.collective.data.Constants;
 import com.natamus.collective.data.GlobalVariables;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
@@ -160,6 +161,10 @@ public class BlockFunctions {
 	}
 	public static String blockToReadableString(Block block) {
 		return blockToReadableString(block, 1);
+	}
+
+	public static String getBlockId(Level level, Block block) {
+		return level.registryAccess().registryOrThrow(Registries.BLOCK).getKey(block).toString();
 	}
 
 	public static BlockState withSharedPropertiesOf(BlockState state, BlockState source) {

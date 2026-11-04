@@ -254,6 +254,10 @@ public class ItemFunctions {
 		return itemToReadableString(item, 1);
 	}
 
+	public static String getItemId(Level level, Item item) {
+		return level.registryAccess().registryOrThrow(Registries.ITEM).getKey(item).toString();
+	}
+
 	public static String getNBTStringFromItemStack(ItemStack itemStack) {
 		return getNBTStringFromItemStack(itemStack, true);
 	}
