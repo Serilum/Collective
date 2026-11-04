@@ -1,7 +1,6 @@
 package com.natamus.collective.fabric.mixin.plugin;
 
 import com.natamus.collective.fabric.bundle.FabricBundleConfigCheck;
-import com.natamus.collective.fabric.bundle.FabricBundleJarJarCheck;
 import org.objectweb.asm.tree.ClassNode;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
@@ -34,11 +33,6 @@ public class FabricMixinConfigPlugin implements IMixinConfigPlugin {
 		}
 
 		String modId = pSpl[2].split("_")[0];
-
-		if (FabricBundleJarJarCheck.isModJarJard(modId) && !FabricBundleConfigCheck.isBundleModEnabled(modId)) {
-			return false;
-		}
-
 		return FabricBundleConfigCheck.isModEnabled(modId);
 	}
 
