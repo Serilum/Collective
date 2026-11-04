@@ -6,7 +6,7 @@
   "collective.shared.message.confirmclick": "Click",
   "collective.shared.message.confirmdisablehint": "Tip: these confirmations can be turned off with the 'commandsAskForConfirmation' option in Collective's config.",
   "collective.shared.message.confirmorrun": "or run",
-  "collective.shared.message.confirmwithin": "within %s seconds,",
+  "collective.shared.message.confirmwithin": "within %s seconds to continue,",
   "collective.shared.message.nopermission": "You do not have permission to use that command.",
   "collective.shared.message.nothingtoconfirm": "There is nothing to confirm. Run '%s' first to see what it does.",
   "collective.shared.message.playeronly": "This command can only be run as a player.",
