@@ -5,19 +5,20 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.Relative;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
+
+import java.util.Set;
 
 public class FabricTeleportHelper implements TeleportHelper {
 	@Override
 	public boolean teleportEntity(Entity entity, ServerLevel serverLevel, Vec3 vec3) {
-		return entity.teleportTo(serverLevel, vec3.x, vec3.y, vec3.z, Relative.ALL, entity.getYRot(), entity.getXRot(), true);
+		return entity.teleportTo(serverLevel, vec3.x, vec3.y, vec3.z, Set.of(), entity.getYRot(), entity.getXRot(), true);
 	}
 
 	@Override
 	public boolean teleportEntity(Entity entity, ServerLevel serverLevel, BlockPos blockPos) {
-		return entity.teleportTo(serverLevel, blockPos.getX()+0.5, blockPos.getY(), blockPos.getZ()+0.5, Relative.ALL, entity.getYRot(), entity.getXRot(), true);
+		return entity.teleportTo(serverLevel, blockPos.getX()+0.5, blockPos.getY(), blockPos.getZ()+0.5, Set.of(), entity.getYRot(), entity.getXRot(), true);
 	}
 
 	@Override
