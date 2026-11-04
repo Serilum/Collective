@@ -1,7 +1,6 @@
 package com.natamus.collective.forge.mixin.plugin;
 
 import com.natamus.collective.forge.bundle.ForgeBundleConfigCheck;
-import com.natamus.collective.forge.bundle.ForgeBundleJarJarCheck;
 import org.objectweb.asm.tree.ClassNode;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
@@ -34,11 +33,6 @@ public class ForgeMixinConfigPlugin implements IMixinConfigPlugin {
 		}
 
 		String modId = pSpl[2].split("_")[0];
-
-		if (ForgeBundleJarJarCheck.isModJarJard(modId) && !ForgeBundleConfigCheck.isBundleModEnabled(modId)) {
-			return false;
-		}
-
 		return ForgeBundleConfigCheck.isModEnabled(modId);
 	}
 

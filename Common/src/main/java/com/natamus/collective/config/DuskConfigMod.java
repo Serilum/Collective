@@ -131,7 +131,7 @@ public class DuskConfigMod {
 		if (modid.equals(CollectiveReference.MOD_ID) || modid.equals("hideexperimentalwarning")) {
 			return true;
 		}
-		return modid.startsWith("serilum") && modid.contains("bundle");
+		return ConfigFunctions.isBundleModId(modid);
 	}
 
 	private boolean canBeDisabled() {

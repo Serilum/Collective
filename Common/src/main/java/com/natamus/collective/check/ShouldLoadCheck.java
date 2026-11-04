@@ -7,10 +7,6 @@ import com.natamus.collective.services.Services;
 
 public class ShouldLoadCheck {
 	public static boolean shouldLoad(String modId) {
-		if (Services.MODLOADER.isJarJard(modId) && !Services.MODLOADER.isBundleModEnabled(modId)) {
-			return false;
-		}
-
 		DuskConfigModToggles.addKnownMod(modId);
 		Services.MODLOADER.registerConfigScreen(modId);
 

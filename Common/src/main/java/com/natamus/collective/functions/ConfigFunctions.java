@@ -7,6 +7,7 @@ import com.natamus.collective.config.DuskConfigMigration;
 import com.natamus.collective.config.DuskConfigMod;
 import com.natamus.collective.config.DuskConfigModToggles;
 import com.natamus.collective.objects.IdAmount;
+import com.natamus.collective.services.Services;
 
 import java.io.File;
 import java.io.IOException;
@@ -73,21 +74,21 @@ public class ConfigFunctions {
 	}
 
 	public static boolean isModEnabled(Path gameConfigDirectory, String modid) {
+		return isModEnabled(gameConfigDirectory, modid, Services.MODLOADER.isJarJard(modid));
+	}
+
+	public static boolean isModEnabled(Path gameConfigDirectory, String modid, boolean isBundled) {
 		DuskConfigMigration.moveToSerilumConfigDirectory(gameConfigDirectory, modid);
-		JsonObject json = getConfigJson(gameConfigDirectory.resolve(serilumConfigFolderName), modid);
+		return DuskConfigModToggles.syncModSwitches(gameConfigDirectory, modid, isBundled);
+	}
 
-		boolean enabledInModConfig = true;
+	public static Boolean getModEnableValue(Path configDirectory, String modid) {
+		JsonObject json = getConfigJson(configDirectory, modid);
 		String enableKey = getModEnableKey(json);
-		if (enableKey != null) {
-			enabledInModConfig = !getValueString(getEntryValue(json.get(enableKey))).equalsIgnoreCase("false");
+		if (enableKey == null) {
+			return null;
 		}
-
-		// Both switches are kept equal when changed in-game; a hand edit that leaves them apart turns the mod off in both.
-		boolean enabledInCollectiveList = !DuskConfigModToggles.isDisabledInList(gameConfigDirectory, modid);
-		if (enabledInModConfig != enabledInCollectiveList) {
-			DuskConfigModToggles.disableEverywhere(gameConfigDirectory, modid);
-		}
-		return enabledInModConfig && enabledInCollectiveList;
+		return !getValueString(getEntryValue(json.get(enableKey))).equalsIgnoreCase("false");
 	}
 
 	public static String getModEnableKey(String modid) {
@@ -133,12 +134,29 @@ public class ConfigFunctions {
 	public static HashMap<String, Boolean> getBundleModToggles(Path gameConfigDirectory) {
 		HashMap<String, Boolean> toggles = new HashMap<>();
 
+		for (File bundleConfigFile : getBundleConfigFiles(gameConfigDirectory)) {
+			try {
+				for (Map.Entry<String, JsonElement> entry : readConfigJson(bundleConfigFile.toPath()).entrySet()) {
+					String bundledModId = getBundledModId(entry.getKey());
+					if (bundledModId != null) {
+						toggles.put(bundledModId, getValueString(getEntryValue(entry.getValue())).equals("true"));
+					}
+				}
+			}
+			catch (Exception ignored) { }
+		}
+
+		return toggles;
+	}
+
+	public static List<File> getBundleConfigFiles(Path gameConfigDirectory) {
+		List<File> bundleConfigFiles = new ArrayList<>();
+
 		DuskConfigMigration.moveBundleConfigFiles(gameConfigDirectory);
 
-		Path configDirectory = gameConfigDirectory.resolve(serilumConfigFolderName);
-		File[] configFiles = configDirectory.toFile().listFiles();
+		File[] configFiles = gameConfigDirectory.resolve(serilumConfigFolderName).toFile().listFiles();
 		if (configFiles == null) {
-			return toggles;
+			return bundleConfigFiles;
 		}
 
 		for (File configFile : configFiles) {
@@ -150,18 +168,22 @@ public class ConfigFunctions {
 				continue;
 			}
 
-			try {
-				for (Map.Entry<String, JsonElement> entry : readConfigJson(configFile.toPath()).entrySet()) {
-					String key = entry.getKey().replace(" ", "").toLowerCase(Locale.ROOT);
-					if (key.startsWith("enable")) {
-						toggles.put(key.replaceFirst("enable", ""), getValueString(getEntryValue(entry.getValue())).equals("true"));
-					}
-				}
-			}
-			catch (Exception ignored) { }
+			bundleConfigFiles.add(configFile);
 		}
 
-		return toggles;
+		return bundleConfigFiles;
+	}
+
+	public static String getBundledModId(String bundleConfigKey) {
+		String key = bundleConfigKey.replace(" ", "").toLowerCase(Locale.ROOT);
+		if (!key.startsWith("enable")) {
+			return null;
+		}
+		return key.replaceFirst("enable", "");
+	}
+
+	public static boolean isBundleModId(String modid) {
+		return modid.startsWith("serilum") && modid.contains("bundle");
 	}
 
 	public static JsonObject readConfigJson(Path configPath) throws IOException {
