@@ -21,7 +21,7 @@ public class FabricBundleConfigCheck {
 
 	public static boolean isModEnabled(String modId) {
 		if (!GlobalCaches.modEnabledCache.containsKey(modId)) {
-			GlobalCaches.modEnabledCache.put(modId, ConfigFunctions.isModEnabled(FabricLoader.getInstance().getGameDir().resolve("config"), modId));
+			GlobalCaches.modEnabledCache.put(modId, ConfigFunctions.isModEnabled(FabricLoader.getInstance().getGameDir().resolve("config"), modId, FabricBundleJarJarCheck.isModJarJard(modId)));
 		}
 		return GlobalCaches.modEnabledCache.get(modId);
 	}

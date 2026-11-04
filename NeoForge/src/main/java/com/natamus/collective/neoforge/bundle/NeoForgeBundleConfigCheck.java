@@ -21,7 +21,7 @@ public class NeoForgeBundleConfigCheck {
 
 	public static boolean isModEnabled(String modId) {
 		if (!GlobalCaches.modEnabledCache.containsKey(modId)) {
-			GlobalCaches.modEnabledCache.put(modId, ConfigFunctions.isModEnabled(FMLPaths.GAMEDIR.get().resolve("config"), modId));
+			GlobalCaches.modEnabledCache.put(modId, ConfigFunctions.isModEnabled(FMLPaths.GAMEDIR.get().resolve("config"), modId, NeoForgeBundleJarJarCheck.isModJarJard(modId)));
 		}
 		return GlobalCaches.modEnabledCache.get(modId);
 	}
