@@ -4,6 +4,7 @@ import com.natamus.collective.data.GlobalVariables;
 import com.natamus.collective.util.CollectiveReference;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.effect.MobEffect;
@@ -86,6 +87,10 @@ public class EntityFunctions {
 		}
 
 		return entityString;
+	}
+
+	public static String getEntityTypeId(Level level, EntityType<?> entityType) {
+		return level.registryAccess().registryOrThrow(Registries.ENTITY_TYPE).getKey(entityType).toString();
 	}
 	// END: GET functions
 
