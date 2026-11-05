@@ -7,6 +7,7 @@ import com.natamus.collective.config.DuskConfigEntry;
 import com.natamus.collective.config.DuskConfigFile;
 import com.natamus.collective.config.DuskConfigMod;
 import com.natamus.collective.config.DuskConfigModToggles;
+import com.natamus.collective.networking.packets.ConfigSyncClientHandler;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
@@ -61,6 +62,8 @@ public class DuskConfigEditScreen extends DuskConfigBaseScreen {
 		if (!DuskConfigModToggles.hasConfigScreen(modid)) {
 			return parent;
 		}
+
+		ConfigSyncClientHandler.restoreOwnValuesAfterLeavingServer();
 
 		DuskConfigMod configMod = DuskConfigMod.addListOnlyMod(modid);
 		DuskConfigFile.reload(configMod);

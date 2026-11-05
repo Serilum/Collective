@@ -21,6 +21,7 @@ public class DuskConfigEntry {
 	public final boolean single;
 	public final boolean amounts;
 	public final boolean weights;
+	public final boolean sync;
 	private final String name;
 	private final String displayName;
 	private final Class<?> type;
@@ -48,6 +49,7 @@ public class DuskConfigEntry {
 		this.single = entry.single();
 		this.amounts = entry.amounts();
 		this.weights = entry.weights();
+		this.sync = entry.sync();
 		this.rgb = entry.rgb();
 
 		if (type.isEnum()) {
@@ -76,6 +78,7 @@ public class DuskConfigEntry {
 		this.single = false;
 		this.amounts = false;
 		this.weights = false;
+		this.sync = false;
 		this.rgb = false;
 	}
 

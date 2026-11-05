@@ -106,6 +106,8 @@ public class DuskConfigFile {
 			return;
 		}
 
+		DuskConfigSync.keepEditedValuesAsOwn(configMod);
+
 		JsonObject json = new JsonObject();
 		json.addProperty("//", getFileHeader(configMod));
 
@@ -154,7 +156,9 @@ public class DuskConfigFile {
 			}
 		}
 
+		DuskConfigSync.restoreOwnValues(configMod);
 		load(configMod);
+		DuskConfigSync.applyServerValues(configMod);
 		return true;
 	}
 
@@ -166,7 +170,7 @@ public class DuskConfigFile {
 			jsonEntry.addProperty("//", comment);
 		}
 
-		jsonEntry.add("value", gson.toJsonTree(entry.getValue()));
+		jsonEntry.add("value", gson.toJsonTree(DuskConfigSync.getValueToSave(entry)));
 		return jsonEntry;
 	}
 
@@ -195,7 +199,7 @@ public class DuskConfigFile {
 		}
 	}
 
-	private static boolean readValue(DuskConfigEntry entry, JsonElement value) {
+	static boolean readValue(DuskConfigEntry entry, JsonElement value) {
 		if (entry.hasOptions()) {
 			String option = entry.findOption(ConfigFunctions.getValueString(value));
 			if (option == null) {

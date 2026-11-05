@@ -8,11 +8,11 @@ public class RegisterCollectiveForgeClientEvents {
 	public static void registerEventsInBus() {
 		// BusGroup.DEFAULT.register(MethodHandles.lookup(), RegisterCollectiveForgeClientEvents.class);
 
-		TickEvent.PlayerTickEvent.Pre.BUS.addListener(RegisterCollectiveForgeClientEvents::onClientTick);
+		TickEvent.ClientTickEvent.Post.BUS.addListener(RegisterCollectiveForgeClientEvents::onClientTick);
 	}
 
 	@SubscribeEvent
-	public static void onClientTick(TickEvent.PlayerTickEvent.Pre e) {
+	public static void onClientTick(TickEvent.ClientTickEvent.Post e) {
 		CollectiveClientEvents.onClientTick();
 	}
 }

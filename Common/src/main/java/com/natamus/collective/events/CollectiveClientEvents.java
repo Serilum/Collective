@@ -2,6 +2,7 @@ package com.natamus.collective.events;
 
 import com.mojang.datafixers.util.Pair;
 import com.natamus.collective.config.screen.DuskConfigRegistryCache;
+import com.natamus.collective.networking.packets.ConfigSyncClientHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.gui.screens.DeathScreen;
@@ -18,6 +19,7 @@ public class CollectiveClientEvents {
 	public static int clientTickCount = 0;
 	public static void onClientTick() {
 		cachePickerIdsOnWorldJoin();
+		ConfigSyncClientHandler.restoreOwnValuesAfterLeavingServer();
 
 		if (mc.isPaused()) {
 			if (!(mc.gui.screen() instanceof DeathScreen)) {

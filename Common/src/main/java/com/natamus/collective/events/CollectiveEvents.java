@@ -215,6 +215,7 @@ public class CollectiveEvents {
 				if (CollectiveConfigHandler.transferItemsBetweenReplacedEntities) {
 					EntityFunctions.transferItemsBetweenEntities(entity, to, ignoreMainhand);
 				}
+				EntityFunctions.transferSpawnStateBetweenEntities(entity, to);
 			}
 
 			if (!(level instanceof ServerLevel serverLevel)) {

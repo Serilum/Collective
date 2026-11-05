@@ -85,6 +85,13 @@ public class DuskConfigModToggles {
 		return ConfigFunctions.isInIdList(getDisabledMods(gameConfigDirectory), modid);
 	}
 
+	public static boolean isDisabledSerilumMod(String modid) {
+		if (!knownModIds.contains(modid)) {
+			return false;
+		}
+		return isDisabledInList(DataFunctions.getGameConfigDirectoryPath(), modid);
+	}
+
 	public static synchronized boolean syncModSwitches(Path gameConfigDirectory, String modid, boolean isBundled) {
 		if (DuskConfigMod.isAlwaysEnabled(modid)) {
 			return true;
