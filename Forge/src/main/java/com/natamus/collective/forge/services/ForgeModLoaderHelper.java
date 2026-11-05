@@ -29,7 +29,7 @@ public class ForgeModLoaderHelper implements ModLoaderHelper {
 	}
 
 	@Override
-	public boolean isModLoaded(String modId) {
+	public boolean isModLoadedUncached(String modId) {
 		return ModList.isLoaded(modId);
 	}
 

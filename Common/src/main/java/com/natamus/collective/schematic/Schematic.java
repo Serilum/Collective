@@ -3,7 +3,6 @@ package com.natamus.collective.schematic;
 import com.mojang.brigadier.StringReader;
 import com.mojang.datafixers.util.Pair;
 import com.natamus.collective.data.Constants;
-import com.natamus.collective.util.CollectiveReference;
 import net.minecraft.commands.arguments.blocks.BlockStateParser;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
@@ -284,7 +283,7 @@ public class Schematic {
 				}
 			}
 		} catch (Exception ignored) {
-			Constants.LOG.warn("[" + CollectiveReference.NAME + "] Something went wrong while parsing the schematic.");
+			Constants.LOG.warn("Something went wrong while parsing the schematic.");
 		}
 
 		Constants.LOG.warn("Can't load {} Schematic file.", type);
