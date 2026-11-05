@@ -19,6 +19,10 @@ import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerWorldEvents;
+import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 
 public class CollectiveFabric implements ModInitializer { 
@@ -33,6 +37,14 @@ public class CollectiveFabric implements ModInitializer {
 			GenerateJSONFiles.initGeneration(minecraftServer);
 			ServerTranslationPack.onServerStarting(minecraftServer);
 			BlockEntityData.addModdedCampfiresToCache(minecraftServer);
+		});
+
+		ServerWorldEvents.UNLOAD.register((MinecraftServer server, ServerLevel level) -> {
+			CollectiveEvents.onWorldUnload(level);
+		});
+
+		PlayerBlockBreakEvents.AFTER.register((level, player, pos, state, blockEntity) -> {
+			CollectiveEvents.onBlockBreak(level, pos);
 		});
 
 		ServerTickEvents.START_WORLD_TICK.register((serverLevel) -> {

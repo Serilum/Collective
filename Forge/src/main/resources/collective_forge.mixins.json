@@ -6,6 +6,7 @@
   "refmap": "collective_forge.refmap.json",
   "mixins": [
     "BlockEntityMixin",
+    "BlockItemMixin",
     "BoneMealItemMixin",
     "EntityMixin",
     "NetherPortalBlockMixin",

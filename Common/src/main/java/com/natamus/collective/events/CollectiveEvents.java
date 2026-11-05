@@ -4,6 +4,7 @@ import com.mojang.datafixers.util.Pair;
 import com.natamus.collective.config.CollectiveConfigHandler;
 import com.natamus.collective.data.GlobalVariables;
 import com.natamus.collective.features.PlayerHeadCacheFeature;
+import com.natamus.collective.features.PlayerPlacedBlocksFeature;
 import com.natamus.collective.functions.BlockPosFunctions;
 import com.natamus.collective.functions.EntityFunctions;
 import com.natamus.collective.functions.HeadFunctions;
@@ -42,7 +43,17 @@ public class CollectiveEvents {
 
 	public static CopyOnWriteArrayList<Pair<Integer, Runnable>> scheduledServerRunnables = new CopyOnWriteArrayList<>();
 
+	public static void onWorldUnload(Level level) {
+		PlayerPlacedBlocksFeature.onWorldUnload(level);
+	}
+
+	public static void onBlockBreak(Level level, BlockPos pos) {
+		PlayerPlacedBlocksFeature.onBlockBroken(level, pos);
+	}
+
 	public static void onWorldTick(ServerLevel serverLevel) {
+		PlayerPlacedBlocksFeature.onWorldTick(serverLevel);
+
 		if (!entitiesToSpawn.computeIfAbsent(serverLevel, k -> new ArrayList<>()).isEmpty()) {
 			Entity tospawn = entitiesToSpawn.get(serverLevel).get(0);
 

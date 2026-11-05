@@ -10,7 +10,6 @@ import java.util.List;
 import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
 import com.natamus.collective.data.Constants;
-import com.natamus.collective.util.CollectiveReference;
 
 public class JsonFunctions {
 	public static HashMap<String, String> JsonStringToHashMap(String jsonstring) {
@@ -39,7 +38,7 @@ public class JsonFunctions {
 			jsonElement = getJsonElementFromFile(folder, fileName);
 		}
 		catch (IOException ex) {
-			Constants.LOG.warn("[" + CollectiveReference.NAME + "] IOException while trying to parse JSON file: " + folder + fileName);
+			Constants.LOG.warn("IOException while trying to parse JSON file: " + folder + fileName);
 			return stringList;
 		}
 
@@ -55,7 +54,7 @@ public class JsonFunctions {
 
 		JsonArray jsonArray = jsonObject.getAsJsonArray(key);
 		if (jsonArray == null) {
-			Constants.LOG.warn("[" + CollectiveReference.NAME + "] Unable to find JSON member with key: " + key);
+			Constants.LOG.warn("Unable to find JSON member with key: " + key);
 			return stringList;
 		}
 
@@ -65,7 +64,7 @@ public class JsonFunctions {
 				stringList.add(stringElement);
 			}
 			catch (Exception ex) {
-				Constants.LOG.warn("[" + CollectiveReference.NAME + "] Unable to parse '" + jE.toString() + "' as a String Element.");
+				Constants.LOG.warn("Unable to parse '" + jE.toString() + "' as a String Element.");
 			}
 		}
 

@@ -24,6 +24,7 @@ import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.entity.living.MobSpawnEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.level.BlockEvent;
+import net.minecraftforge.event.level.LevelEvent;
 import net.minecraftforge.event.server.ServerAboutToStartEvent;
 import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.EventPriority;
@@ -37,6 +38,26 @@ public class RegisterCollectiveForgeEvents {
 		GenerateJSONFiles.initGeneration(e.getServer());
 		ServerTranslationPack.onServerStarting(e.getServer());
 		BlockEntityData.addModdedCampfiresToCache(e.getServer());
+	}
+
+	@SubscribeEvent
+	public void onWorldUnload(LevelEvent.Unload e) {
+		Level level = WorldFunctions.getWorldIfInstanceOfAndNotRemote(e.getLevel());
+		if (level == null) {
+			return;
+		}
+
+		CollectiveEvents.onWorldUnload(level);
+	}
+
+	@SubscribeEvent
+	public void onBlockBreak(BlockEvent.BreakEvent e) {
+		Level level = WorldFunctions.getWorldIfInstanceOfAndNotRemote(e.getLevel());
+		if (level == null) {
+			return;
+		}
+
+		CollectiveEvents.onBlockBreak(level, e.getPos());
 	}
 
 	@SubscribeEvent
