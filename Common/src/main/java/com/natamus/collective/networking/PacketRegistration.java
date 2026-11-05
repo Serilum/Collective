@@ -12,5 +12,6 @@ public class PacketRegistration {
 	private void initClientPackets() {
 		Network.registerPacket(CollectiveInstalledPacket.CHANNEL, CollectiveInstalledPacket.class, CollectiveInstalledPacket::encode, CollectiveInstalledPacket::decode, CollectiveInstalledPacket::handle);
 		Network.registerPacket(EntityDataSyncPacket.CHANNEL, EntityDataSyncPacket.class, EntityDataSyncPacket::encode, EntityDataSyncPacket::decode, EntityDataSyncPacket::handle);
+		Network.registerPacket(ConfigSyncPacket.CHANNEL, ConfigSyncPacket.class, ConfigSyncPacket::encode, ConfigSyncPacket::decode, ConfigSyncPacket::handle);
 	}
 }

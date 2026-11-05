@@ -18,6 +18,7 @@
     "EntityMixin",
     "EntityTypeMixin",
     "ExplosionMixin",
+    "FileToIdConverterMixin",
     "FishingRodHookedTriggerMixin",
     "ItemEntityMixin",
     "ItemStackMixin",

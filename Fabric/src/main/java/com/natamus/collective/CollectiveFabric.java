@@ -2,6 +2,7 @@ package com.natamus.collective;
 
 import com.natamus.collective.check.RegisterMod;
 import com.natamus.collective.cmds.CommandCollective;
+import com.natamus.collective.config.DuskConfigSync;
 import com.natamus.collective.config.GenerateJSONFiles;
 import com.natamus.collective.data.BlockEntityData;
 import com.natamus.collective.events.CollectiveEvents;
@@ -10,8 +11,10 @@ import com.natamus.collective.fabric.callbacks.CollectiveEntityEvents;
 import com.natamus.collective.fabric.callbacks.CollectivePlayerEvents;
 import com.natamus.collective.fabric.data.GlobalFabricObjects;
 import com.natamus.collective.fabric.networking.FabricNetworkHandler;
+import com.natamus.collective.functions.TaskFunctions;
 import com.natamus.collective.implementations.networking.NetworkSetup;
 import com.natamus.collective.implementations.networking.data.Side;
+import com.natamus.collective.networking.packets.ConfigSyncPacket;
 import com.natamus.collective.translations.ServerTranslationPack;
 import com.natamus.collective.util.CollectiveReference;
 import net.fabricmc.api.ModInitializer;
@@ -21,6 +24,7 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerWorldEvents;
 import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
+import net.fabricmc.fabric.api.networking.v1.S2CPlayChannelEvents;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -70,6 +74,15 @@ public class CollectiveFabric implements ModInitializer {
 		CollectivePlayerEvents.PLAYER_LOGGED_IN.register((world, player) -> {
 			if (player instanceof ServerPlayer serverPlayer) {
 				ServerTranslationPack.onPlayerJoin(serverPlayer);
+			}
+		});
+
+		S2CPlayChannelEvents.REGISTER.register((handler, sender, server, channels) -> {
+			if (channels.contains(ConfigSyncPacket.CHANNEL)) {
+				// Fabric can fire this while it is still setting up the connection, before it can send anything.
+				TaskFunctions.enqueueCollectiveServerTask(server, () -> {
+					DuskConfigSync.sendServerValues(handler.player);
+				}, 0);
 			}
 		});
 
