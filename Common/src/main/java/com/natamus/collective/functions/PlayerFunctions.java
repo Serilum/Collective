@@ -6,6 +6,7 @@ import com.natamus.collective.util.CollectiveReference;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.NonNullList;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.TagParser;
 import net.minecraft.server.MinecraftServer;
@@ -16,8 +17,10 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.component.BundleContents;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BedBlock;
@@ -27,6 +30,7 @@ import net.minecraft.world.level.portal.DimensionTransition;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.*;
+import java.util.function.Predicate;
 
 public class PlayerFunctions {
 	public static boolean respawnPlayer(Level world, Player player) {
@@ -69,6 +73,34 @@ public class PlayerFunctions {
 
 	public static boolean isHoldingWater(Player player) {
 		return player.getItemInHand(InteractionHand.OFF_HAND).getItem().equals(Items.WATER_BUCKET) || player.getItemInHand(InteractionHand.MAIN_HAND).getItem().equals(Items.WATER_BUCKET);
+	}
+
+	public static boolean hasItemInInventory(Player player, Item item) {
+		return hasItemInInventory(player, itemStack -> itemStack.is(item));
+	}
+	public static boolean hasItemInInventory(Player player, Predicate<ItemStack> isWantedItem) {
+		Inventory inventory = player.getInventory();
+		for (int slot = 0; slot < inventory.getContainerSize(); slot++) {
+			ItemStack itemStack = inventory.getItem(slot);
+			if (isWantedItem.test(itemStack) || isInBundle(itemStack, isWantedItem)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private static boolean isInBundle(ItemStack bundleStack, Predicate<ItemStack> isWantedItem) {
+		BundleContents bundleContents = bundleStack.get(DataComponents.BUNDLE_CONTENTS);
+		if (bundleContents == null) {
+			return false;
+		}
+
+		for (ItemStack bundledStack : bundleContents.items()) {
+			if (isWantedItem.test(bundledStack) || isInBundle(bundledStack, isWantedItem)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public static boolean isJoiningWorldForTheFirstTime(Player player, String modid) {

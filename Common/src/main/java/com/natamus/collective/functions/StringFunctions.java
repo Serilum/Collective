@@ -4,10 +4,8 @@ import com.natamus.collective.data.GlobalVariables;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.Style;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
@@ -45,36 +43,7 @@ public class StringFunctions {
 	}
 
 	public static void sendMessage(CommandSourceStack source, String m, ChatFormatting colour, boolean emptyline, String url) {
-		if (m.isEmpty()) {
-			return;
-		}
-
-		if (emptyline) {
-			source.sendSuccess(() -> {
-				return Component.literal("");
-			}, false);
-		}
-
-		MutableComponent message = Component.literal(m);
-		message.withStyle(colour);
-		if (m.contains("http") || !url.isEmpty()) {
-			if (url.isEmpty()) {
-				for (String word : m.split(" ")) {
-					if (word.contains("http")) {
-						url = word;
-						break;
-					}
-				}
-			}
-
-			if (!url.isEmpty()) {
-				Style clickstyle = message.getStyle().withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, url));
-				message.withStyle(clickstyle);
-			}
-		}
-		source.sendSuccess(() -> {
-			return message;
-		}, false);
+		MessageFunctions.sendMessage(source, m, colour, emptyline, url);
 	}
 
 	public static void sendMessage(Player player, String m, ChatFormatting colour, boolean emptyline, String url) {
@@ -86,24 +55,7 @@ public class StringFunctions {
 			player.sendSystemMessage(Component.literal(""));
 		}
 
-		MutableComponent message = Component.literal(m);
-		message.withStyle(colour);
-		if (m.contains("http") || !url.isEmpty()) {
-			if (url.isEmpty()) {
-				for (String word : m.split(" ")) {
-					if (word.contains("http")) {
-						url = word;
-						break;
-					}
-				}
-			}
-
-			if (!url.isEmpty()) {
-				Style clickstyle = message.getStyle().withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, url));
-				message.withStyle(clickstyle);
-			}
-		}
-		player.sendSystemMessage(message);
+		player.sendSystemMessage(MessageFunctions.buildMessage(m, colour, url));
 	}
 
 	public static void broadcastMessage(Level world, String m, ChatFormatting colour) {
@@ -227,6 +179,22 @@ public class StringFunctions {
 			count++;
 		}
 		return count;
+	}
+
+	public static String getTextBefore(String text, String part) {
+		int partStart = text.indexOf(part);
+		if (partStart < 0) {
+			return text;
+		}
+		return text.substring(0, partStart);
+	}
+
+	public static String getTextAfter(String text, String part) {
+		int partStart = text.indexOf(part);
+		if (partStart < 0) {
+			return "";
+		}
+		return text.substring(partStart + part.length());
 	}
 	
 	public static String joinListWithCommaAnd(List<String> inputlist) {

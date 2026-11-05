@@ -7,6 +7,7 @@ import com.natamus.collective.config.DuskConfigEntry;
 import com.natamus.collective.config.DuskConfigFile;
 import com.natamus.collective.config.DuskConfigMod;
 import com.natamus.collective.config.DuskConfigModToggles;
+import com.natamus.collective.config.DuskConfigSync;
 import com.natamus.collective.functions.MessageFunctions;
 import com.natamus.collective.globalcallbacks.ConfigCallback;
 import com.natamus.collective.objects.IdAmount;
@@ -133,7 +134,7 @@ public class CommandCollectiveConfig {
 			return 0;
 		}
 
-		DuskConfig.write(configMod.modid);
+		saveConfig(source, configMod);
 		MessageFunctions.sendTranslatableMessage(source, "collective.collective.message.configset", ChatFormatting.DARK_GREEN, getCommandKey(entry), entry.getText());
 		showRestartNotice(source, configMod, entry);
 		return 1;
@@ -142,7 +143,7 @@ public class CommandCollectiveConfig {
 	private static int resetValue(CommandSourceStack source, DuskConfigMod configMod, DuskConfigEntry entry) {
 		entry.resetValue();
 
-		DuskConfig.write(configMod.modid);
+		saveConfig(source, configMod);
 		MessageFunctions.sendTranslatableMessage(source, "collective.collective.message.configset", ChatFormatting.DARK_GREEN, getCommandKey(entry), entry.getText());
 		showRestartNotice(source, configMod, entry);
 		return 1;
@@ -171,7 +172,7 @@ public class CommandCollectiveConfig {
 		idList.add(newId);
 		entry.setIdList(idList);
 
-		DuskConfig.write(configMod.modid);
+		saveConfig(source, configMod);
 		MessageFunctions.sendTranslatableMessage(source, "collective.collective.message.configidadded", ChatFormatting.DARK_GREEN, newId);
 		return 1;
 	}
@@ -188,7 +189,7 @@ public class CommandCollectiveConfig {
 		idList.remove(index);
 		entry.setIdList(idList);
 
-		DuskConfig.write(configMod.modid);
+		saveConfig(source, configMod);
 		MessageFunctions.sendTranslatableMessage(source, "collective.collective.message.configidremoved", ChatFormatting.DARK_GREEN, oldId);
 		return 1;
 	}
@@ -199,9 +200,15 @@ public class CommandCollectiveConfig {
 			return 0;
 		}
 		ConfigCallback.CONFIG_CHANGED.invoker().onConfigChanged(configMod.modid);
+		DuskConfigSync.sendServerValues(source.getServer(), configMod.modid);
 
 		MessageFunctions.sendTranslatableMessage(source, "collective.collective.message.configreloaded", ChatFormatting.DARK_GREEN);
 		return 1;
+	}
+
+	private static void saveConfig(CommandSourceStack source, DuskConfigMod configMod) {
+		DuskConfig.write(configMod.modid);
+		DuskConfigSync.sendServerValues(source.getServer(), configMod.modid);
 	}
 
 	private static void showEntryInfo(CommandSourceStack source, DuskConfigEntry entry) {

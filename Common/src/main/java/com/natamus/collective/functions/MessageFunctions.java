@@ -8,7 +8,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.Style;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
@@ -170,24 +169,62 @@ public class MessageFunctions {
 		return message;
 	}
 
-	private static MutableComponent buildMessage(String m, ChatFormatting colour, String url) {
-		MutableComponent message = withColour(Component.literal(m), colour);
-		if (m.contains("http") || !url.isEmpty()) {
-			if (url.isEmpty()) {
-				for (String word : m.split(" ")) {
-					if (word.contains("http")) {
-						url = word;
-						break;
-					}
-				}
+	static MutableComponent buildMessage(String m, ChatFormatting colour, String url) {
+		if (!url.isEmpty()) {
+			return withColour(withLink(Component.literal(m), url), colour);
+		}
+		if (!m.contains("http") && !m.contains("www.")) {
+			return withColour(Component.literal(m), colour);
+		}
+		return withColour(withClickableLinks(m), colour);
+	}
+
+	private static MutableComponent withClickableLinks(String m) {
+		MutableComponent message = Component.literal("");
+		StringBuilder plainText = new StringBuilder();
+		String wordSeparator = "";
+
+		for (String word : m.split(" ", -1)) {
+			plainText.append(wordSeparator);
+			wordSeparator = " ";
+
+			String link = getLinkInWord(word);
+			if (link.isEmpty()) {
+				plainText.append(word);
+				continue;
 			}
 
-			if (!url.isEmpty()) {
-				Style clickstyle = message.getStyle().withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, url));
-				message.withStyle(clickstyle);
-			}
+			plainText.append(StringFunctions.getTextBefore(word, link));
+			message.append(plainText.toString());
+			message.append(withLink(Component.literal(link), link));
+			plainText = new StringBuilder(StringFunctions.getTextAfter(word, link));
 		}
+
+		message.append(plainText.toString());
 		return message;
+	}
+
+	private static String getLinkInWord(String word) {
+		String link = word;
+		while (!link.isEmpty() && !link.startsWith("http") && !link.startsWith("www.")) {
+			link = link.substring(1);
+		}
+		while (!link.isEmpty() && ".,;:!?)]}>'\"".indexOf(link.charAt(link.length() - 1)) >= 0) {
+			link = link.substring(0, link.length() - 1);
+		}
+		return link;
+	}
+
+	private static MutableComponent withLink(MutableComponent component, String link) {
+		String fullLink = link;
+		if (link.startsWith("www.")) {
+			fullLink = "https://" + link;
+		}
+
+		if (fullLink.startsWith("http://") || fullLink.startsWith("https://")) {
+			component.withStyle(component.getStyle().withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, fullLink)));
+		}
+		return component;
 	}
 
 	public static void broadcastMessage(Level world, String m, ChatFormatting colour) {
