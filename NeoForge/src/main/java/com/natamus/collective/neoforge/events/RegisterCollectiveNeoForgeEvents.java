@@ -21,6 +21,7 @@ import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.event.entity.living.FinalizeSpawnEvent;
 import net.neoforged.neoforge.event.entity.living.MobSpawnEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.neoforge.event.level.LevelEvent;
 import net.neoforged.neoforge.event.server.ServerAboutToStartEvent;
 import net.neoforged.neoforge.event.tick.LevelTickEvent;
@@ -43,6 +44,26 @@ public class RegisterCollectiveNeoForgeEvents {
 		}
 
 		CollectiveEvents.onWorldLoad(level);
+	}
+
+	@SubscribeEvent
+	public static void onWorldUnload(LevelEvent.Unload e) {
+		Level level = WorldFunctions.getWorldIfInstanceOfAndNotRemote(e.getLevel());
+		if (level == null) {
+			return;
+		}
+
+		CollectiveEvents.onWorldUnload(level);
+	}
+
+	@SubscribeEvent
+	public static void onBlockBreak(BlockEvent.BreakEvent e) {
+		Level level = WorldFunctions.getWorldIfInstanceOfAndNotRemote(e.getLevel());
+		if (level == null) {
+			return;
+		}
+
+		CollectiveEvents.onBlockBreak(level, e.getPos());
 	}
 
 	@SubscribeEvent
