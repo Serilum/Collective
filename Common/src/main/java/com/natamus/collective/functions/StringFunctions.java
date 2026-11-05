@@ -4,19 +4,14 @@ import com.natamus.collective.data.GlobalVariables;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.Style;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -48,76 +43,11 @@ public class StringFunctions {
 	}
 
 	public static void sendMessage(CommandSourceStack source, String m, ChatFormatting colour, boolean emptyline, String url) {
-		if (m.isEmpty()) {
-			return;
-		}
-
-		if (emptyline) {
-			source.sendSuccess(() -> {
-				return Component.literal("");
-			}, false);
-		}
-
-		MutableComponent message = Component.literal(m);
-		message.withStyle(colour);
-		if (m.contains("http") || !url.isEmpty()) {
-			if (url.isEmpty()) {
-				for (String word : m.split(" ")) {
-					if (word.contains("http")) {
-						url = word;
-						break;
-					}
-				}
-			}
-
-			if (!url.isEmpty()) {
-				try {
-					Style clickstyle = message.getStyle().withClickEvent(new ClickEvent.OpenUrl(new URI(url)));
-					message.withStyle(clickstyle);
-				}
-				catch (URISyntaxException ignored) { }
-			}
-		}
-		source.sendSuccess(() -> {
-			return message;
-		}, false);
+		MessageFunctions.sendMessage(source, m, colour, emptyline, url);
 	}
 
 	public static void sendMessage(Player player, String m, ChatFormatting colour, boolean emptyline, String url) {
-		if (player.level().isClientSide()) {
-			return;
-		}
-
-		if (m.isEmpty()) {
-			return;
-		}
-
-		ServerPlayer serverPlayer = (ServerPlayer)player;
-		if (emptyline) {
-			serverPlayer.sendSystemMessage(Component.literal(""));
-		}
-
-		MutableComponent message = Component.literal(m);
-		message.withStyle(colour);
-		if (m.contains("http") || !url.isEmpty()) {
-			if (url.isEmpty()) {
-				for (String word : m.split(" ")) {
-					if (word.contains("http")) {
-						url = word;
-						break;
-					}
-				}
-			}
-
-			if (!url.isEmpty()) {
-				try {
-					Style clickstyle = message.getStyle().withClickEvent(new ClickEvent.OpenUrl(new URI(url)));
-					message.withStyle(clickstyle);
-				}
-				catch (URISyntaxException ignored) { }
-			}
-		}
-		serverPlayer.sendSystemMessage(message);
+		MessageFunctions.sendMessage(player, m, colour, emptyline, url);
 	}
 
 	public static void broadcastMessage(Level world, String m, ChatFormatting colour) {
@@ -241,6 +171,22 @@ public class StringFunctions {
 			count++;
 		}
 		return count;
+	}
+
+	public static String getTextBefore(String text, String part) {
+		int partStart = text.indexOf(part);
+		if (partStart < 0) {
+			return text;
+		}
+		return text.substring(0, partStart);
+	}
+
+	public static String getTextAfter(String text, String part) {
+		int partStart = text.indexOf(part);
+		if (partStart < 0) {
+			return "";
+		}
+		return text.substring(partStart + part.length());
 	}
 	
 	public static String joinListWithCommaAnd(List<String> inputlist) {

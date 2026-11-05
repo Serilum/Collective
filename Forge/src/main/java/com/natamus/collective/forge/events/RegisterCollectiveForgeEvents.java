@@ -1,6 +1,7 @@
 package com.natamus.collective.forge.events;
 
 import com.natamus.collective.cmds.CommandCollective;
+import com.natamus.collective.config.DuskConfigSync;
 import com.natamus.collective.config.GenerateJSONFiles;
 import com.natamus.collective.data.BlockEntityData;
 import com.natamus.collective.events.CollectiveEvents;
@@ -131,6 +132,7 @@ public class RegisterCollectiveForgeEvents {
 	public static void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent e) {
 		if (e.getEntity() instanceof ServerPlayer player) {
 			ServerTranslationPack.onPlayerJoin(player);
+			DuskConfigSync.sendServerValues(player);
 		}
 	}
 

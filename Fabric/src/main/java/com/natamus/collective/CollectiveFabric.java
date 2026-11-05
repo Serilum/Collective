@@ -2,6 +2,7 @@ package com.natamus.collective;
 
 import com.natamus.collective.check.RegisterMod;
 import com.natamus.collective.cmds.CommandCollective;
+import com.natamus.collective.config.DuskConfigSync;
 import com.natamus.collective.config.GenerateJSONFiles;
 import com.natamus.collective.data.BlockEntityData;
 import com.natamus.collective.events.CollectiveEvents;
@@ -69,6 +70,7 @@ public class CollectiveFabric implements ModInitializer {
 		CollectivePlayerEvents.PLAYER_LOGGED_IN.register((world, player) -> {
 			if (player instanceof ServerPlayer serverPlayer) {
 				ServerTranslationPack.onPlayerJoin(serverPlayer);
+				DuskConfigSync.sendServerValues(serverPlayer);
 			}
 		});
 

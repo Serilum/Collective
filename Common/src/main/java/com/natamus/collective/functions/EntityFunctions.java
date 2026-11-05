@@ -207,6 +207,23 @@ public class EntityFunctions {
 		transferItemsBetweenEntities(from, to, false);
 	}
 
+	public static void transferSpawnStateBetweenEntities(Entity from, Entity to) {
+		if (from instanceof LivingEntity livingFrom && to instanceof LivingEntity livingTo) {
+			for (MobEffectInstance effect : livingFrom.getActiveEffects()) {
+				livingTo.addEffect(new MobEffectInstance(effect));
+			}
+		}
+
+		if (from instanceof Mob mobFrom && mobFrom.isPersistenceRequired() && to instanceof Mob mobTo) {
+			mobTo.setPersistenceRequired();
+		}
+
+		if (from.hasCustomName()) {
+			to.setCustomName(from.getCustomName());
+			to.setCustomNameVisible(from.isCustomNameVisible());
+		}
+	}
+
 	public static Boolean doesEntitySurviveThisDamage(Player player, int halfheartdamage) {
 		return doesEntitySurviveThisDamage((LivingEntity)player, halfheartdamage);
 	}

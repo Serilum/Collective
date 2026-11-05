@@ -9,6 +9,7 @@
     "BlockItemMixin",
     "BoneMealItemMixin",
     "EntityMixin",
+    "FileToIdConverterMixin",
     "NetherPortalBlockMixin",
     "PatrolSpawnerMixin",
     "PrimaryLevelDataMixin",

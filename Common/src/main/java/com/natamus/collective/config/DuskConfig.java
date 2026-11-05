@@ -23,6 +23,7 @@ public abstract class DuskConfig {
 		boolean rgb() default false;
 		boolean amounts() default false;
 		boolean weights() default false;
+		boolean sync() default false;
 	}
 
 	public static void init(String name, String modid, Class<?> configClass) {
