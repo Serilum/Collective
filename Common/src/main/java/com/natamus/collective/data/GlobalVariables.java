@@ -13,11 +13,14 @@ import net.minecraft.world.level.block.entity.BlockEntityTypes;
 import net.minecraft.world.level.material.MapColor;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class GlobalVariables {
 	public static Random random = new Random();
 	public static RandomSource randomSource = RandomSource.create();
+
+	public static Map<String, Boolean> loadedModCache = new ConcurrentHashMap<>();
 
 	// Spawn A Mob variables
 	public static CopyOnWriteArrayList<EntityType<?>> activeSAMEntityTypes = new CopyOnWriteArrayList<>();

@@ -28,7 +28,7 @@ public class NeoForgeModLoaderHelper implements ModLoaderHelper {
 	}
 
 	@Override
-	public boolean isModLoaded(String modId) {
+	public boolean isModLoadedUncached(String modId) {
 		return ModList.get().isLoaded(modId);
 	}
 
