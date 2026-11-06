@@ -20,6 +20,7 @@ public class DuskConfigSetting {
 	public final List<AbstractWidget> widgets = new ArrayList<>();
 	private final AbstractWidget valueWidget;
 	private final Button resetButton;
+	private boolean resetPending = false;
 	public boolean isValid = true;
 
 	public DuskConfigSetting(DuskConfigEditScreen screen, DuskConfigEntry entry, int screenWidth) {
@@ -61,7 +62,7 @@ public class DuskConfigSetting {
 			valueWidget.setTooltip(Tooltip.create(Component.literal(String.join(" ", entry.description))));
 		}
 
-		resetButton = new DuskConfigButton(screenWidth - 205, 0, 40, 20, Component.translatable("controls.reset").withStyle(ChatFormatting.RED), button -> resetValue());
+		resetButton = new DuskConfigButton(screenWidth - 205, 0, 40, 20, getResetLabel(), button -> pressReset());
 		updateResetButton();
 
 		widgets.add(valueWidget);
@@ -158,6 +159,33 @@ public class DuskConfigSetting {
 		}
 
 		screen.onSettingChanged();
+	}
+
+	private Component getResetLabel() {
+		if (resetPending) {
+			return Component.literal("✔").withStyle(ChatFormatting.RED);
+		}
+		return Component.translatable("controls.reset").withStyle(ChatFormatting.RED);
+	}
+
+	private void pressReset() {
+		if (!resetPending) {
+			resetPending = true;
+			resetButton.setMessage(getResetLabel());
+			return;
+		}
+
+		cancelPendingReset();
+		resetValue();
+	}
+
+	public boolean isResetPending() {
+		return resetPending;
+	}
+
+	public void cancelPendingReset() {
+		resetPending = false;
+		resetButton.setMessage(getResetLabel());
 	}
 
 	private void resetValue() {

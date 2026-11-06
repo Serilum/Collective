@@ -18,6 +18,7 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.NoiseColumn;
 import net.minecraft.world.level.StructureManager;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.biome.BiomeSource;
@@ -514,19 +515,32 @@ public class BlockPosFunctions {
 				continue;
 			}
 
-			if (firstColumnWithBiome == null) {
-				firstColumnWithBiome = new BlockPos(x, 0, z);
+			surfaceChecks += 1;
+			if (surfaceChecks > 512) {
+				break;
 			}
 
-			int surfaceY = chunkGenerator.getBaseHeight(x, z, Heightmap.Types.WORLD_SURFACE_WG, serverLevel, randomState);
+			int surfaceY = getStandingY(serverLevel, chunkGenerator, randomState, x, z);
+			if (surfaceY <= serverLevel.getMinBuildHeight()) {
+				continue;
+			}
+
+			if (firstColumnWithBiome == null) {
+				firstColumnWithBiome = new BlockPos(x, surfaceY, z);
+			}
+
 			if (isBiomeAt(biomeSource, climateSampler, biomePredicate, x, surfaceY, z)) {
 				boolean isAwayFromEdge = isBiomeAroundOnSurface(biomeSource, climateSampler, biomePredicate, x, surfaceY, z, minimumDistanceFromBiomeEdge);
 				boolean isOnLand = !preferLand || isLandColumn(serverLevel, chunkGenerator, randomState, x, surfaceY, z);
 				if (isAwayFromEdge && isOnLand) {
-					return getSurfaceBlockPos(serverLevel, x, z);
+					BlockPos standingPos = getStandingBlockPos(serverLevel, x, surfaceY, z);
+					if (standingPos != null) {
+						return standingPos;
+					}
+					continue;
 				}
 
-				BlockPos column = new BlockPos(x, 0, z);
+				BlockPos column = new BlockPos(x, surfaceY, z);
 				if (isOnLand && firstLandColumnNearEdge == null) {
 					firstLandColumnNearEdge = column;
 				}
@@ -537,11 +551,6 @@ public class BlockPosFunctions {
 					firstWaterColumnNearEdge = column;
 				}
 			}
-
-			surfaceChecks += 1;
-			if (surfaceChecks >= 512) {
-				break;
-			}
 		}
 
 		BlockPos bestColumn = getFirstFoundColumn(firstLandColumnNearEdge, firstWaterColumnAwayFromEdge, firstWaterColumnNearEdge, firstColumnWithBiome);
@@ -549,7 +558,67 @@ public class BlockPosFunctions {
 			return null;
 		}
 
-		return getSurfaceBlockPos(serverLevel, bestColumn.getX(), bestColumn.getZ());
+		return getStandingBlockPos(serverLevel, bestColumn.getX(), bestColumn.getY(), bestColumn.getZ());
+	}
+
+	private static int getStandingY(ServerLevel serverLevel, ChunkGenerator chunkGenerator, RandomState randomState, int x, int z) {
+		if (serverLevel.dimensionType().hasCeiling()) {
+			return getCaveFloorY(serverLevel, chunkGenerator, randomState, x, z);
+		}
+		return chunkGenerator.getBaseHeight(x, z, Heightmap.Types.WORLD_SURFACE_WG, serverLevel, randomState);
+	}
+
+	private static int getCaveFloorY(ServerLevel serverLevel, ChunkGenerator chunkGenerator, RandomState randomState, int x, int z) {
+		NoiseColumn noiseColumn = chunkGenerator.getBaseColumn(x, z, serverLevel, randomState);
+		int ceilingY = serverLevel.getMinBuildHeight() + serverLevel.dimensionType().logicalHeight() - 1;
+
+		for (int y = ceilingY - 1; y > serverLevel.getMinBuildHeight(); y--) {
+			if (isStandingSpot(noiseColumn.getBlock(y - 1), noiseColumn.getBlock(y), noiseColumn.getBlock(y + 1))) {
+				return y;
+			}
+		}
+
+		return serverLevel.getMinBuildHeight();
+	}
+
+	private static boolean isStandingSpot(BlockState floorState, BlockState feetState, BlockState headState) {
+		return feetState.isAir() && headState.isAir() && !floorState.isAir() && floorState.getFluidState().isEmpty();
+	}
+
+	private static BlockPos getStandingBlockPos(ServerLevel serverLevel, int x, int standingY, int z) {
+		if (!serverLevel.dimensionType().hasCeiling()) {
+			return getSurfaceBlockPos(serverLevel, x, z);
+		}
+
+		BlockPos noisePos = new BlockPos(x, standingY, z);
+		if (isStandingSpot(serverLevel, noisePos)) {
+			return noisePos;
+		}
+
+		for (int distance = 1; distance <= 8; distance++) {
+			BlockPos abovePos = noisePos.above(distance);
+			if (isStandingSpot(serverLevel, abovePos)) {
+				return abovePos;
+			}
+
+			BlockPos belowPos = noisePos.below(distance);
+			if (isStandingSpot(serverLevel, belowPos)) {
+				return belowPos;
+			}
+		}
+
+		return null;
+	}
+
+	private static boolean isStandingSpot(ServerLevel serverLevel, BlockPos pos) {
+		BlockPos floorPos = pos.below();
+		BlockState floorState = serverLevel.getBlockState(floorPos);
+		BlockState feetState = serverLevel.getBlockState(pos);
+		BlockState headState = serverLevel.getBlockState(pos.above());
+		if (!isStandingSpot(floorState, feetState, headState)) {
+			return false;
+		}
+		return floorState.isFaceSturdy(serverLevel, floorPos, Direction.UP);
 	}
 
 	private static boolean isLandColumn(ServerLevel serverLevel, ChunkGenerator chunkGenerator, RandomState randomState, int x, int surfaceY, int z) {

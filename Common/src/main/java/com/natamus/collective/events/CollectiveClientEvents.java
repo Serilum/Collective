@@ -3,6 +3,7 @@ package com.natamus.collective.events;
 import com.mojang.datafixers.util.Pair;
 import com.natamus.collective.config.screen.DuskConfigRegistryCache;
 import com.natamus.collective.networking.packets.ConfigSyncClientHandler;
+import com.natamus.collective.worldcreation.WorldCreationRows;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.gui.screens.DeathScreen;
@@ -44,6 +45,7 @@ public class CollectiveClientEvents {
 
 		lastPickerCacheLevel = mc.level;
 		if (mc.level != null) {
+			WorldCreationRows.forgetCreateWorldScreen();
 			DuskConfigRegistryCache.saveWorldRegistryIds();
 		}
 	}

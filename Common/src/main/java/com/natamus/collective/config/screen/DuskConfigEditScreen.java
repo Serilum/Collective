@@ -166,11 +166,31 @@ public class DuskConfigEditScreen extends DuskConfigBaseScreen {
 
 	@Override
 	public boolean mouseClicked(double mouseX, double mouseY, int button) {
+		List<DuskConfigSetting> settingsPendingReset = getSettingsPendingReset();
+
+		boolean handled;
 		if (button == InputConstants.MOUSE_BUTTON_RIGHT && searchBox.isMouseOver(mouseX, mouseY)) {
 			searchBox.setValue("");
-			return true;
+			handled = true;
 		}
-		return super.mouseClicked(mouseX, mouseY, button);
+		else {
+			handled = super.mouseClicked(mouseX, mouseY, button);
+		}
+
+		for (DuskConfigSetting setting : settingsPendingReset) {
+			setting.cancelPendingReset();
+		}
+		return handled;
+	}
+
+	private List<DuskConfigSetting> getSettingsPendingReset() {
+		List<DuskConfigSetting> settingsPendingReset = new ArrayList<>();
+		for (DuskConfigSetting setting : settings) {
+			if (setting.isResetPending()) {
+				settingsPendingReset.add(setting);
+			}
+		}
+		return settingsPendingReset;
 	}
 
 	@Override
