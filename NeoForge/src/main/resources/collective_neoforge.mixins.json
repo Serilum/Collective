@@ -18,9 +18,13 @@
     "VillageSiegeMixin"
   ],
   "client": [
+    "ChildContainerInvoker",
     "ClientLanguageMixin",
     "ClientPacketListenerMixin",
     "ConditionalItemModelPropertiesMixin",
+    "CreateWorldScreenMixin",
+    "GridLayoutMixin",
+    "GridLayoutTabMixin",
     "GuiMixin",
     "LanguageManagerMixin",
     "MinecraftMixin",
