@@ -82,6 +82,26 @@ public class DuskConfigEntry {
 		this.rgb = false;
 	}
 
+	public DuskConfigEntry(String displayName, String registry, boolean weights, String value) {
+		this.field = null;
+		this.description = new ArrayList<>();
+		this.name = displayName;
+		this.displayName = displayName;
+		this.type = String.class;
+		this.genericType = String.class;
+		this.value = value;
+		this.defaultValue = value;
+		this.min = Double.MIN_NORMAL;
+		this.max = Double.MAX_VALUE;
+		this.registry = registry;
+		this.filter = "";
+		this.single = false;
+		this.amounts = false;
+		this.weights = weights;
+		this.sync = false;
+		this.rgb = false;
+	}
+
 	public boolean hasIdNumbers() {
 		return amounts || weights;
 	}

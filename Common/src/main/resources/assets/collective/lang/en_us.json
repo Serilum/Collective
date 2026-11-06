@@ -118,6 +118,7 @@
   "collective.biomespawnpoint.message.unknownbiome": "%s is not a biome or biome tag in this world.",
   "collective.biomespawnpoint.message.somethingwentwrongediting": "Something went wrong while editing the spawn biome config file.",
   "collective.biomespawnpoint.message.nospawnfound": "Unable to find one of the spawn biomes. The world spawn point was not changed.",
+  "collective.biomespawnpoint.gui.spawnbiomes": "Spawn Biomes",
 
   "_comment_modname_brandnewday": "Brand New Day",
   "collective.brandnewday.day": "Day %s",

@@ -111,7 +111,7 @@ public class DuskConfigRegistryScreen extends DuskConfigBaseScreen {
 	private void addPatternRow(int listWidth) {
 		EditBox patternBox = this.addRenderableWidget(new EditBox(this.font, 10, this.height - 54, listWidth - 65, 20, Component.translatable("collective.collective.gui.idpattern")));
 		patternBox.setMaxLength(Integer.MAX_VALUE);
-		patternBox.setHint(Component.translatable("collective.collective.gui.idpattern").withStyle(ChatFormatting.DARK_GRAY));
+		patternBox.setHint(getHintThatFits(patternBox, Component.translatable("collective.collective.gui.idpattern").withStyle(ChatFormatting.DARK_GRAY)));
 		this.addRenderableWidget(new DuskConfigButton(listWidth - 50, this.height - 54, 60, 20, Component.translatable("collective.collective.gui.add"), button -> {
 			addId(patternBox.getValue().strip());
 			patternBox.setValue("");
@@ -172,7 +172,7 @@ public class DuskConfigRegistryScreen extends DuskConfigBaseScreen {
 		EditBox amountBox = new EditBox(this.font, 0, 0, 44, 20, getAmountBoxLabel());
 		amountBox.setValue(idAmount.getAmountText());
 		if (entry.weights) {
-			amountBox.setHint(getAmountBoxLabel());
+			amountBox.setHint(getHintThatFits(amountBox, getAmountBoxLabel()));
 			weightBoxes.put(id, amountBox);
 		}
 
@@ -187,6 +187,11 @@ public class DuskConfigRegistryScreen extends DuskConfigBaseScreen {
 			refreshWeightTooltips();
 		});
 		return amountBox;
+	}
+
+	private Component getHintThatFits(EditBox editBox, Component hint) {
+		String fittedHint = DuskConfigRow.fitLabel(this.font, hint.getString(), editBox.getInnerWidth());
+		return Component.literal(fittedHint).withStyle(hint.getStyle());
 	}
 
 	private Component getAmountBoxLabel() {
@@ -389,7 +394,7 @@ public class DuskConfigRegistryScreen extends DuskConfigBaseScreen {
 		if (registryIds.isEmpty() && DuskConfigRegistryIds.needsWorld(entry.registry)) {
 			renderWorldNeededNotice(guiGraphics);
 		}
-		else if (this.minecraft.level == null && isShowingCachedList()) {
+		else if (this.minecraft.level == null && DuskConfigRegistryIds.worldCreationRegistries == null && isShowingCachedList()) {
 			renderTopNotice(guiGraphics, Component.translatable("collective.collective.gui.cachedlist"));
 		}
 		else if (this.minecraft.level == null && !entry.filter.isEmpty() && suggestedIds.isEmpty()) {

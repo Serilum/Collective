@@ -9,6 +9,7 @@ import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.server.IntegratedServer;
 import net.minecraft.core.Registry;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
@@ -32,6 +33,7 @@ import java.util.List;
 import java.util.Optional;
 
 public class DuskConfigRegistryIds {
+	public static RegistryAccess worldCreationRegistries = null;
 	private static final HashMap<EntityType<?>, SpawnEggItem> spawnEggs = new HashMap<>();
 
 	public static List<String> getIds(String registryName) {
@@ -250,12 +252,19 @@ public class DuskConfigRegistryIds {
 			return builtInRegistry;
 		}
 
+		ResourceKey<Registry<Object>> registryKey = ResourceKey.createRegistryKey(registryId);
+		if (worldCreationRegistries != null) {
+			Optional<Registry<Object>> worldCreationRegistry = worldCreationRegistries.registry(registryKey);
+			if (worldCreationRegistry.isPresent()) {
+				return worldCreationRegistry.get();
+			}
+		}
+
 		ClientPacketListener connection = Minecraft.getInstance().getConnection();
 		if (connection == null) {
 			return null;
 		}
 
-		ResourceKey<Registry<Object>> registryKey = ResourceKey.createRegistryKey(registryId);
 		Optional<Registry<Object>> worldRegistry = connection.registryAccess().registry(registryKey);
 		if (worldRegistry.isPresent()) {
 			return worldRegistry.get();

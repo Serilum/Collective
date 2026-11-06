@@ -2,6 +2,8 @@ package com.natamus.collective.fabric.mixin;
 
 import com.mojang.serialization.Lifecycle;
 import com.natamus.collective.services.Services;
+import com.natamus.collective.worldcreation.WorldCreationRows;
+import net.minecraft.client.gui.components.tabs.Tab;
 import net.minecraft.client.gui.screens.worldselection.CreateWorldScreen;
 import net.minecraft.client.gui.screens.worldselection.WorldCreationContext;
 import net.minecraft.core.LayeredRegistryAccess;
@@ -12,6 +14,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
@@ -34,5 +37,16 @@ public abstract class CreateWorldScreenMixin {
 			this.createNewWorld(complete.specialWorldProperty(), layeredRegistryAccess, lifecycle3);
 			ci.cancel();
 		}
+	}
+
+	@ModifyArg(method = "init", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/components/tabs/TabNavigationBar$Builder;addTabs([Lnet/minecraft/client/gui/components/tabs/Tab;)Lnet/minecraft/client/gui/components/tabs/TabNavigationBar$Builder;"), index = 0)
+	private Tab[] init_addTabs(Tab[] tabs) {
+		WorldCreationRows.addRowsToTabs((CreateWorldScreen)(Object)this, tabs);
+		return tabs;
+	}
+
+	@Inject(method = "popScreen", at = @At(value = "HEAD"))
+	private void popScreen(CallbackInfo ci) {
+		WorldCreationRows.forgetCreateWorldScreen();
 	}
 }

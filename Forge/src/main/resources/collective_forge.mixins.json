@@ -18,7 +18,11 @@
     "VillageSiegeMixin"
   ],
   "client": [
+    "CellInhabitantInvoker",
     "ClientLanguageMixin",
+    "CreateWorldScreenMixin",
+    "GridLayoutMixin",
+    "GridLayoutTabMixin",
     "GuiMixin",
     "LanguageManagerMixin",
     "MinecraftMixin",
