@@ -115,7 +115,7 @@ public class PlayerFunctions {
 		return isJoiningWorldForTheFirstTime(player, modid, false);
 	}
 	public static boolean isJoiningWorldForTheFirstTime(Player player, String modid, boolean mustHaveEmptyInventory) {
-		return isJoiningWorldForTheFirstTime(player, modid, false, true);
+		return isJoiningWorldForTheFirstTime(player, modid, mustHaveEmptyInventory, true);
 	}
 	public static boolean isJoiningWorldForTheFirstTime(Player player, String modid, boolean mustHaveEmptyInventory, boolean mustBeCloseToSpawn) {
 		String firstjointag = CollectiveReference.MOD_ID + ".firstJoin." + modid;
@@ -175,7 +175,8 @@ public class PlayerFunctions {
 			int spawnRadius = serverLevel.getGameRules().get(GameRules.RESPAWN_RADIUS);
 			Constants.LOG.debug("[{}] Checking for first join of {} with spawn radius: {}", modid, playerName, spawnRadius);
 
-			return checkPos.closerThan(spawnPos, spawnRadius * 2);
+			int checkRadius = Math.max(spawnRadius * 2, 1);
+			return checkPos.closerThan(spawnPos, checkRadius);
 		}
 
 		return true;
