@@ -1,16 +1,21 @@
 package com.natamus.collective.functions;
 
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.gson.JsonPrimitive;
+import com.natamus.collective.config.DuskConfigEntry;
 import com.natamus.collective.config.DuskConfigMigration;
 import com.natamus.collective.config.DuskConfigMod;
 import com.natamus.collective.config.DuskConfigModToggles;
 import com.natamus.collective.objects.IdAmount;
 import com.natamus.collective.services.Services;
+import net.minecraft.server.MinecraftServer;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.nio.charset.MalformedInputException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -33,6 +38,122 @@ public class ConfigFunctions {
 	public static HashMap<String, String> getConfigValues(String modid) {
 		DuskConfigMigration.moveToSerilumConfigDirectory(modid);
 		return getConfigValues(DataFunctions.getConfigDirectoryPath(), modid);
+	}
+
+	public static String getConfigString(String modid, String key, String fallback) {
+		if (getLoadedConfigValue(modid, key) instanceof String value) {
+			return value;
+		}
+		return fallback;
+	}
+	public static String getConfigString(MinecraftServer server, String modid, String key, String fallback) {
+		JsonElement worldValue = getWorldConfigValue(server, modid, key);
+		if (worldValue != null && worldValue.isJsonPrimitive()) {
+			return worldValue.getAsString();
+		}
+		return getConfigString(modid, key, fallback);
+	}
+
+	public static boolean getConfigBoolean(String modid, String key, boolean fallback) {
+		if (getLoadedConfigValue(modid, key) instanceof Boolean value) {
+			return value;
+		}
+		return fallback;
+	}
+	public static boolean getConfigBoolean(MinecraftServer server, String modid, String key, boolean fallback) {
+		JsonElement worldValue = getWorldConfigValue(server, modid, key);
+		if (worldValue != null && worldValue.isJsonPrimitive() && worldValue.getAsJsonPrimitive().isBoolean()) {
+			return worldValue.getAsBoolean();
+		}
+		return getConfigBoolean(modid, key, fallback);
+	}
+
+	public static int getConfigInt(String modid, String key, int fallback) {
+		if (getLoadedConfigValue(modid, key) instanceof Integer value) {
+			return value;
+		}
+		return fallback;
+	}
+	public static int getConfigInt(MinecraftServer server, String modid, String key, int fallback) {
+		JsonElement worldValue = getWorldConfigValue(server, modid, key);
+		if (worldValue != null && worldValue.isJsonPrimitive() && worldValue.getAsJsonPrimitive().isNumber()) {
+			return worldValue.getAsInt();
+		}
+		return getConfigInt(modid, key, fallback);
+	}
+
+	public static void setWorldConfigValue(MinecraftServer server, String modid, String key, String value) {
+		writeWorldConfigValue(server, modid, key, new JsonPrimitive(value));
+	}
+	public static void setWorldConfigValue(MinecraftServer server, String modid, String key, boolean value) {
+		writeWorldConfigValue(server, modid, key, new JsonPrimitive(value));
+	}
+	public static void setWorldConfigValue(MinecraftServer server, String modid, String key, int value) {
+		writeWorldConfigValue(server, modid, key, new JsonPrimitive(value));
+	}
+
+	private static Object getLoadedConfigValue(String modid, String key) {
+		DuskConfigMod configMod = getEnabledConfigMod(modid);
+		if (configMod == null) {
+			return null;
+		}
+
+		for (DuskConfigEntry entry : configMod.entries) {
+			if (entry.getName().equals(key)) {
+				return entry.getValue();
+			}
+		}
+		return null;
+	}
+
+	private static JsonElement getWorldConfigValue(MinecraftServer server, String modid, String key) {
+		if (getEnabledConfigMod(modid) == null) {
+			return null;
+		}
+		return getWorldConfigJson(server, modid).get(key);
+	}
+
+	private static DuskConfigMod getEnabledConfigMod(String modid) {
+		DuskConfigMod configMod = DuskConfigMod.configMods.get(modid);
+		if (configMod == null || configMod.isDisabled || DuskConfigModToggles.isDisabledSerilumMod(modid)) {
+			return null;
+		}
+		return configMod;
+	}
+
+	private static JsonObject getWorldConfigJson(MinecraftServer server, String modid) {
+		Path worldConfigPath = getWorldConfigPath(server, modid);
+		if (!Files.isRegularFile(worldConfigPath)) {
+			return new JsonObject();
+		}
+
+		try {
+			return readConfigJson(worldConfigPath);
+		}
+		catch (Exception ignored) { }
+		return new JsonObject();
+	}
+
+	private static void writeWorldConfigValue(MinecraftServer server, String modid, String key, JsonPrimitive value) {
+		JsonObject worldConfigJson = getWorldConfigJson(server, modid);
+		worldConfigJson.add(key, value);
+
+		File worldConfigFile = getWorldConfigPath(server, modid).toFile();
+		boolean ignored = worldConfigFile.getParentFile().mkdirs();
+		writeJsonFile(worldConfigFile, worldConfigJson);
+	}
+
+	private static void writeJsonFile(File file, JsonObject json) {
+		try {
+			PrintWriter writer = new PrintWriter(file, StandardCharsets.UTF_8);
+			writer.println(new GsonBuilder().setPrettyPrinting().create().toJson(json));
+			writer.close();
+		}
+		catch (IOException ignored) { }
+	}
+
+	private static Path getWorldConfigPath(MinecraftServer server, String modid) {
+		return Path.of(WorldFunctions.getWorldPath(server), "data", modid, "config.json");
 	}
 
 	public static List<String> getRawConfigValues(String modid) {
