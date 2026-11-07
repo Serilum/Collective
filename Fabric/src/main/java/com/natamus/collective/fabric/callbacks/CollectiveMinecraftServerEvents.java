@@ -13,9 +13,23 @@ public final class CollectiveMinecraftServerEvents {
 			callback.onSetSpawn(serverLevel, serverLevelData);
 		}
 	});
-    
+
+	public static final Event<Create_Spawn> WORLD_CREATE_SPAWN = EventFactory.createArrayBacked(Create_Spawn.class, callbacks -> (serverLevel, serverLevelData) -> {
+		for (Create_Spawn callback : callbacks) {
+			if (callback.onCreateSpawn(serverLevel, serverLevelData)) {
+				return true;
+			}
+		}
+		return false;
+	});
+
 	@FunctionalInterface
 	public interface Set_Spawn {
 		 void onSetSpawn(ServerLevel serverLevel, ServerLevelData serverLevelData);
+	}
+
+	@FunctionalInterface
+	public interface Create_Spawn {
+		 boolean onCreateSpawn(ServerLevel serverLevel, ServerLevelData serverLevelData);
 	}
 }

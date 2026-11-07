@@ -151,8 +151,13 @@ public class CommandCollectiveConfig {
 
 	private static int addId(CommandSourceStack source, DuskConfigMod configMod, DuskConfigEntry entry, String id) {
 		String newId = id.strip();
-		if (entry.amounts) {
-			newId = new IdAmount(newId.replaceFirst("\\s+", "=")).toEntry();
+		if (entry.hasIdNumbers()) {
+			IdAmount idAmount = new IdAmount(newId.replaceFirst("\\s+", "="));
+			if (entry.weights && !IdAmount.isValidWeightText(idAmount.getAmountText())) {
+				MessageFunctions.sendTranslatableMessage(source, "collective.collective.message.configinvalid", ChatFormatting.RED, newId);
+				return 0;
+			}
+			newId = idAmount.toEntry();
 		}
 
 		List<String> idList = entry.getIdList();
@@ -240,7 +245,7 @@ public class CommandCollectiveConfig {
 	}
 
 	private static String getEntryId(DuskConfigEntry entry, String listEntry) {
-		if (!entry.amounts) {
+		if (!entry.hasIdNumbers()) {
 			return listEntry;
 		}
 		return IdAmount.getId(listEntry.replaceFirst("\\s+", "="));
