@@ -31,6 +31,14 @@ public class MinecraftServerMixin {
 		});
 	}
 
+	@Inject(method = "setInitialSpawn", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerLevel;getChunkSource()Lnet/minecraft/server/level/ServerChunkCache;", ordinal = 0), cancellable = true)
+	private static void MinecraftServer_setInitialSpawn_createSpawn(ServerLevel serverLevel, ServerLevelData serverLevelData, boolean bl, boolean bl2, LevelLoadListener levelLoadListener, CallbackInfo ci) {
+		if (CollectiveMinecraftServerEvents.WORLD_CREATE_SPAWN.invoker().onCreateSpawn(serverLevel, serverLevelData)) {
+			CollectiveMinecraftServerEvents.WORLD_SET_SPAWN.invoker().onSetSpawn(serverLevel, serverLevelData);
+			ci.cancel();
+		}
+	}
+
 	@Inject(method = "setInitialSpawn", at = @At(value = "RETURN"))
 	private static void MinecraftServer_setInitialSpawn(ServerLevel serverLevel, ServerLevelData serverLevelData, boolean bl, boolean bl2, LevelLoadListener levelLoadListener, CallbackInfo ci) {
 		CollectiveMinecraftServerEvents.WORLD_SET_SPAWN.invoker().onSetSpawn(serverLevel, serverLevelData);
