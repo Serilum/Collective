@@ -9,23 +9,37 @@ import net.minecraft.client.gui.layouts.GridLayout;
 import net.minecraft.client.gui.layouts.LayoutSettings;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.worldselection.CreateWorldScreen;
+import net.minecraft.client.gui.screens.worldselection.WorldCreationUiState;
 import net.minecraft.network.chat.Component;
 
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 public class WorldCreationRows {
 	private static final List<WorldCreationRow> rows = new CopyOnWriteArrayList<>();
 
 	public static void addButtonRow(WorldCreationTab tab, Component label, Supplier<Component> valueText, Supplier<Component> tooltip, Consumer<CreateWorldScreen> onPress) {
-		rows.add(new WorldCreationButtonRow(tab, label, valueText, tooltip, onPress));
+		addButtonRow(tab, label, null, valueText, tooltip, onPress);
+	}
+
+	public static void addButtonRow(WorldCreationTab tab, Component label, Component description, Supplier<Component> valueText, Supplier<Component> tooltip, Consumer<CreateWorldScreen> onPress) {
+		rows.add(new WorldCreationButtonRow(tab, label, description, valueText, tooltip, onPress));
 	}
 
 	public static void addSwitchRow(WorldCreationTab tab, Component label, BooleanSupplier switchState, Consumer<Boolean> onSwitch) {
-		rows.add(new WorldCreationSwitchRow(tab, label, switchState, onSwitch));
+		addSwitchRow(tab, label, null, switchState, onSwitch);
+	}
+
+	public static void addSwitchRow(WorldCreationTab tab, Component label, Component description, BooleanSupplier switchState, Consumer<Boolean> onSwitch) {
+		rows.add(new WorldCreationSwitchRow(tab, label, description, switchState, onSwitch));
+	}
+
+	public static void addSwitchRow(WorldCreationTab tab, Component label, Component description, Predicate<WorldCreationUiState> activeCondition, Component inactiveDescription, BooleanSupplier switchState, Consumer<Boolean> onSwitch) {
+		rows.add(new WorldCreationSwitchRow(tab, label, description, activeCondition, inactiveDescription, switchState, onSwitch));
 	}
 
 	public static void openRegistryPicker(Screen parent, String title, String registry, boolean weights, String value, Consumer<String> onChange) {
@@ -54,6 +68,7 @@ public class WorldCreationRows {
 		}
 
 		useRegistriesOf(screen);
+		screen.getUiState().addListener(uiState -> refreshRows());
 
 		for (Tab tab : tabs) {
 			WorldCreationTab worldCreationTab = WorldCreationTab.fromTitle(tab.getTabTitle());

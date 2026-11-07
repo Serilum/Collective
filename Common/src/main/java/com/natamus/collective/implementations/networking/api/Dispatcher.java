@@ -130,7 +130,7 @@ public class Dispatcher {
 	 * @param <T>    - The type
 	 */
 	public static <T> void sendToClientsLoadingPos(T packet, ServerLevel level, BlockPos pos) {
-		sendToClientsLoadingPos(packet, level, new ChunkPos(pos.getX(), pos.getZ()));
+		sendToClientsLoadingPos(packet, level, ChunkPos.containing(pos));
 	}
 
 	/**

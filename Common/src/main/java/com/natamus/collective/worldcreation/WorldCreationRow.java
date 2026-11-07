@@ -3,6 +3,7 @@ package com.natamus.collective.worldcreation;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.StringWidget;
+import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.layouts.GridLayout;
 import net.minecraft.client.gui.layouts.LayoutElement;
 import net.minecraft.client.gui.layouts.SpacerElement;
@@ -16,10 +17,17 @@ public abstract class WorldCreationRow {
 
 	public final WorldCreationTab tab;
 	protected final Component label;
+	protected final Component description;
+	private StringWidget labelWidget = null;
 
 	protected WorldCreationRow(WorldCreationTab tab, Component label) {
+		this(tab, label, null);
+	}
+
+	protected WorldCreationRow(WorldCreationTab tab, Component label, Component description) {
 		this.tab = tab;
 		this.label = label;
+		this.description = description;
 	}
 
 	protected abstract AbstractWidget createWidget(CreateWorldScreen screen);
@@ -41,11 +49,35 @@ public abstract class WorldCreationRow {
 		return tabButtonWidth;
 	}
 
+	protected Component getDescription() {
+		return description;
+	}
+
+	protected Tooltip getDescriptionTooltip() {
+		Component shownDescription = getDescription();
+		if (shownDescription == null) {
+			return null;
+		}
+		return Tooltip.create(shownDescription);
+	}
+
+	protected void refreshLabelTooltip() {
+		if (labelWidget != null) {
+			labelWidget.setTooltip(getDescriptionTooltip());
+		}
+	}
+
 	private GridLayout createLabeledRow(AbstractWidget widget) {
 		GridLayout rowLayout = new GridLayout();
 		rowLayout.addChild(SpacerElement.width(worldTabWidth), 0, 0, 1, 2);
-		rowLayout.addChild(new StringWidget(label, Minecraft.getInstance().font), 1, 0, rowLayout.newCellSettings().align(0.0F, 0.5F));
+		rowLayout.addChild(createLabelWidget(), 1, 0, rowLayout.newCellSettings().align(0.0F, 0.5F));
 		rowLayout.addChild(widget, 1, 1, rowLayout.newCellSettings().alignHorizontallyRight());
 		return rowLayout;
+	}
+
+	private StringWidget createLabelWidget() {
+		labelWidget = new StringWidget(label, Minecraft.getInstance().font);
+		labelWidget.setTooltip(getDescriptionTooltip());
+		return labelWidget;
 	}
 }

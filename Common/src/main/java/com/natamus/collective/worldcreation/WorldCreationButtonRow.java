@@ -17,7 +17,11 @@ public class WorldCreationButtonRow extends WorldCreationRow {
 	private Button button = null;
 
 	public WorldCreationButtonRow(WorldCreationTab tab, Component label, Supplier<Component> valueText, Supplier<Component> tooltip, Consumer<CreateWorldScreen> onPress) {
-		super(tab, label);
+		this(tab, label, null, valueText, tooltip, onPress);
+	}
+
+	public WorldCreationButtonRow(WorldCreationTab tab, Component label, Component description, Supplier<Component> valueText, Supplier<Component> tooltip, Consumer<CreateWorldScreen> onPress) {
+		super(tab, label, description);
 		this.valueText = valueText;
 		this.tooltip = tooltip;
 		this.onPress = onPress;
@@ -50,6 +54,9 @@ public class WorldCreationButtonRow extends WorldCreationRow {
 	private void refreshTooltip() {
 		if (tooltip != null) {
 			button.setTooltip(Tooltip.create(tooltip.get()));
+		}
+		else if (tab != WorldCreationTab.WORLD) {
+			button.setTooltip(getDescriptionTooltip());
 		}
 	}
 }

@@ -1,5 +1,6 @@
 {
   "_comment_modname_shared": "Shared",
+  "collective.shared.gui.requiresgeneratestructures": "Turn on Generate Structures to use this.",
   "collective.shared.message.adminusage": "%s Admin Usage:",
   "collective.shared.message.commandsusage": "--- %s Commands Usage ---",
   "collective.shared.message.confirmbutton": "[Confirm]",
@@ -119,6 +120,8 @@
   "collective.biomespawnpoint.message.somethingwentwrongediting": "Something went wrong while editing the spawn biome config file.",
   "collective.biomespawnpoint.message.nospawnfound": "Unable to find one of the spawn biomes. The world spawn point was not changed.",
   "collective.biomespawnpoint.gui.spawnbiomes": "Spawn Biomes",
+  "collective.biomespawnpoint.gui.spawninbiomes": "Spawn in Biomes",
+  "collective.biomespawnpoint.gui.spawninbiomesdescription": "New players start in one of these biomes, picked by weight. Click the number to choose them.",
 
   "_comment_modname_brandnewday": "Brand New Day",
   "collective.brandnewday.day": "Day %s",
@@ -657,6 +660,10 @@
   "collective.villagernames.message.loadedvillagerswithout": "%s loaded villagers without a name have been named.",
   "collective.villagernames.message.namesloadedvillagers": "The names of %s loaded villagers have been removed.",
   "collective.villagernames.message.removesnamesloaded": "Removes the names of all loaded villagers.",
+
+  "_comment_modname_villagespawnpoint": "Village Spawn Point",
+  "collective.villagespawnpoint.gui.spawninvillage": "Spawn in Village",
+  "collective.villagespawnpoint.gui.spawninvillagedescription": "Moves the world spawn point to the nearest village.",
 
   "_comment_modname_voidvanguards": "Void Vanguards",
   "collective.voidvanguards.message.cosmosdimension": "You are not in the cosmos dimension.",
