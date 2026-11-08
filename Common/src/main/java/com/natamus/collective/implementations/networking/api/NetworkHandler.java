@@ -53,6 +53,8 @@ public interface NetworkHandler
 	 */
 	<T> boolean isRegisteredOnClient(Class<T> packetClass, ServerPlayer player);
 
+	<T> boolean isRegisteredOnServer(Class<T> packetClass);
+
 	/**
 	 * Sends the packet to the client players, only if the players has the packet registered.
 	 *

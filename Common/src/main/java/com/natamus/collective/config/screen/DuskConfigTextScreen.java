@@ -1,10 +1,12 @@
 package com.natamus.collective.config.screen;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import com.natamus.collective.config.DuskConfigEntry;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.MultiLineEditBox;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.input.KeyEvent;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
@@ -48,6 +50,7 @@ public class DuskConfigTextScreen extends DuskConfigBaseScreen {
 		MultiLineEditBox textBox = MultiLineEditBox.builder().setX(boxX).setY(boxTop).build(this.font, boxWidth, this.height - boxTop - 40, Component.literal(entry.getDisplayName()));
 		textBox.setCharacterLimit(Integer.MAX_VALUE);
 		textBox.setValue(text);
+		moveCursorToStart(textBox);
 		textBox.setValueListener(newText -> text = newText);
 		this.addRenderableWidget(textBox);
 		this.setInitialFocus(textBox);
@@ -57,11 +60,18 @@ public class DuskConfigTextScreen extends DuskConfigBaseScreen {
 			if (entry.isList()) {
 				entry.setListFromLines(text);
 			}
+			else if (entry.multiline) {
+				entry.setValue(text);
+			}
 			else {
 				entry.setValue(text.replaceAll("\\R", " "));
 			}
 			onClose();
 		}).pos(this.width / 2 + 4, this.height - 28).size(150, 20).build());
+	}
+
+	private void moveCursorToStart(MultiLineEditBox textBox) {
+		textBox.keyPressed(new KeyEvent(InputConstants.KEY_PAGEUP, InputConstants.KEYCODE_PAGEUP, 0));
 	}
 
 	@Override
@@ -71,7 +81,7 @@ public class DuskConfigTextScreen extends DuskConfigBaseScreen {
 
 	@Override
 	public void onClose() {
-		this.minecraft.setScreenAndShow(parent);
+		this.minecraft.gui.setScreen(parent);
 	}
 
 	@Override

@@ -20,6 +20,7 @@ public class CollectiveCommon {
 		RegisterMod.onCollectiveConfigLoaded();
 		GlobalVariables.generateHashMaps();
 		LoadJSONFiles.startListening();
+		LoadJSONFiles.addCustomFiles();
 
 		registerPackets();
 		loadEvents();

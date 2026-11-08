@@ -53,7 +53,7 @@ public class WorldCreationRows {
 		}
 
 		DuskConfigValueEntry pickerEntry = new DuskConfigValueEntry(title, registry, weights, value, onChangeAndRefresh);
-		Minecraft.getInstance().setScreenAndShow(new DuskConfigRegistryScreen(parent, pickerEntry));
+		Minecraft.getInstance().gui.setScreen(new DuskConfigRegistryScreen(parent, pickerEntry));
 	}
 
 	public static void refreshRows() {

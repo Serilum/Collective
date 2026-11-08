@@ -8,6 +8,7 @@ import com.natamus.collective.implementations.networking.data.PacketContext;
 import com.natamus.collective.implementations.networking.data.Side;
 import com.natamus.collective.implementations.networking.exceptions.RegistrationException;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerPlayer;
@@ -84,6 +85,13 @@ public class ForgeNetworkHandler extends PacketRegistrationHandler {
 	public <T> boolean isRegisteredOnClient(Class<T> packetClass, ServerPlayer player) {
 		var message = (Message<T>) CHANNELS.get(packetClass);
 		return message != null && message.channel().isRemotePresent(player.connection.getConnection());
+	}
+
+	@SuppressWarnings("unchecked")
+	public <T> boolean isRegisteredOnServer(Class<T> packetClass) {
+		Message<T> message = (Message<T>) CHANNELS.get(packetClass);
+		ClientPacketListener connection = Minecraft.getInstance().getConnection();
+		return message != null && connection != null && message.channel().isRemotePresent(connection.getConnection());
 	}
 
 	private <T> BiConsumer<T, CustomPayloadEvent.Context> buildHandler(Consumer<PacketContext<T>> handler) {

@@ -7,6 +7,7 @@ import com.google.gson.JsonObject;
 import com.natamus.collective.functions.ConfigFunctions;
 import com.natamus.collective.functions.DataFunctions;
 import com.natamus.collective.functions.NumberFunctions;
+import com.natamus.collective.functions.StringFunctions;
 
 import java.io.File;
 import java.io.IOException;
@@ -15,6 +16,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
 import java.util.List;
 
 public class DuskConfigMigration {
@@ -95,6 +97,46 @@ public class DuskConfigMigration {
 		for (String name : List.of(modid + ".json", modid + ".json5", modid + "-common.toml", modid + ".json.unreadable", modid)) {
 			moveConfigPath(oldDirectory.resolve(name), newDirectory.resolve(name));
 		}
+	}
+
+	public static String takeDisabledIdsFromFile(String modid, String fileName) {
+		Path filePath = DataFunctions.getConfigDirectoryPath().resolve(modid).resolve(fileName);
+		if (!Files.isRegularFile(filePath)) {
+			return null;
+		}
+
+		List<String> disabledIds = new ArrayList<>();
+		try {
+			for (String line : Files.readAllLines(filePath, StandardCharsets.UTF_8)) {
+				if (line.strip().startsWith("//")) {
+					continue;
+				}
+
+				for (String rawEntry : line.split(",")) {
+					String entry = rawEntry.strip();
+					if (entry.startsWith("!")) {
+						disabledIds.add(entry.substring(1).strip());
+					}
+				}
+			}
+
+			Files.move(filePath, getOldFilePath(filePath), StandardCopyOption.REPLACE_EXISTING);
+		}
+		catch (IOException ignored) {
+			return null;
+		}
+		return String.join(",", disabledIds);
+	}
+
+	private static Path getOldFilePath(Path filePath) {
+		String fileName = filePath.getFileName().toString();
+		if (!fileName.contains(".")) {
+			return filePath.resolveSibling(fileName + "_old");
+		}
+
+		String nameWithoutExtension = StringFunctions.getTextBeforeLast(fileName, ".");
+		String extension = StringFunctions.getTextAfterLast(fileName, ".");
+		return filePath.resolveSibling(nameWithoutExtension + "_old." + extension);
 	}
 
 	private static void moveConfigPath(Path oldPath, Path newPath) {

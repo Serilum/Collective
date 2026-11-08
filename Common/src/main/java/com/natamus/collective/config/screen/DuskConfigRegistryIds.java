@@ -13,9 +13,12 @@ import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
+import net.minecraft.locale.Language;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -122,10 +125,16 @@ public class DuskConfigRegistryIds {
 			if (spawnEgg.isPresent()) {
 				return new ItemStack(spawnEgg.get());
 			}
+			if (entityType.getCategory() != MobCategory.MISC) {
+				return new ItemStack(Items.EGG);
+			}
 		}
 
 		if (value instanceof Enchantment) {
 			return new ItemStack(Items.ENCHANTED_BOOK);
+		}
+		if (value instanceof SoundEvent) {
+			return new ItemStack(Items.NOTE_BLOCK);
 		}
 		return ItemStack.EMPTY;
 	}
@@ -182,11 +191,93 @@ public class DuskConfigRegistryIds {
 		if (value instanceof Enchantment enchantment) {
 			return enchantment.description().getString();
 		}
+		if (value instanceof SoundEvent) {
+			return getSoundSubtitle(identifier);
+		}
 		return "";
+	}
+
+	public static ItemStack getIconWithVariants(String registryName, String id) {
+		String mainEntityId = getMainEntityId(registryName, id);
+		if (mainEntityId != null) {
+			return getIcon(registryName, mainEntityId);
+		}
+		return getIcon(registryName, id);
+	}
+
+	public static String getNameWithVariants(String registryName, String id) {
+		String mainEntityId = getMainEntityId(registryName, id);
+		if (mainEntityId != null) {
+			return getName(registryName, mainEntityId) + " (" + getVariantName(id, mainEntityId) + ")";
+		}
+		return getName(registryName, id);
+	}
+
+	public static String getMainEntityId(String registryName, String id) {
+		Identifier identifier = Identifier.tryParse(id);
+		if (identifier == null || getRegistry(registryName) != BuiltInRegistries.ENTITY_TYPE || BuiltInRegistries.ENTITY_TYPE.containsKey(identifier)) {
+			return null;
+		}
+
+		String path = identifier.getPath();
+		if (isVillagerProfession(path)) {
+			return "minecraft:villager";
+		}
+		if (path.startsWith("zombie_") && isVillagerProfession(StringFunctions.getTextAfter(path, "zombie_"))) {
+			return "minecraft:zombie_villager";
+		}
+
+		Identifier mainEntityId = null;
+		for (Identifier entityId : BuiltInRegistries.ENTITY_TYPE.keySet()) {
+			boolean isLongerMatch = mainEntityId == null || entityId.getPath().length() > mainEntityId.getPath().length();
+			if (entityId.getNamespace().equals(identifier.getNamespace()) && path.endsWith("_" + entityId.getPath()) && isLongerMatch) {
+				mainEntityId = entityId;
+			}
+		}
+
+		if (mainEntityId == null) {
+			return null;
+		}
+		return mainEntityId.toString();
+	}
+
+	private static boolean isVillagerProfession(String path) {
+		for (Identifier professionId : BuiltInRegistries.VILLAGER_PROFESSION.keySet()) {
+			if (professionId.getPath().equals(path)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private static String getVariantName(String id, String mainEntityId) {
+		String path = Identifier.tryParse(id).getPath();
+		String mainEntityPath = Identifier.tryParse(mainEntityId).getPath();
+
+		String variant = path;
+		if (path.endsWith("_" + mainEntityPath)) {
+			variant = StringFunctions.getTextBeforeLast(path, "_" + mainEntityPath);
+		}
+		else if (mainEntityPath.equals("zombie_villager")) {
+			variant = StringFunctions.getTextAfter(path, "zombie_");
+		}
+		return StringFunctions.capitalizeEveryWord(variant.replace("_", " "));
+	}
+
+	private static String getSoundSubtitle(Identifier identifier) {
+		String subtitleKey = "subtitles." + identifier.getPath();
+		if (!Language.getInstance().has(subtitleKey)) {
+			return "";
+		}
+		return Component.translatable(subtitleKey).getString();
 	}
 
 	public static Component getAmountLabel(String registryName, int amount) {
 		return Component.translatable("options.generic_value", getRegistryLabel(registryName), amount);
+	}
+
+	public static Component getSuggestedLabel() {
+		return Component.translatable("collective.collective.gui.suggested");
 	}
 
 	public static Component getAllLabel(String registryName) {
@@ -203,6 +294,7 @@ public class DuskConfigRegistryIds {
 			case "worldgen/biome" -> Component.translatable("collective.collective.gui.biomes");
 			case "mob_effect" -> Component.translatable("collective.collective.gui.effects");
 			case "enchantment" -> Component.translatable("collective.collective.gui.enchantments");
+			case "sound_event" -> Component.translatable("collective.collective.gui.sounds");
 			case DuskConfigModToggles.modRegistry -> Component.translatable("collective.collective.gui.mods");
 			default -> Component.translatable("collective.collective.gui.entries");
 		};
@@ -223,6 +315,7 @@ public class DuskConfigRegistryIds {
 			case "blocks" -> Component.translatable("collective.collective.gui.blocks");
 			case "logs" -> Component.translatable("collective.collective.gui.filterlogs");
 			case "leaves" -> Component.translatable("collective.collective.gui.filterleaves");
+			case "flowers" -> Component.translatable("collective.collective.gui.filterflowers");
 			case "ores" -> Component.translatable("collective.collective.gui.filterores");
 			case "mobs" -> Component.translatable("collective.collective.gui.filtermobs");
 			case "monsters" -> Component.translatable("collective.collective.gui.filtermonsters");

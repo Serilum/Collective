@@ -1,8 +1,6 @@
 package com.natamus.collective.config.screen;
 
 import com.natamus.collective.config.DuskConfigEntry;
-import com.natamus.collective.functions.ColourFunctions;
-import com.natamus.collective.functions.StringFunctions;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.AbstractWidget;
@@ -30,7 +28,7 @@ public class DuskConfigSetting {
 		int valueX = screenWidth - 160;
 		int valueWidth = 150;
 		if (entry.isText()) {
-			widgets.add(Button.builder(Component.literal("..."), button -> Minecraft.getInstance().setScreenAndShow(new DuskConfigTextScreen(screen, entry))).pos(screenWidth - 30, 0).size(20, 20).build());
+			widgets.add(Button.builder(Component.literal("..."), button -> Minecraft.getInstance().gui.setScreen(new DuskConfigTextScreen(screen, entry))).pos(screenWidth - 30, 0).size(20, 20).build());
 			valueWidth -= 25;
 		}
 		else if (entry.isRgb()) {
@@ -38,10 +36,13 @@ public class DuskConfigSetting {
 			valueWidth -= 25;
 		}
 
-		if (entry.hasRegistry() || entry.isRgb() || entry.isList()) {
+		if (entry.hasRegistry() || entry.isRgb() || entry.isList() || entry.multiline) {
 			valueWidget = new DuskConfigButton(valueX, 0, valueWidth, 20, getButtonLabel(), button -> openValueScreen());
 		}
-		else if (entry.isBoolean() || entry.hasOptions() || entry.isChatColour()) {
+		else if (entry.isChatColour()) {
+			valueWidget = new DuskConfigButton(valueX, 0, valueWidth, 20, getButtonLabel(), button -> openChatColourScreen());
+		}
+		else if (entry.isBoolean() || entry.hasOptions()) {
 			valueWidget = new DuskConfigButton(valueX, 0, valueWidth, 20, getButtonLabel(), button -> cycleValue(false), button -> cycleValue(true));
 		}
 		else {
@@ -88,6 +89,14 @@ public class DuskConfigSetting {
 			return Component.literal(entry.getText());
 		}
 
+		if (entry.multiline) {
+			String text = entry.getText().strip();
+			if (text.isEmpty()) {
+				return Component.translatable("gui.none").withStyle(ChatFormatting.GRAY);
+			}
+			return Component.translatable("collective.collective.gui.lines", text.split("\\R").length);
+		}
+
 		if (entry.hasOptions()) {
 			return Component.literal(entry.getOptionLabel(entry.getOption()));
 		}
@@ -97,11 +106,7 @@ public class DuskConfigSetting {
 		}
 
 		if (entry.isChatColour()) {
-			ChatFormatting colour = ColourFunctions.getById((Integer) entry.getValue());
-			if (colour == null) {
-				return Component.literal(String.valueOf(entry.getValue()));
-			}
-			return Component.literal(StringFunctions.capitalizeEveryWord(colour.name().replace("_", " "))).withStyle(colour);
+			return DuskConfigChatColourScreen.getColourLabel((Integer) entry.getValue());
 		}
 
 		if ((Boolean) entry.getValue()) {
@@ -112,14 +117,19 @@ public class DuskConfigSetting {
 
 	private void openValueScreen() {
 		if (entry.hasRegistry()) {
-			Minecraft.getInstance().setScreenAndShow(new DuskConfigRegistryScreen(screen, entry));
+			Minecraft.getInstance().gui.setScreen(new DuskConfigRegistryScreen(screen, entry));
 		}
-		else if (entry.isList()) {
-			Minecraft.getInstance().setScreenAndShow(new DuskConfigTextScreen(screen, entry));
+		else if (entry.isList() || entry.multiline) {
+			Minecraft.getInstance().gui.setScreen(new DuskConfigTextScreen(screen, entry));
 		}
 		else {
-			Minecraft.getInstance().setScreenAndShow(new DuskConfigColourScreen(screen, entry));
+			Minecraft.getInstance().gui.setScreen(new DuskConfigColourScreen(screen, entry));
 		}
+	}
+
+	private void openChatColourScreen() {
+		Component title = Component.literal(entry.getDisplayName());
+		Minecraft.getInstance().gui.setScreen(new DuskConfigChatColourScreen(screen, title, (Integer) entry.getValue(), entry::setValue));
 	}
 
 	private void cycleValue(boolean backwards) {
@@ -130,13 +140,6 @@ public class DuskConfigSetting {
 			else {
 				entry.setOption(entry.getNextOption());
 			}
-		}
-		else if (entry.isChatColour()) {
-			int step = 1;
-			if (backwards) {
-				step = 15;
-			}
-			entry.setValue(((Integer) entry.getValue() + step) % 16);
 		}
 		else {
 			entry.setValue(!(Boolean) entry.getValue());
