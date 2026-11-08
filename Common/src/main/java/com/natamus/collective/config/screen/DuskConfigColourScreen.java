@@ -209,7 +209,7 @@ public class DuskConfigColourScreen extends DuskConfigBaseScreen {
 
 	@Override
 	public void onClose() {
-		this.minecraft.setScreenAndShow(parent);
+		this.minecraft.setScreen(parent);
 	}
 
 	@Override

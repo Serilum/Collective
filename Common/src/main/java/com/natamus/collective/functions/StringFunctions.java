@@ -188,6 +188,22 @@ public class StringFunctions {
 		}
 		return text.substring(partStart + part.length());
 	}
+
+	public static String getTextBeforeLast(String text, String part) {
+		int partStart = text.lastIndexOf(part);
+		if (partStart < 0) {
+			return text;
+		}
+		return text.substring(0, partStart);
+	}
+
+	public static String getTextAfterLast(String text, String part) {
+		int partStart = text.lastIndexOf(part);
+		if (partStart < 0) {
+			return "";
+		}
+		return text.substring(partStart + part.length());
+	}
 	
 	public static String joinListWithCommaAnd(List<String> inputlist) {
 		if (inputlist.isEmpty()) {

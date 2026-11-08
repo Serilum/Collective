@@ -2,6 +2,7 @@ package com.natamus.collective.events;
 
 import com.mojang.datafixers.util.Pair;
 import com.natamus.collective.config.screen.DuskConfigRegistryCache;
+import com.natamus.collective.networking.packets.ConfigServerClientHandler;
 import com.natamus.collective.networking.packets.ConfigSyncClientHandler;
 import com.natamus.collective.worldcreation.WorldCreationRows;
 import net.minecraft.client.Minecraft;
@@ -21,6 +22,7 @@ public class CollectiveClientEvents {
 	public static void onClientTick() {
 		cachePickerIdsOnWorldJoin();
 		ConfigSyncClientHandler.restoreOwnValuesAfterLeavingServer();
+		ConfigServerClientHandler.stopEditingServerConfigAfterLeavingServer();
 
 		if (mc.isPaused()) {
 			if (!(mc.screen instanceof DeathScreen)) {

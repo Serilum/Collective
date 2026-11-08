@@ -42,6 +42,7 @@ public class FilterFunctions {
 		return switch (filter) {
 			case "logs" -> block.defaultBlockState().is(BlockTags.LOGS);
 			case "leaves" -> block.defaultBlockState().is(BlockTags.LEAVES);
+			case "flowers" -> block.defaultBlockState().is(BlockTags.FLOWERS);
 			case "ores" -> Services.BLOCKTAGS.isOre(block.defaultBlockState(), true);
 			default -> false;
 		};
