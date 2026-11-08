@@ -25,11 +25,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 
 public class ConfigFunctions {
 	public static final String serilumConfigFolderName = "serilum";
 	public static final String tveConfigFolderName = "TVE";
+	private static final Map<String, Map<String, JsonPrimitive>> worldCreationValues = new ConcurrentHashMap<>();
 
 	public static String getConfigValue(String modid, String key) {
 		return getConfigValues(modid).get(key);
@@ -90,6 +92,37 @@ public class ConfigFunctions {
 	}
 	public static void setWorldConfigValue(MinecraftServer server, String modid, String key, int value) {
 		writeWorldConfigValue(server, modid, key, new JsonPrimitive(value));
+	}
+
+	public static void setWorldCreationValue(String modid, String key, String value) {
+		putWorldCreationValue(modid, key, new JsonPrimitive(value));
+	}
+	public static void setWorldCreationValue(String modid, String key, boolean value) {
+		putWorldCreationValue(modid, key, new JsonPrimitive(value));
+	}
+	public static void setWorldCreationValue(String modid, String key, int value) {
+		putWorldCreationValue(modid, key, new JsonPrimitive(value));
+	}
+
+	public static void saveWorldCreationValues(MinecraftServer server) {
+		if (server.getWorldData().overworldData().isInitialized()) {
+			return;
+		}
+
+		for (Map.Entry<String, Map<String, JsonPrimitive>> modValues : worldCreationValues.entrySet()) {
+			for (Map.Entry<String, JsonPrimitive> value : modValues.getValue().entrySet()) {
+				writeWorldConfigValue(server, modValues.getKey(), value.getKey(), value.getValue());
+			}
+		}
+	}
+
+	private static void putWorldCreationValue(String modid, String key, JsonPrimitive value) {
+		Map<String, JsonPrimitive> modValues = worldCreationValues.get(modid);
+		if (modValues == null) {
+			modValues = new ConcurrentHashMap<>();
+			worldCreationValues.put(modid, modValues);
+		}
+		modValues.put(key, value);
 	}
 
 	private static Object getLoadedConfigValue(String modid, String key) {

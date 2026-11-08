@@ -5,6 +5,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.ContainerObjectSelectionList;
 import net.minecraft.client.gui.components.EditBox;
@@ -28,12 +29,16 @@ public class DuskConfigIdRow extends ContainerObjectSelectionList.Entry<DuskConf
 	private final String id;
 	private final int colour;
 	private final Button button;
-	private final EditBox amountBox;
+	private final AbstractWidget amountBox;
+	private final Button resetButton;
 
 	public DuskConfigIdRow(ItemStack icon, DuskConfigModIcons modIcon, TextureAtlasSprite effectSprite, String name, String id, int colour, Component buttonLabel, Button.OnPress onPress) {
-		this(icon, modIcon, effectSprite, name, id, colour, buttonLabel, onPress, null);
+		this(icon, modIcon, effectSprite, name, id, colour, buttonLabel, onPress, null, null);
 	}
 	public DuskConfigIdRow(ItemStack icon, DuskConfigModIcons modIcon, TextureAtlasSprite effectSprite, String name, String id, int colour, Component buttonLabel, Button.OnPress onPress, EditBox amountBox) {
+		this(icon, modIcon, effectSprite, name, id, colour, buttonLabel, onPress, amountBox, null);
+	}
+	public DuskConfigIdRow(ItemStack icon, DuskConfigModIcons modIcon, TextureAtlasSprite effectSprite, String name, String id, int colour, Component buttonLabel, Button.OnPress onPress, AbstractWidget amountBox, Button resetButton) {
 		this.icon = icon;
 		this.modIcon = modIcon;
 		this.effectSprite = effectSprite;
@@ -42,6 +47,18 @@ public class DuskConfigIdRow extends ContainerObjectSelectionList.Entry<DuskConf
 		this.colour = colour;
 		this.button = Button.builder(buttonLabel, onPress).size(20, 20).build();
 		this.amountBox = amountBox;
+		this.resetButton = resetButton;
+	}
+	public DuskConfigIdRow(ItemStack icon, DuskConfigModIcons modIcon, TextureAtlasSprite effectSprite, String name, String id, int colour, AbstractWidget amountBox, Button resetButton) {
+		this.icon = icon;
+		this.modIcon = modIcon;
+		this.effectSprite = effectSprite;
+		this.name = name;
+		this.id = id;
+		this.colour = colour;
+		this.button = null;
+		this.amountBox = amountBox;
+		this.resetButton = resetButton;
 	}
 
 	@Override
@@ -61,9 +78,15 @@ public class DuskConfigIdRow extends ContainerObjectSelectionList.Entry<DuskConf
 		}
 
 		Font font = Minecraft.getInstance().font;
-		int labelWidth = right - x - 48;
+		int labelWidth = right - x - 24;
+		if (button != null) {
+			labelWidth -= 24;
+		}
 		if (amountBox != null) {
 			labelWidth -= amountBox.getWidth() + 4;
+		}
+		if (resetButton != null) {
+			labelWidth -= resetButton.getWidth() + 4;
 		}
 		if (name.isEmpty()) {
 			guiGraphics.drawString(font, DuskConfigRow.fitLabel(font, id, labelWidth), x + 20, y + 6, colour);
@@ -84,15 +107,41 @@ public class DuskConfigIdRow extends ContainerObjectSelectionList.Entry<DuskConf
 			screen.setTooltipForNextRenderPass(getFullLabelLines());
 		}
 
-		button.setX(right - 24);
-		button.setY(y);
-		button.render(guiGraphics, mouseX, mouseY, partialTick);
+		int amountBoxRight = right;
+		if (button != null) {
+			button.setX(right - 24);
+			button.setY(y);
+			button.render(guiGraphics, mouseX, mouseY, partialTick);
+			amountBoxRight = right - 24;
+		}
 
+		int resetButtonRight = amountBoxRight;
 		if (amountBox != null) {
-			amountBox.setX(right - 28 - amountBox.getWidth());
+			amountBox.setX(amountBoxRight - 4 - amountBox.getWidth());
 			amountBox.setY(y);
 			amountBox.render(guiGraphics, mouseX, mouseY, partialTick);
+			resetButtonRight = amountBox.getX();
 		}
+
+		if (resetButton != null) {
+			resetButton.setX(resetButtonRight - 4 - resetButton.getWidth());
+			resetButton.setY(y);
+			resetButton.render(guiGraphics, mouseX, mouseY, partialTick);
+		}
+	}
+
+	private List<AbstractWidget> getWidgets() {
+		List<AbstractWidget> widgets = new ArrayList<>();
+		if (resetButton != null) {
+			widgets.add(resetButton);
+		}
+		if (amountBox != null) {
+			widgets.add(amountBox);
+		}
+		if (button != null) {
+			widgets.add(button);
+		}
+		return widgets;
 	}
 
 	private boolean isLabelShortened(Font font, int labelWidth) {
@@ -113,17 +162,11 @@ public class DuskConfigIdRow extends ContainerObjectSelectionList.Entry<DuskConf
 
 	@Override
 	public @NotNull List<? extends GuiEventListener> children() {
-		if (amountBox != null) {
-			return List.of(amountBox, button);
-		}
-		return List.of(button);
+		return getWidgets();
 	}
 
 	@Override
 	public @NotNull List<? extends NarratableEntry> narratables() {
-		if (amountBox != null) {
-			return List.of(amountBox, button);
-		}
-		return List.of(button);
+		return getWidgets();
 	}
 }

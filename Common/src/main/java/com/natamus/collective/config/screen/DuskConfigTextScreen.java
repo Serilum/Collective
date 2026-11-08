@@ -1,5 +1,6 @@
 package com.natamus.collective.config.screen;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import com.natamus.collective.config.DuskConfigEntry;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
@@ -48,6 +49,7 @@ public class DuskConfigTextScreen extends DuskConfigBaseScreen {
 		MultiLineEditBox textBox = new MultiLineEditBox(this.font, boxX, boxTop, boxWidth, this.height - boxTop - 40, Component.empty(), Component.literal(entry.getDisplayName()));
 		textBox.setCharacterLimit(Integer.MAX_VALUE);
 		textBox.setValue(text);
+		moveCursorToStart(textBox);
 		textBox.setValueListener(newText -> text = newText);
 		this.addRenderableWidget(textBox);
 		this.setInitialFocus(textBox);
@@ -57,11 +59,18 @@ public class DuskConfigTextScreen extends DuskConfigBaseScreen {
 			if (entry.isList()) {
 				entry.setListFromLines(text);
 			}
+			else if (entry.multiline) {
+				entry.setValue(text);
+			}
 			else {
 				entry.setValue(text.replaceAll("\\R", " "));
 			}
 			onClose();
 		}).pos(this.width / 2 + 4, this.height - 28).size(150, 20).build());
+	}
+
+	private void moveCursorToStart(MultiLineEditBox textBox) {
+		textBox.keyPressed(InputConstants.KEY_PAGEUP, 0, 0);
 	}
 
 	@Override

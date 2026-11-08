@@ -22,6 +22,8 @@ public class DuskConfigEntry {
 	public final boolean amounts;
 	public final boolean weights;
 	public final boolean sync;
+	public final boolean idValues;
+	public final boolean multiline;
 	private final String name;
 	private final String displayName;
 	private final Class<?> type;
@@ -50,6 +52,8 @@ public class DuskConfigEntry {
 		this.amounts = entry.amounts();
 		this.weights = entry.weights();
 		this.sync = entry.sync();
+		this.idValues = false;
+		this.multiline = false;
 		this.rgb = entry.rgb();
 
 		if (type.isEnum()) {
@@ -79,10 +83,16 @@ public class DuskConfigEntry {
 		this.amounts = false;
 		this.weights = false;
 		this.sync = false;
+		this.idValues = false;
+		this.multiline = false;
 		this.rgb = false;
 	}
 
 	public DuskConfigEntry(String displayName, String registry, boolean weights, String value) {
+		this(displayName, registry, "", false, weights, false, value);
+	}
+
+	public DuskConfigEntry(String displayName, String registry, String filter, boolean single, boolean weights, boolean idValues, String value) {
 		this.field = null;
 		this.description = new ArrayList<>();
 		this.name = displayName;
@@ -94,16 +104,65 @@ public class DuskConfigEntry {
 		this.min = Double.MIN_NORMAL;
 		this.max = Double.MAX_VALUE;
 		this.registry = registry;
-		this.filter = "";
-		this.single = false;
+		this.filter = filter;
+		this.single = single;
 		this.amounts = false;
 		this.weights = weights;
 		this.sync = false;
+		this.idValues = idValues;
+		this.multiline = false;
+		this.rgb = false;
+	}
+
+	public DuskConfigEntry(String displayName, List<String> description, String registry, String filter, boolean idValues, boolean multiline, String value) {
+		String cleanValue = getCleanValue(registry, value);
+
+		this.field = null;
+		this.description = description;
+		this.name = displayName;
+		this.displayName = displayName;
+		this.type = String.class;
+		this.genericType = String.class;
+		this.value = cleanValue;
+		this.defaultValue = cleanValue;
+		this.min = Double.MIN_NORMAL;
+		this.max = Double.MAX_VALUE;
+		this.registry = registry;
+		this.filter = filter;
+		this.single = false;
+		this.amounts = false;
+		this.weights = false;
+		this.sync = false;
+		this.idValues = idValues;
+		this.multiline = multiline;
 		this.rgb = false;
 	}
 
 	public boolean hasIdNumbers() {
-		return amounts || weights;
+		return amounts || weights || idValues;
+	}
+
+	public boolean hasChatColourValues() {
+		return false;
+	}
+
+	public boolean hasLevelDurationValues() {
+		return false;
+	}
+
+	public boolean isIdMap() {
+		return false;
+	}
+
+	public boolean isFixedList() {
+		if (field == null) {
+			return false;
+		}
+		return field.getAnnotation(DuskConfig.Entry.class).fixed();
+	}
+
+	public List<String> getVariantIds() {
+		return new ArrayList<>();
 	}
 
 	public String getName() {
@@ -170,7 +229,7 @@ public class DuskConfigEntry {
 	}
 
 	public boolean isText() {
-		return type == String.class && !hasOptions() && !hasRegistry() && !isRgb();
+		return type == String.class && !hasOptions() && !hasRegistry() && !isRgb() && !multiline;
 	}
 
 	public boolean isList() {
@@ -264,6 +323,13 @@ public class DuskConfigEntry {
 
 	public void setIdList(List<String> idList) {
 		setValue(String.join(",", idList));
+	}
+
+	public List<String> getDefaultIdList() {
+		if (field == null) {
+			return new ArrayList<>();
+		}
+		return splitList(String.valueOf(defaultValue));
 	}
 
 	public String getText() {
@@ -385,7 +451,14 @@ public class DuskConfigEntry {
 		return BigDecimal.valueOf(number).stripTrailingZeros().toPlainString();
 	}
 
-	private static List<String> splitList(String text) {
+	private static String getCleanValue(String registry, String value) {
+		if (registry.isEmpty()) {
+			return value;
+		}
+		return String.join(",", splitList(value));
+	}
+
+	protected static List<String> splitList(String text) {
 		List<String> list = new ArrayList<>();
 		for (String part : text.split(",")) {
 			if (!part.isBlank()) {

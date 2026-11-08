@@ -13,21 +13,78 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class GenerateJSONFiles {
-	private static final List<String> requestedJsonFiles = new ArrayList<String>();
+	private static final List<String> requestedJsonFiles = new CopyOnWriteArrayList<>();
+	private static final Map<String, List<String>> requestedJsonFilesPerMod = new ConcurrentHashMap<>();
 
 	public static void requestJSONFile(String modid, List<String> fileNames) {
 		for (String fileName : fileNames) {
 			requestJSONFile(modid, fileName);
 		}
 	}
-	public static void requestJSONFile(String modid, String fileName) {
+	public static synchronized void requestJSONFile(String modid, String fileName) {
 		if (!requestedJsonFiles.contains(fileName)) {
 			requestedJsonFiles.add(fileName);
 		}
 
+		List<String> modFiles = requestedJsonFilesPerMod.get(modid);
+		if (modFiles == null) {
+			modFiles = new CopyOnWriteArrayList<>();
+			requestedJsonFilesPerMod.put(modid, modFiles);
+		}
+		if (!modFiles.contains(fileName)) {
+			modFiles.add(fileName);
+		}
+
+		createFromBundledFileIfMissing(fileName);
+
 		Constants.LOG.info("JSON file '" + fileName + "' generation requested by mod '" + modid + "'.");
+	}
+
+	private static void createFromBundledFileIfMissing(String fileName) {
+		File file = getJsonFile(fileName);
+		if (file.isFile()) {
+			return;
+		}
+
+		try (InputStream inputStream = GenerateJSONFiles.class.getResourceAsStream("/data/" + CollectiveReference.MOD_ID + "/json/" + fileName)) {
+			if (inputStream != null) {
+				writeJsonFile(file, JsonParser.parseReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8)));
+			}
+		}
+		catch (IOException ignored) { }
+	}
+
+	static File getJsonFile(String fileName) {
+		return new File(DataFunctions.getConfigDirectory() + File.separator + CollectiveReference.MOD_ID + File.separator + fileName);
+	}
+
+	static void writeJsonFile(File file, JsonElement jsonElement) {
+		boolean ignored = file.getParentFile().mkdirs();
+
+		PrintWriter writer;
+		try {
+			writer = new PrintWriter(file, StandardCharsets.UTF_8);
+		}
+		catch (IOException ex) {
+			Constants.LOG.warn("Unable to write the JSON file: " + file.getName());
+			return;
+		}
+
+		writer.print(Constants.GSON.toJson(jsonElement));
+		writer.close();
+	}
+
+	public static List<String> getRequestedFiles(String modid) {
+		List<String> modFiles = requestedJsonFilesPerMod.get(modid);
+		if (modFiles == null) {
+			return new ArrayList<>();
+		}
+		return new ArrayList<>(modFiles);
 	}
 
 	public static void initGeneration(ServerLevel serverLevel) {
@@ -48,23 +105,12 @@ public class GenerateJSONFiles {
 			boolean isCreated = false;
 			JsonElement jsonElement = null;
 
-			File file = new File(dirpath + File.separator + fileName);
+			File file = getJsonFile(fileName);
 			if (!file.isFile()) {
 				InputStream inputStream = DataFunctions.getDataInputStream(minecraftServer, CollectiveReference.MOD_ID, "json", fileName);
 				if (inputStream != null) {
 					jsonElement = JsonParser.parseReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
-
-					PrintWriter writer = null;
-					try {
-						writer = new PrintWriter(dirpath + File.separator + fileName, StandardCharsets.UTF_8);
-						writer.print(Constants.GSON.toJson(jsonElement));
-					} catch (IOException ex) {
-						Constants.LOG.warn("Unable to write the JSON file: " + fileName);
-					}
-
-					if (writer != null) {
-						writer.close();
-					}
+					writeJsonFile(file, jsonElement);
 				}
 				else {
 					Constants.LOG.warn("Unable to get Input Stream for: " + fileName);

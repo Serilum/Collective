@@ -60,6 +60,10 @@ public class Dispatcher {
 		return Network.getNetworkHandler().isRegisteredOnClient(packetClass, player);
 	}
 
+	public static <T> boolean isRegisteredOnServer(Class<T> packetClass) {
+		return Network.getNetworkHandler().isRegisteredOnServer(packetClass);
+	}
+
 	/**
 	 * Sends the packet to the client players, only if the players has the packet registered.
 	 *

@@ -7,6 +7,7 @@ import com.natamus.collective.implementations.networking.data.PacketContainer;
 import com.natamus.collective.implementations.networking.data.PacketContext;
 import com.natamus.collective.implementations.networking.data.Side;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.network.Connection;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.network.NetworkEvent;
@@ -69,6 +70,12 @@ public class ForgeNetworkHandler extends PacketRegistrationHandler {
 	public <T> boolean isRegisteredOnClient(Class<T> packetClass, ServerPlayer player) {
 		SimpleChannel channel = CHANNELS.get(packetClass);
 		return channel != null && channel.isRemotePresent(player.connection.connection);
+	}
+
+	public <T> boolean isRegisteredOnServer(Class<T> packetClass) {
+		SimpleChannel channel = CHANNELS.get(packetClass);
+		ClientPacketListener connection = Minecraft.getInstance().getConnection();
+		return channel != null && connection != null && channel.isRemotePresent(connection.getConnection());
 	}
 
 
