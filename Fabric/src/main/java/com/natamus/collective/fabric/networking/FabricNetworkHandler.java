@@ -74,4 +74,10 @@ public class FabricNetworkHandler extends PacketRegistrationHandler {
 		PacketContainer<T> container = (PacketContainer<T>) PACKET_MAP.get(packetClass);
 		return container != null && ServerPlayNetworking.canSend(player, container.type().id());
 	}
+
+	@SuppressWarnings("unchecked")
+	public <T> boolean isRegisteredOnServer(Class<T> packetClass) {
+		PacketContainer<T> container = (PacketContainer<T>) PACKET_MAP.get(packetClass);
+		return container != null && ClientPlayNetworking.canSend(container.type().id());
+	}
 }

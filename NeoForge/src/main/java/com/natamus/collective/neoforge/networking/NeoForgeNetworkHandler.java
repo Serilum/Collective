@@ -7,6 +7,8 @@ import com.natamus.collective.implementations.networking.data.PacketContainer;
 import com.natamus.collective.implementations.networking.data.PacketContext;
 import com.natamus.collective.implementations.networking.data.Side;
 import com.natamus.collective.implementations.networking.exceptions.RegistrationException;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.LogicalSide;
@@ -70,6 +72,13 @@ public class NeoForgeNetworkHandler extends PacketRegistrationHandler {
 	public <T> boolean isRegisteredOnClient(Class<T> packetClass, ServerPlayer player) {
 		PacketContainer<T> container = (PacketContainer<T>) PACKET_MAP.get(packetClass);
 		return container != null && player.connection.hasChannel(container.type());
+	}
+
+	@SuppressWarnings("unchecked")
+	public <T> boolean isRegisteredOnServer(Class<T> packetClass) {
+		PacketContainer<T> container = (PacketContainer<T>) PACKET_MAP.get(packetClass);
+		ClientPacketListener connection = Minecraft.getInstance().getConnection();
+		return container != null && connection != null && connection.hasChannel(container.type());
 	}
 
 	private <T, K extends CommonPacketWrapper<T>> IPayloadHandler<K> buildHandler(Consumer<PacketContext<T>> handler) {

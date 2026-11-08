@@ -5,8 +5,9 @@ import com.google.gson.reflect.TypeToken;
 import com.natamus.collective.data.Constants;
 
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -71,7 +72,7 @@ public class JsonFunctions {
 		return stringList;
 	}
 	public static JsonElement getJsonElementFromFile(String folder, String fileName) throws IOException {
-		return JsonParser.parseReader(new FileReader(folder + fileName));
+		return JsonParser.parseString(Files.readString(Path.of(folder + fileName)));
 	}
 
 	public static List<JsonElement> jsonArrayToList(JsonArray jsonArray) {

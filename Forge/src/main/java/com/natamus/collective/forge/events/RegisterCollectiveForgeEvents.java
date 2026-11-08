@@ -6,6 +6,7 @@ import com.natamus.collective.config.GenerateJSONFiles;
 import com.natamus.collective.data.BlockEntityData;
 import com.natamus.collective.events.CollectiveEvents;
 import com.natamus.collective.events.CollectiveSpawnCheckEvents;
+import com.natamus.collective.functions.ConfigFunctions;
 import com.natamus.collective.functions.WorldFunctions;
 import com.natamus.collective.translations.ServerTranslationPack;
 import com.natamus.collective.util.CollectiveReference;
@@ -34,6 +35,7 @@ public class RegisterCollectiveForgeEvents {
 	public void onServerStarted(ServerAboutToStartEvent e) {
 		GenerateJSONFiles.initGeneration(e.getServer());
 		ServerTranslationPack.onServerStarting(e.getServer());
+		ConfigFunctions.saveWorldCreationValues(e.getServer());
 		BlockEntityData.addModdedCampfiresToCache(e.getServer());
 	}
 

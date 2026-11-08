@@ -10,6 +10,7 @@ import com.natamus.collective.fabric.callbacks.CollectiveEntityEvents;
 import com.natamus.collective.fabric.callbacks.CollectivePlayerEvents;
 import com.natamus.collective.fabric.data.GlobalFabricObjects;
 import com.natamus.collective.fabric.networking.FabricNetworkHandler;
+import com.natamus.collective.functions.ConfigFunctions;
 import com.natamus.collective.implementations.networking.NetworkSetup;
 import com.natamus.collective.implementations.networking.data.Side;
 import com.natamus.collective.translations.ServerTranslationPack;
@@ -36,6 +37,7 @@ public class CollectiveFabric implements ModInitializer {
 		ServerLifecycleEvents.SERVER_STARTING.register((minecraftServer) -> {
 			GenerateJSONFiles.initGeneration(minecraftServer);
 			ServerTranslationPack.onServerStarting(minecraftServer);
+			ConfigFunctions.saveWorldCreationValues(minecraftServer);
 			BlockEntityData.addModdedCampfiresToCache(minecraftServer);
 		});
 
