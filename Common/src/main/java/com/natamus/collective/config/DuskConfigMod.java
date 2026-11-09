@@ -29,6 +29,7 @@ public class DuskConfigMod {
 	public final String modid;
 	public final Path path;
 	public final List<DuskConfigEntry> entries = new ArrayList<>();
+	public final Set<String> entriesNewInFile = new HashSet<>();
 	public final DuskConfigEntry enableEntry;
 	public final boolean isDisabled;
 	public final boolean isListOnly;

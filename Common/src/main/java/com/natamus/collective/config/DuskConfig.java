@@ -36,6 +36,23 @@ public abstract class DuskConfig {
 		DuskConfigFile.load(configMod);
 	}
 
+	public static boolean setInitialValue(String modid, String entryName, Object value) {
+		DuskConfigMod configMod = DuskConfigMod.configMods.get(modid);
+		if (configMod == null || !configMod.entriesNewInFile.contains(entryName)) {
+			return false;
+		}
+
+		for (DuskConfigEntry entry : configMod.entries) {
+			if (!entry.isDefault()) {
+				return false;
+			}
+		}
+
+		configMod.getEntry(entryName).setValue(value);
+		DuskConfigFile.write(configMod);
+		return true;
+	}
+
 	public static void write(String modid) {
 		DuskConfigMod configMod = DuskConfigMod.configMods.get(modid);
 		if (configMod == null) {

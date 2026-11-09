@@ -32,6 +32,9 @@ public class DuskConfigFile {
 		boolean rewrite = DuskConfigMigration.importOldConfigFiles(configMod);
 
 		if (!Files.exists(configMod.path)) {
+			for (DuskConfigEntry entry : configMod.entries) {
+				configMod.entriesNewInFile.add(entry.getName());
+			}
 			resetValues(configMod);
 			write(configMod);
 			return;
@@ -77,6 +80,7 @@ public class DuskConfigFile {
 		for (DuskConfigEntry entry : configMod.entries) {
 			JsonElement jsonEntry = json.get(entry.getName());
 			if (jsonEntry == null) {
+				configMod.entriesNewInFile.add(entry.getName());
 				entry.resetValue();
 				rewrite = true;
 				continue;

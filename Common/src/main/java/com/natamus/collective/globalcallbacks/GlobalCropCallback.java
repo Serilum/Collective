@@ -31,6 +31,16 @@ public class GlobalCropCallback {
 		return true;
 	});
 
+	public static final Event<On_Bone_Meal_Grow> ON_BONE_MEAL_GROW = EventFactory.createArrayBacked(On_Bone_Meal_Grow.class, callbacks -> (world, pos, state, stack) -> {
+		for (On_Bone_Meal_Grow callback : callbacks) {
+			if (callback.onBoneMealGrow(world, pos, state, stack)) {
+				return true;
+			}
+		}
+
+		return false;
+	});
+
 	@FunctionalInterface
 	public interface On_Bone_Meal_Apply {
 		 boolean onBoneMealApply(Player player, Level world, BlockPos pos, BlockState state, ItemStack stack);
@@ -39,5 +49,10 @@ public class GlobalCropCallback {
 	@FunctionalInterface
 	public interface On_General_Bone_Meal_Apply {
 		 boolean onGeneralBoneMealApply(Level world, BlockPos pos, BlockState state, ItemStack stack);
+	}
+
+	@FunctionalInterface
+	public interface On_Bone_Meal_Grow {
+		 boolean onBoneMealGrow(Level world, BlockPos pos, BlockState state, ItemStack stack);
 	}
 }
