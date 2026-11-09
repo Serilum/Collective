@@ -24,8 +24,15 @@ public class BoneMealItemMixin {
 		}
 	}
 
-	@Inject(method = "growCrop(Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/level/Level;Lnet/minecraft/core/BlockPos;)Z", at = @At(value = "HEAD"))
+	@Inject(method = "growCrop(Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/level/Level;Lnet/minecraft/core/BlockPos;)Z", at = @At(value = "HEAD"), cancellable = true)
 	private static void growCrop(ItemStack itemStack, Level level, BlockPos blockPos, CallbackInfoReturnable<Boolean> cir) {
 		GlobalCropCallback.ON_GENERAL_BONE_MEAL_APPLY.invoker().onGeneralBoneMealApply(level, blockPos, level.getBlockState(blockPos), itemStack);
+
+		if (GlobalCropCallback.ON_BONE_MEAL_GROW.invoker().onBoneMealGrow(level, blockPos, level.getBlockState(blockPos), itemStack)) {
+			if (!level.isClientSide()) {
+				itemStack.shrink(1);
+			}
+			cir.setReturnValue(true);
+		}
 	}
 }

@@ -302,6 +302,9 @@
   "collective.grindstonesharpertools.message.toollongersharpened": "Your tool is no longer sharpened.",
   "collective.grindstonesharpertools.message.toolsharpeneduses": "Your tool has been sharpened with %s uses.",
 
+  "_comment_modname_guiclock": "GUI Clock",
+  "collective.guiclock.gui.day": "Day %s",
+
   "_comment_modname_guifollowers": "GUI Followers",
   "collective.guifollowers.key.clearlist": "Clear GUI Follower List",
   "collective.guifollowers.message.usage": "Use /guifollowers hide while looking at a pet, /guifollowers hide <name> or /guifollowers unhide.",
@@ -516,6 +519,7 @@
   "collective.seaworthyboats.tier.netherite": "Netherite",
   "collective.seaworthyboats.message.chestpickupconfirm": "Crouch and right-click again to pick up the boat. The chest's contents will drop.",
   "collective.seaworthyboats.shipyard.switchhint": "Crouch and right-click to switch modes.",
+  "collective.seaworthyboats.message.crouchhitpickuphint": "Crouch and hit the boat with an empty hand to pick it up.",
 
   "_comment_modname_shadowmounts": "Shadow Mounts",
   "item.shadowmounts.shadow_saddle": "Shadow Saddle",
