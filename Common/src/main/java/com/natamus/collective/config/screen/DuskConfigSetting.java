@@ -77,7 +77,7 @@ public class DuskConfigSetting {
 				return Component.translatable("gui.none").withStyle(ChatFormatting.GRAY);
 			}
 			if (entry.single) {
-				return Component.literal(DuskConfigRegistryIds.getName(entry.registry, idList.get(0)));
+				return Component.literal(getSingleIdLabel(idList.get(0)));
 			}
 			return DuskConfigRegistryIds.getAmountLabel(entry.registry, idList.size());
 		}
@@ -113,6 +113,14 @@ public class DuskConfigSetting {
 			return Component.translatable("gui.yes").withStyle(ChatFormatting.GREEN);
 		}
 		return Component.translatable("gui.no").withStyle(ChatFormatting.RED);
+	}
+
+	private String getSingleIdLabel(String id) {
+		String name = DuskConfigRegistryIds.getName(entry.registry, id);
+		if (name.isEmpty()) {
+			return id;
+		}
+		return name;
 	}
 
 	private void openValueScreen() {

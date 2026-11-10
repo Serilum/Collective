@@ -3,17 +3,18 @@ package com.natamus.collective.schematic;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.Vec3;
 
 import javax.annotation.Nullable;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 public class ParseSchematicFile {
 	public static ParsedSchematicObject getParsedSchematicObject(InputStream schematicInputStream, Level level, BlockPos centerPos, int extraYOffset, boolean skipAir) {
@@ -62,11 +63,15 @@ public class ParseSchematicFile {
 
 		List<Pair<BlockPos, Entity>> entities = new ArrayList<>();
 		for (Pair<BlockPos, CompoundTag> rawEntityPair : schematic.getEntityRelativePosPairs()) {
-			Optional<Entity> optionalNewEntity = EntityType.create(rawEntityPair.getSecond(), level);
-			if (optionalNewEntity.isPresent()) {
-				BlockPos actualEntityPosition = rawEntityPair.getFirst().offset(centerPos.getX() + xoffset, yoffset, centerPos.getZ() + zoffset).immutable();
-				Entity newEntity = optionalNewEntity.get();
-				newEntity.setPos(actualEntityPosition.getX()+0.5, actualEntityPosition.getY(), actualEntityPosition.getZ()+0.5);
+			CompoundTag entityCompound = rawEntityPair.getSecond();
+			BlockPos actualEntityPosition = rawEntityPair.getFirst().offset(centerPos.getX() + xoffset, yoffset, centerPos.getZ() + zoffset).immutable();
+			Vec3 actualEntityExactPosition = SchematicFunctions.getPosition(entityCompound.getList("Pos", Tag.TAG_DOUBLE)).add(centerPos.getX() + xoffset, yoffset, centerPos.getZ() + zoffset);
+
+			Entity newEntity = EntityType.loadEntityRecursive(entityCompound, level, entity -> {
+				entity.setPos(actualEntityExactPosition);
+				return entity;
+			});
+			if (newEntity != null) {
 				entities.add(new Pair<>(actualEntityPosition, newEntity));
 			}
 		}

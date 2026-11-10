@@ -177,6 +177,10 @@ public class DuskConfigRegistryIds {
 		}
 
 		ResourceLocation resourceLocation = ResourceLocation.tryParse(id);
+		if (resourceLocation != null && registryName.equals("dimension")) {
+			return getDimensionName(resourceLocation);
+		}
+
 		Registry<?> registry = getRegistry(registryName);
 		if (resourceLocation == null || registry == null || !registry.containsKey(resourceLocation)) {
 			return "";
@@ -205,6 +209,10 @@ public class DuskConfigRegistryIds {
 			return getSoundSubtitle(resourceLocation);
 		}
 		return "";
+	}
+
+	private static String getDimensionName(ResourceLocation dimensionIdentifier) {
+		return StringFunctions.capitalizeEveryWord(dimensionIdentifier.getPath().replace("_", " "));
 	}
 
 	public static ItemStack getIconWithVariants(String registryName, String id) {
