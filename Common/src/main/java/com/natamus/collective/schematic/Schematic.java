@@ -10,15 +10,19 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtOps;
+import net.minecraft.nbt.NbtUtils;
+import net.minecraft.util.datafix.DataFixTypes;
+import net.minecraft.util.datafix.DataFixers;
+import net.minecraft.util.datafix.fixes.BlockStateData;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.Vec3;
 
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 @SuppressWarnings({"deprecated", "OptionalGetWithoutIsPresent"})
 public class Schematic {
@@ -35,6 +39,8 @@ public class Schematic {
 	private List<CompoundTag> blockEntities;
 	private List<Pair<BlockPos, CompoundTag>> entities;
 	private boolean parsedCorrectly = false;
+
+	private static final int flatteningDataVersion = 1451;
 
 	public Schematic(InputStream inputStream) {
 		new Schematic(inputStream, null);
@@ -71,7 +77,7 @@ public class Schematic {
 			if (nbtdata.contains("entities")) {
 				type = "nbt";
 			}
-			else if (nbtdata.contains("DataVersion")) {
+			else if (nbtdata.contains("DataVersion") || nbtdata.contains("BlockData")) {
 				type = "schem";
 			}
 			else {
@@ -88,17 +94,27 @@ public class Schematic {
 					byte[] blockDataRaw;
 					CompoundTag palette;
 					ListTag tileentitynbtlist;
+					Vec3 entityPositionOrigin = Vec3.ZERO;
+					boolean blockEntityDataIsNested = false;
 
-					if (nbtdata.getIntOr("Version", 2) == 2) {
+					if (nbtdata.getIntOr("Version", 2) <= 2) {
 						blockDataRaw = nbtdata.getByteArray("BlockData").get();
 						palette = nbtdata.getCompound("Palette").get();
 
-						tileentitynbtlist = nbtdata.getList("BlockEntities").get();
+						tileentitynbtlist = nbtdata.getListOrEmpty("BlockEntities");
+						if (tileentitynbtlist.isEmpty()) {
+							tileentitynbtlist = nbtdata.getListOrEmpty("TileEntities");
+						}
 
-						CompoundTag offsetCompoundTag = nbtdata.getCompound("Metadata").get();
-						offsetX = offsetCompoundTag.getInt("WEOffsetX").get();
-						offsetY = offsetCompoundTag.getInt("WEOffsetY").get();
-						offsetZ = offsetCompoundTag.getInt("WEOffsetZ").get();
+						CompoundTag offsetCompoundTag = nbtdata.getCompoundOrEmpty("Metadata");
+						offsetX = offsetCompoundTag.getIntOr("WEOffsetX", 0);
+						offsetY = offsetCompoundTag.getIntOr("WEOffsetY", 0);
+						offsetZ = offsetCompoundTag.getIntOr("WEOffsetZ", 0);
+
+						if (nbtdata.contains("Offset")) {
+							int[] minimumPoint = nbtdata.getIntArray("Offset").get();
+							entityPositionOrigin = new Vec3(minimumPoint[0], minimumPoint[1], minimumPoint[2]);
+						}
 					}
 					else {
 						CompoundTag blocksCompoundTag = nbtdata.getCompoundOrEmpty("Blocks");
@@ -106,6 +122,7 @@ public class Schematic {
 						blockDataRaw = blocksCompoundTag.getByteArray("Data").get();
 						palette = blocksCompoundTag.getCompound("Palette").get();
 						tileentitynbtlist = blocksCompoundTag.getList("BlockEntities").get();
+						blockEntityDataIsNested = true;
 
 						int[] offsetArray = nbtdata.getIntArray("Offset").get();
 
@@ -162,7 +179,19 @@ public class Schematic {
 					this.blockEntities = new ArrayList<>();
 
 					for (int t = 0; t < tileentitynbtlist.size(); t++) {
-						this.blockEntities.add(tileentitynbtlist.getCompound(t).get());
+						CompoundTag blockEntityCompound = tileentitynbtlist.getCompound(t).get();
+						if (blockEntityDataIsNested) {
+							blockEntityCompound = getFlattenedBlockEntityData(blockEntityCompound);
+						}
+						this.blockEntities.add(blockEntityCompound);
+					}
+
+					ListTag entitiesNBTList = nbtdata.getListOrEmpty("Entities");
+					for (int entityIndex = 0; entityIndex < entitiesNBTList.size(); entityIndex++) {
+						CompoundTag schemEntityCompound = entitiesNBTList.getCompoundOrEmpty(entityIndex);
+
+						Vec3 relativePosition = SchematicFunctions.getPosition(schemEntityCompound.getListOrEmpty("Pos")).subtract(entityPositionOrigin);
+						addEntity(BlockPos.containing(relativePosition), relativePosition, getSchemEntityData(schemEntityCompound));
 					}
 
 					parsedCorrectly = true;
@@ -176,13 +205,14 @@ public class Schematic {
 					}
 
 					byte[] metadata = nbtdata.getByteArray("Data").get();
+					Map<Integer, BlockState> legacyBlockStates = getLegacyBlockStates(blockRegistry, blockIDs, metadata);
 
 					int counter = 0;
 					for (int y = 0; y < height; y++) {
 						for (int z = 0; z < length; z++) {
 							for (int x = 0; x < width; x++) {
 								BlockPos pos = new BlockPos(x, y, z);
-								BlockState state = getStateFromOldIds(blockIDs[counter], metadata[counter]);
+								BlockState state = legacyBlockStates.get(getLegacyStateId(blockIDs[counter], metadata[counter]));
 								blockObjects[counter] = new SchematicBlockObject(pos, state);
 								counter++;
 							}
@@ -209,38 +239,12 @@ public class Schematic {
 					return;
 				}
 				case "nbt" -> {
+					nbtdata = DataFixTypes.STRUCTURE.updateToCurrentVersion(DataFixers.getDataFixer(), nbtdata, NbtUtils.getDataVersion(nbtdata, 500));
 					ListTag paletteNBTList = nbtdata.getList("palette").get();
 
 					this.palette = new HashMap<>();
 					for (int i = 0; i < paletteNBTList.size(); i++) {
-						CompoundTag compound = paletteNBTList.getCompound(i).get();
-
-						String nameKey = "id";
-						String propertiesKey = "properties";
-						if (compound.contains("Name")) {
-							nameKey = "Name";
-							propertiesKey = "Properties";
-						}
-
-						String value = compound.getString(nameKey).get();
-
-						if (compound.contains(propertiesKey)) {
-							StringBuilder metaData = new StringBuilder("[");
-
-							CompoundTag propertyCompound = compound.getCompound(propertiesKey).get();
-							for (String propertyKey : propertyCompound.keySet()) {
-								if (!metaData.toString().equals("[")) {
-									metaData.append(",");
-								}
-
-								metaData.append(propertyKey).append("=").append(propertyCompound.get(propertyKey));
-							}
-
-							metaData.append("]");
-							value += metaData;
-						}
-
-						this.palette.put(i, value);
+						this.palette.put(i, getPaletteEntryString(paletteNBTList.getCompound(i).get()));
 					}
 
 					this.blockEntities = new ArrayList<>();
@@ -279,7 +283,13 @@ public class Schematic {
 						int i1 = posList.getInt(1).get();
 						int i2 = posList.getInt(2).get();
 
-						this.entities.add(new Pair<>(new BlockPos(i0, i1, i2), entityCompound));
+						BlockPos relativeBlockPos = new BlockPos(i0, i1, i2);
+						Vec3 relativePosition = Vec3.atBottomCenterOf(relativeBlockPos);
+						if (compound.contains("pos")) {
+							relativePosition = SchematicFunctions.getPosition(compound.getListOrEmpty("pos"));
+						}
+
+						addEntity(relativeBlockPos, relativePosition, entityCompound);
 					}
 
 					offsetX = 0;
@@ -307,12 +317,88 @@ public class Schematic {
 		this.blockEntities = null;
 	}
 
+	private void addEntity(BlockPos relativeBlockPos, Vec3 relativePosition, CompoundTag entityCompound) {
+		entityCompound.put("Pos", SchematicFunctions.getDoubleList(relativePosition));
+		entityCompound.remove("UUID");
+		this.entities.add(new Pair<>(relativeBlockPos, entityCompound));
+	}
+
+	private static CompoundTag getFlattenedBlockEntityData(CompoundTag schemBlockEntityCompound) {
+		CompoundTag blockEntityData = schemBlockEntityCompound.getCompoundOrEmpty("Data").copy();
+		blockEntityData.putIntArray("Pos", schemBlockEntityCompound.getIntArray("Pos").get());
+		blockEntityData.putString("Id", schemBlockEntityCompound.getStringOr("Id", ""));
+		return blockEntityData;
+	}
+
+	private static CompoundTag getSchemEntityData(CompoundTag schemEntityCompound) {
+		CompoundTag entityData = schemEntityCompound.copy();
+		if (schemEntityCompound.contains("Data")) {
+			entityData = schemEntityCompound.getCompoundOrEmpty("Data").copy();
+		}
+
+		entityData.putString("id", schemEntityCompound.getStringOr("Id", ""));
+		entityData.remove("Id");
+		return entityData;
+	}
+
 	public boolean isOldVersion() {
 		return oldVersion;
 	}
 
-	private BlockState getStateFromOldIds(int blockID, byte meta) {
-		return Block.stateById(blockID);
+	private static int getLegacyStateId(int blockID, byte meta) {
+		return (blockID << 4) | (meta & 15);
+	}
+
+	private static Map<Integer, BlockState> getLegacyBlockStates(Registry<Block> blockRegistry, int[] blockIDs, byte[] metadata) {
+		Set<Integer> uniqueLegacyStateIds = new LinkedHashSet<>();
+		for (int i = 0; i < blockIDs.length; i++) {
+			uniqueLegacyStateIds.add(getLegacyStateId(blockIDs[i], metadata[i]));
+		}
+		List<Integer> legacyStateIds = new ArrayList<>(uniqueLegacyStateIds);
+
+		ListTag flattenedPalette = new ListTag();
+		for (int legacyStateId : legacyStateIds) {
+			flattenedPalette.add(BlockStateData.getTag(legacyStateId).convert(NbtOps.INSTANCE).getValue());
+		}
+
+		CompoundTag flattenedStructure = new CompoundTag();
+		flattenedStructure.put("palette", flattenedPalette);
+		flattenedStructure.put("blocks", new ListTag());
+		flattenedStructure.put("entities", new ListTag());
+		ListTag currentPalette = DataFixTypes.STRUCTURE.updateToCurrentVersion(DataFixers.getDataFixer(), flattenedStructure, flatteningDataVersion).getListOrEmpty("palette");
+
+		Map<Integer, BlockState> legacyBlockStates = new HashMap<>();
+		for (int i = 0; i < legacyStateIds.size(); i++) {
+			legacyBlockStates.put(legacyStateIds.get(i), getStateFromString(blockRegistry, getPaletteEntryString(currentPalette.getCompoundOrEmpty(i))));
+		}
+		return legacyBlockStates;
+	}
+
+	private static String getPaletteEntryString(CompoundTag paletteEntry) {
+		String nameKey = "id";
+		String propertiesKey = "properties";
+		if (paletteEntry.contains("Name")) {
+			nameKey = "Name";
+			propertiesKey = "Properties";
+		}
+
+		String value = paletteEntry.getStringOr(nameKey, "minecraft:air");
+		if (!paletteEntry.contains(propertiesKey)) {
+			return value;
+		}
+
+		StringBuilder metaData = new StringBuilder("[");
+		CompoundTag propertyCompound = paletteEntry.getCompoundOrEmpty(propertiesKey);
+		for (String propertyKey : propertyCompound.keySet()) {
+			if (!metaData.toString().equals("[")) {
+				metaData.append(",");
+			}
+
+			metaData.append(propertyKey).append("=").append(propertyCompound.get(propertyKey));
+		}
+
+		metaData.append("]");
+		return value + metaData;
 	}
 
 	public BlockState getBlockState(BlockPos pos) {
@@ -333,10 +419,12 @@ public class Schematic {
 	}
 
 	public BlockState getStateFromID(Registry<Block> blockRegistry, int id) {
-		String iblockstateS = this.palette.get(id);
+		return getStateFromString(blockRegistry, this.palette.get(id));
+	}
 
+	private static BlockState getStateFromString(Registry<Block> blockRegistry, String blockStateString) {
 		try {
-			return BlockStateParser.parseForBlock(blockRegistry, new StringReader(iblockstateS), false).blockState();
+			return BlockStateParser.parseForBlock(blockRegistry, new StringReader(blockStateString), false).blockState();
 		} catch (Exception ex) {
 			return Blocks.AIR.defaultBlockState();
 		}
